@@ -433,7 +433,11 @@ def create_app() -> FastAPI:
 
     @app.post("/api/procurement/cart/add")
     def procurement_cart_add(body: CartAddBody) -> dict:
-        return dlayer.cart_add(body.catalog_id, body.quantity)
+        import sqlite3
+        try:
+            return dlayer.cart_add(body.catalog_id, body.quantity)
+        except sqlite3.IntegrityError:
+            raise HTTPException(422, f"Item '{body.catalog_id}' não existe no catálogo.")
 
     @app.delete("/api/procurement/cart/{cart_id}")
     def procurement_cart_remove(cart_id: int) -> dict:
