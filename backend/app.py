@@ -516,7 +516,7 @@ app = create_app()
 
 def main() -> None:
     c = cfg()
-    uvicorn.run(app, host=c.app.host, port=c.app.port, log_level="info")
+    import os; uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", c.app.port)), log_level="info")
 
 
 if __name__ == "__main__":
