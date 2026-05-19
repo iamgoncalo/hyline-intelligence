@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import uuid
 import shutil
 import sqlite3
 import threading
@@ -117,6 +118,27 @@ CREATE TABLE IF NOT EXISTS actions (
     ts TEXT NOT NULL, kind TEXT NOT NULL, payload TEXT, confirmed INTEGER DEFAULT 1
 );
 CREATE INDEX IF NOT EXISTS idx_actions_ts ON actions(ts DESC);
+
+CREATE TABLE IF NOT EXISTS conversations (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL DEFAULT 'Nova conversa',
+    created_ts TEXT NOT NULL,
+    updated_ts TEXT NOT NULL,
+    user_id TEXT
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    conversation_id TEXT NOT NULL,
+    ts TEXT NOT NULL,
+    role TEXT NOT NULL,
+    content TEXT NOT NULL,
+    tool_calls TEXT,
+    actions TEXT,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+);
+CREATE INDEX IF NOT EXISTS idx_msg_conv ON messages(conversation_id, ts);
+CREATE INDEX IF NOT EXISTS idx_conv_updated ON conversations(updated_ts DESC);
 
 CREATE TABLE IF NOT EXISTS assistant_usage (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -540,6 +562,99 @@ def log_assistant_call(
             "VALUES (?, ?, ?, ?, ?, ?)",
             (ts, model, input_tokens, output_tokens, cost_usd, int(fallback)),
         )
+
+
+# ═══════════════════════════════════════════════════════════════════
+# CONVERSATIONS · histórico persistente do assistente
+# ═══════════════════════════════════════════════════════════════════
+
+def conv_create(user_id: str | None = None) -> dict:
+    conv_id = str(uuid.uuid4())
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    with connection() as conn:
+        conn.execute(
+            "INSERT INTO conversations (id, title, created_ts, updated_ts, user_id) VALUES (?, 'Nova conversa', ?, ?, ?)",
+            (conv_id, ts, ts, user_id),
+        )
+    return {"id": conv_id, "title": "Nova conversa", "created_ts": ts, "updated_ts": ts, "user_id": user_id}
+
+
+def conv_list(limit: int = 50) -> list[dict]:
+    with connection() as conn:
+        rows = conn.execute(
+            "SELECT c.id, c.title, c.created_ts, c.updated_ts, c.user_id, "
+            "COUNT(m.id) AS message_count, "
+            "(SELECT m2.content FROM messages m2 WHERE m2.conversation_id=c.id AND m2.role='user' ORDER BY m2.ts LIMIT 1) AS first_user_msg "
+            "FROM conversations c LEFT JOIN messages m ON m.conversation_id=c.id "
+            "GROUP BY c.id ORDER BY c.updated_ts DESC LIMIT ?",
+            (limit,),
+        ).fetchall()
+    result = []
+    for r in rows:
+        row = dict(r)
+        first = row.pop("first_user_msg") or ""
+        row["preview"] = first[:80]
+        result.append(row)
+    return result
+
+
+def conv_get(conv_id: str) -> dict | None:
+    with connection() as conn:
+        r = conn.execute("SELECT * FROM conversations WHERE id = ?", (conv_id,)).fetchone()
+    return dict(r) if r else None
+
+
+def conv_messages(conv_id: str) -> list[dict]:
+    with connection() as conn:
+        rows = conn.execute(
+            "SELECT * FROM messages WHERE conversation_id = ? ORDER BY ts", (conv_id,)
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
+def conv_add_message(
+    conv_id: str, role: str, content: str,
+    tool_calls: list | None = None, actions: list | None = None,
+) -> None:
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    with connection() as conn:
+        conn.execute(
+            "INSERT INTO messages (conversation_id, ts, role, content, tool_calls, actions) VALUES (?, ?, ?, ?, ?, ?)",
+            (conv_id, ts, role, content,
+             json.dumps(tool_calls, ensure_ascii=False) if tool_calls else None,
+             json.dumps(actions, ensure_ascii=False) if actions else None),
+        )
+        conn.execute("UPDATE conversations SET updated_ts=? WHERE id=?", (ts, conv_id))
+
+
+def conv_rename(conv_id: str, new_title: str) -> None:
+    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    with connection() as conn:
+        conn.execute("UPDATE conversations SET title=?, updated_ts=? WHERE id=?", (new_title, ts, conv_id))
+
+
+def conv_delete(conv_id: str) -> None:
+    with connection() as conn:
+        conn.execute("DELETE FROM messages WHERE conversation_id=?", (conv_id,))
+        conn.execute("DELETE FROM conversations WHERE id=?", (conv_id,))
+
+
+def conv_auto_title(conv_id: str) -> str:
+    with connection() as conn:
+        row = conn.execute("SELECT title FROM conversations WHERE id=?", (conv_id,)).fetchone()
+        if not row or row["title"] != "Nova conversa":
+            return row["title"] if row else ""
+        first = conn.execute(
+            "SELECT content FROM messages WHERE conversation_id=? AND role='user' ORDER BY ts LIMIT 1",
+            (conv_id,),
+        ).fetchone()
+        if not first:
+            return "Nova conversa"
+        title = first["content"][:40].strip()
+        if len(first["content"]) > 40:
+            title += "…"
+        conn.execute("UPDATE conversations SET title=? WHERE id=?", (title, conv_id))
+    return title
 
 
 def get_assistant_usage() -> dict:

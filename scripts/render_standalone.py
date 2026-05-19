@@ -105,6 +105,18 @@ shim = """
   const _demoCart = [];
   let _demoCartId = 0;
 
+  // In-memory conversations for demo mode
+  const _convs = {};
+  const _convMsgs = {};
+  let _convSeq = 0;
+  function _newConv(){
+    const id = 'demo-' + (++_convSeq);
+    const ts = new Date().toISOString();
+    _convs[id] = {id, title:'Nova conversa', created_ts:ts, updated_ts:ts, message_count:0, preview:''};
+    _convMsgs[id] = [];
+    return _convs[id];
+  }
+
   const origFetch = window.fetch;
   window.fetch = async function(url, opts){
     if (typeof url === 'string'){
@@ -191,18 +203,63 @@ shim = """
         _demoCart.length = 0;
         return fakeResp({ok:true, action_id:Math.floor(Math.random()*1000)+1, items:n, total_eur:+tot.toFixed(2), eco_score:eco});
       }
-      // Assistant (floating panel)
+      // Conversations CRUD
+      if (url === '/api/conversations' && (!opts || !opts.method || opts.method === 'GET')){
+        const items = Object.values(_convs).sort((a,b)=>b.updated_ts.localeCompare(a.updated_ts));
+        return fakeResp(items.map(c=>({...c, message_count:(_convMsgs[c.id]||[]).length, preview:c.preview})));
+      }
+      if (url === '/api/conversations' && opts && opts.method === 'POST'){
+        return fakeResp(_newConv());
+      }
+      const mConv = url.match(/^\/api\/conversations\/([a-z0-9-]+)$/);
+      if (mConv){
+        const cid = mConv[1];
+        if (!opts || !opts.method || opts.method === 'GET'){
+          const c = _convs[cid];
+          if (!c) return new Response('{"detail":"not found"}', {status:404});
+          return fakeResp({...c, messages: _convMsgs[cid] || []});
+        }
+        if (opts.method === 'PATCH'){
+          const b = JSON.parse(opts.body||'{}');
+          if (_convs[cid] && b.title) _convs[cid].title = b.title;
+          return fakeResp({ok:true});
+        }
+        if (opts.method === 'DELETE'){
+          delete _convs[cid]; delete _convMsgs[cid];
+          return fakeResp({ok:true});
+        }
+      }
+      // Assistant (dock · persists to in-memory conversations)
       if (url === '/api/assistant' && opts && opts.method === 'POST'){
         const body = JSON.parse(opts.body);
         const q = (body.question || '').toLowerCase();
+        let cid = body.conversation_id;
+        if (!cid || !_convs[cid]){ const c = _newConv(); cid = c.id; }
+        const ts = new Date().toISOString();
+        _convMsgs[cid].push({id:_convMsgs[cid].length+1, conversation_id:cid, ts, role:'user', content:body.question, tool_calls:null, actions:null});
+        _convs[cid].updated_ts = ts;
+        if (_convs[cid].title === 'Nova conversa'){
+          _convs[cid].title = body.question.substring(0,40);
+          _convs[cid].preview = body.question.substring(0,80);
+        }
         const asst = SNAP.__assistant__ || {};
         let key = 'pior estação';
-        if (/vidro/.test(q))                         key = 'encomendar vidro sustentável';
-        else if (/perfil/.test(q))                   key = 'encomendar perfis eco';
-        else if (/co2|co₂|emiss|carb/.test(q))      key = 'emissões CO₂ hoje';
-        else if (/reatrib|optimiz|otimiz/.test(q))   key = 'reatribuir operadores';
+        if (/vidro/.test(q))                             key = 'encomendar vidro sustentável';
+        else if (/perfil/.test(q))                       key = 'encomendar perfis eco';
+        else if (/co2|co₂|emiss|carb/.test(q))          key = 'emissões CO₂ hoje';
+        else if (/reatrib|optimiz|otimiz/.test(q))       key = 'reatribuir operadores';
         else if (/encomendar|comprar|fornecedor/.test(q)) key = 'encomendar vidro sustentável';
-        return fakeResp(asst[key] || {answer:'(modo offline)', actions:[]});
+        const res = asst[key] || {answer:'(modo offline)', actions:[]};
+        // Guarantee actions for offline reliability (Gemini may not invoke tools)
+        const _fallbackActions = /encomendar|comprar|vidro|perfil|ferrag|vedant/.test(q)
+            ? [{kind:'open_view',target:'procurement',label:'Abrir Procurement'}]
+            : /co2|emiss|carb|sustentab/.test(q) ? [{kind:'open_view',target:'sustain',label:'Ver Sustentabilidade'}]
+            : /reatrib|optimiz|otimiz/.test(q) ? [{kind:'open_view',target:'action',label:'Abrir Ação'}]
+            : /alerta|avaria/.test(q) ? [{kind:'open_view',target:'alerts',label:'Ver Alertas'}]
+            : [];
+        const _actions = (res.actions && res.actions.length) ? res.actions : _fallbackActions;
+        _convMsgs[cid].push({id:_convMsgs[cid].length+1, conversation_id:cid, ts:new Date().toISOString(), role:'assistant', content:res.answer, tool_calls:null, actions:JSON.stringify(_actions)});
+        return fakeResp({conversation_id:cid, answer:res.answer, actions:_actions, tool_calls:[]});
       }
 
       // GET /api/export (listing)

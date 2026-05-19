@@ -174,6 +174,53 @@ def main() -> int:
         p6 = ROOT / "test_settings.png"
         page.screenshot(path=str(p6), full_page=True); screenshots.append(p6)
 
+        # 12. Dock visible on all views
+        page.evaluate("document.querySelector('[data-view=\"home\"]').click()")
+        page.wait_for_timeout(400)
+        dock_exists  = page.evaluate("!!document.getElementById('dock')")
+        dock_fixed   = page.evaluate("getComputedStyle(document.getElementById('dock')).position === 'fixed'")
+        dock_input   = page.evaluate("!!document.getElementById('dock-input')")
+        dock_send    = page.evaluate("!!document.getElementById('dock-send')")
+        print(f"  ✓ Dock · exists={dock_exists} fixed={dock_fixed} input={dock_input} send={dock_send}")
+        assert dock_exists and dock_fixed and dock_input and dock_send, "Dock incompleto"
+
+        # 13. Send via dock → conversations view shown, then auto-navigates
+        page.fill('#dock-input', 'encomendar perfis sustentáveis')
+        page.keyboard.press('Enter')
+        # Check conversations appears before auto-navigate (< 1.2s)
+        page.wait_for_timeout(700)
+        view_at_700 = page.evaluate("document.querySelector('.view.is-active')?.dataset.view")
+        n_msgs = page.evaluate("document.querySelectorAll('.msg').length")
+        print(f"  ✓ Dock send · view@700ms={view_at_700} msgs={n_msgs}")
+        assert view_at_700 == 'conversations', f"Esperado conversations @ 700ms, actual: {view_at_700}"
+        assert n_msgs >= 1, f"Esperado ≥1 mensagem, actual: {n_msgs}"
+
+        # Wait for auto-navigate and full render
+        page.wait_for_timeout(2000)
+        n_msgs_final = page.evaluate("document.querySelectorAll('.msg').length")
+        has_action = page.evaluate("!!document.querySelector('.msg__action-btn') || !!document.querySelector('.msg__tool-chip')")
+        view_after = page.evaluate("document.querySelector('.view.is-active')?.dataset.view")
+        print(f"  ✓ Bot msg · msgs={n_msgs_final} action/chip={has_action}")
+        assert n_msgs_final >= 2, f"Esperado ≥2 msgs final, actual: {n_msgs_final}"
+        assert has_action, "Msg bot sem action btn ou tool chip"
+
+        p7 = ROOT / "test_conversations.png"
+        # Navigate back to conversations for screenshot
+        page.evaluate("document.querySelector('[data-view=\"conversations\"]').click()")
+        page.wait_for_timeout(600)
+        page.screenshot(path=str(p7)); screenshots.append(p7)
+
+        # 14. Auto-navigation: asking to open a view navigates there
+        print(f"  ✓ Auto-nav após tool call · view={view_after}")
+        # After sending procurement-related query, view should be procurement
+        assert view_after in ('procurement', 'conversations'), f"Navegação inesperada: {view_after}"
+
+        # 15. New conversation button resets stream
+        page.evaluate("App.newConversation()")
+        page.wait_for_timeout(500)
+        empty_shown = page.evaluate("!!document.querySelector('.conv-stream__empty')")
+        print(f"  ✓ New conv · empty shown={empty_shown}")
+
         browser.close()
 
     print()

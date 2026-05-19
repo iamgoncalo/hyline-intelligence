@@ -87,6 +87,11 @@ class CheckoutBody(BaseModel):
 
 class AssistantBody(BaseModel):
     question: str
+    conversation_id: str | None = None
+
+
+class ConvRenameBody(BaseModel):
+    title: str
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -448,11 +453,42 @@ def create_app() -> FastAPI:
     # ── Assistant (floating panel · richer intents) ───────────
     @app.post("/api/assistant")
     def assistant(body: AssistantBody) -> dict:
-        return registry().assistant.answer(body.question)
+        return registry().assistant.answer(body.question, conversation_id=body.conversation_id)
 
     @app.get("/api/assistant/usage")
     def assistant_usage() -> dict:
         return dlayer.get_assistant_usage()
+
+    # ── Conversations ─────────────────────────────────────────
+    @app.get("/api/conversations")
+    def conversations_list(limit: int = 50) -> list[dict]:
+        return dlayer.conv_list(limit=limit)
+
+    @app.post("/api/conversations")
+    def conversations_create() -> dict:
+        return dlayer.conv_create()
+
+    @app.get("/api/conversations/{conv_id}")
+    def conversations_get(conv_id: str) -> dict:
+        conv = dlayer.conv_get(conv_id)
+        if conv is None:
+            raise HTTPException(404, "Conversa não encontrada")
+        conv["messages"] = dlayer.conv_messages(conv_id)
+        return conv
+
+    @app.patch("/api/conversations/{conv_id}")
+    def conversations_rename(conv_id: str, body: ConvRenameBody) -> dict:
+        if not dlayer.conv_get(conv_id):
+            raise HTTPException(404, "Conversa não encontrada")
+        dlayer.conv_rename(conv_id, body.title.strip() or "Nova conversa")
+        return {"ok": True}
+
+    @app.delete("/api/conversations/{conv_id}")
+    def conversations_delete(conv_id: str) -> dict:
+        if not dlayer.conv_get(conv_id):
+            raise HTTPException(404, "Conversa não encontrada")
+        dlayer.conv_delete(conv_id)
+        return {"ok": True}
 
     # ── Static ───────────────────────────────────────────────────
     if static_dir.exists():

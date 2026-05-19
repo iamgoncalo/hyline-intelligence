@@ -253,26 +253,61 @@ class AssistantAgent:
     """
     name = "ASSISTENTE"
 
-    def answer(self, question: str, context: dict | None = None) -> dict:
+    def answer(self, question: str, conversation_id: str | None = None, context: dict | None = None) -> dict:
+        # 1. Create conversation if needed
+        if not conversation_id:
+            conv = dlayer.conv_create()
+            conversation_id = conv["id"]
+
+        # 2. Persist user message
+        dlayer.conv_add_message(conversation_id, "user", question)
+
+        # 3. Auto-title on first message
+        dlayer.conv_auto_title(conversation_id)
+
+        # 4. Load history (exclude the message just added; take last 20 for context)
+        all_msgs = dlayer.conv_messages(conversation_id)
+        history_msgs = all_msgs[:-1][-20:]
+
+        # 5. Route to Gemini or rules
         if os.environ.get("GEMINI_API_KEY"):
             usage = dlayer.get_assistant_usage()
             if usage["today"]["calls"] < cfg().ai.daily_cap_calls:
                 try:
-                    return self._answer_gemini(question, context)
+                    result = self._answer_gemini(question, history_msgs, context)
                 except Exception as e:
                     log.warning("Gemini fallback: %s", e)
                     dlayer.log_assistant_call(cfg().ai.gemini_model, 0, 0, 0.0, fallback=True)
-        return self._answer_rules(question, context)
+                    result = self._answer_rules(question, context)
+            else:
+                result = self._answer_rules(question, context)
+        else:
+            result = self._answer_rules(question, context)
+
+        # 6. Persist assistant response
+        dlayer.conv_add_message(
+            conversation_id, "assistant", result["answer"],
+            tool_calls=result.get("tool_calls"),
+            actions=result.get("actions"),
+        )
+
+        return {
+            "conversation_id": conversation_id,
+            "answer":          result["answer"],
+            "actions":         result.get("actions", []),
+            "tool_calls":      result.get("tool_calls", []),
+        }
 
     # ── Gemini path ──────────────────────────────────────────────
 
-    def _answer_gemini(self, question: str, context: dict | None = None) -> dict:
+    def _answer_gemini(self, question: str, history_msgs: list[dict], context: dict | None = None) -> dict:
         import google.genai as genai
         from google.genai import types
 
         c = cfg()
         client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         _actions: list[dict] = []
+        _tool_calls: list[dict] = []
 
         # Manual schemas — avoids SDK introspection issues with closures
         S = types.Schema
@@ -322,6 +357,7 @@ class AssistantAgent:
         ])
 
         def _exec(name: str, args: dict) -> dict:
+            _tool_calls.append({"name": name, "args": dict(args)})
             if name == "open_view":
                 t = str(args.get("target", "home"))
                 _actions.append({"kind": "open_view", "target": t, "label": f"Abrir {t}"})
@@ -350,8 +386,14 @@ class AssistantAgent:
                 return _k()
             return {"error": f"ferramenta desconhecida: {name}"}
 
-        # Multi-turn tool-call loop (max 5 rounds)
-        contents = [types.Content(role="user", parts=[types.Part(text=question)])]
+        # Build contents: conversation history + current question
+        contents = []
+        for m in history_msgs:
+            if m["role"] == "user":
+                contents.append(types.Content(role="user",  parts=[types.Part(text=m["content"])]))
+            elif m["role"] == "assistant":
+                contents.append(types.Content(role="model", parts=[types.Part(text=m["content"])]))
+        contents.append(types.Content(role="user", parts=[types.Part(text=question)]))
         response = None
         for _ in range(5):
             response = client.models.generate_content(
@@ -380,8 +422,9 @@ class AssistantAgent:
         dlayer.log_assistant_call(c.ai.gemini_model, in_tok, out_tok, round(cost, 8))
 
         return {
-            "answer":  (response.text if response else None) or "Sem resposta do assistente.",
-            "actions": _actions,
+            "answer":      (response.text if response else None) or "Sem resposta do assistente.",
+            "actions":     _actions,
+            "tool_calls":  _tool_calls,
         }
 
     # ── Rules path (always available, zero cost) ─────────────────

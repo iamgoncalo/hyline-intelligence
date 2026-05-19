@@ -21,6 +21,9 @@ const App = (() => {
   let procActiveCat = '';
   let procEcoOnly   = false;
 
+  // Chat state
+  const __chat = { currentConvId: null, conversations: [] };
+
   // ── Utils ───────────────────────────────────────────────────
   const $  = (s, el=document) => el.querySelector(s);
   const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
@@ -57,18 +60,20 @@ const App = (() => {
     $$('.nav__item').forEach(b => b.classList.toggle('is-active', b.dataset.view === name));
     $$('.view').forEach(v => v.classList.toggle('is-active', v.dataset.view === name));
     const titles = {
-      home:        ['Homepage','Produção'],
-      alerts:      ['Alertas','Monitorização'],
-      action:      ['Ação','4 Agentes'],
-      scale:       ['Escala','Mercado & Estratégia'],
-      procurement: ['Procurement','Catálogo Sustentável'],
-      sustain:     ['Sustentabilidade','Circularidade'],
-      settings:    ['Definições','Equipa & Parâmetros'],
+      home:          ['Homepage','Produção'],
+      alerts:        ['Alertas','Monitorização'],
+      action:        ['Ação','4 Agentes'],
+      scale:         ['Escala','Mercado & Estratégia'],
+      procurement:   ['Procurement','Catálogo Sustentável'],
+      sustain:       ['Sustentabilidade','Circularidade'],
+      conversations: ['Conversas','Histórico do Assistente'],
+      settings:      ['Definições','Equipa & Parâmetros'],
     }[name] || ['—','—'];
     $('#view-title').innerHTML = `${titles[0]} <span>·</span> ${titles[1]}`;
-    if (name === 'scale')       renderTrendsChart();
-    if (name === 'settings')    { renderConnections(); renderArchitecture(); renderExport(); }
-    if (name === 'procurement') renderProcurement();
+    if (name === 'scale')         renderTrendsChart();
+    if (name === 'settings')      { renderConnections(); renderArchitecture(); renderExport(); }
+    if (name === 'procurement')   renderProcurement();
+    if (name === 'conversations') loadConversations();
   }
 
   // ── Clock + live m² ticker (runs every second) ────────────
@@ -1066,72 +1071,218 @@ const App = (() => {
           body: JSON.stringify({confirmed: true}),
         });
         loadCart();
-        if (r.ok) addAiMsg(`Encomenda registada · ${r.items} itens · ${nf(r.total_eur,2)}€ · score eco ${r.eco_score}/100.`, 'bot');
       });
   }
 
   // ══════════════════════════════════════════════════════════
-  // FLOATING ASSISTANT (⌘K)
+  // DOCK + CONVERSATIONS
   // ══════════════════════════════════════════════════════════
-  async function updateAiStatus(){
+
+  function relativeTime(ts){
+    const diff = Math.floor((Date.now() - new Date(ts).getTime()) / 1000);
+    if (diff < 60)   return 'agora';
+    if (diff < 3600) return `${Math.floor(diff/60)} min`;
+    if (diff < 86400) return `${Math.floor(diff/3600)} h`;
+    return `${Math.floor(diff/86400)} d`;
+  }
+
+  function renderMsgText(text){
+    return (text || '').replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  }
+
+  function renderConvStream(messages){
+    const host = $('#conv-stream'); if (!host) return;
+    if (!messages || !messages.length){
+      host.innerHTML = '<div class="conv-stream__empty">Ainda sem mensagens nesta conversa</div>';
+      return;
+    }
+    host.innerHTML = '';
+    messages.forEach(m => {
+      if (m.role === 'user'){
+        const div = el('div', 'msg msg--user');
+        div.innerHTML = renderMsgText(m.content);
+        host.appendChild(div);
+        return;
+      }
+      if (m.role === 'assistant'){
+        const div = el('div', 'msg msg--bot');
+        div.innerHTML = renderMsgText(m.content);
+        // Tool chips
+        const toolCalls = m.tool_calls ? (typeof m.tool_calls === 'string' ? JSON.parse(m.tool_calls) : m.tool_calls) : [];
+        toolCalls.forEach(tc => {
+          const chip = el('div', 'msg__tool-chip');
+          chip.textContent = `↳ ${toolLabel(tc.name)} ${toolArgs(tc.args)}`;
+          div.appendChild(chip);
+        });
+        // Action buttons
+        const actions = m.actions ? (typeof m.actions === 'string' ? JSON.parse(m.actions) : m.actions) : [];
+        if (actions.length){
+          const bar = el('div', 'msg__actions');
+          actions.forEach(a => {
+            if (a.kind === 'open_view'){
+              const btn = el('button', 'msg__action-btn');
+              btn.textContent = a.label;
+              btn.onclick = () => switchView(a.target);
+              bar.appendChild(btn);
+            }
+          });
+          div.appendChild(bar);
+        }
+        host.appendChild(div);
+      }
+    });
+    host.scrollTop = host.scrollHeight;
+  }
+
+  function toolLabel(name){
+    return {
+      open_view:'Navegou para', search_catalog:'Procurou catálogo',
+      add_to_cart:'Adicionou ao carrinho', checkout:'Confirmou compra',
+      get_station_status:'Consultou estação', suggest_reassignment:'Propostas reatribuição',
+      global_kpis:'KPIs globais',
+    }[name] || name;
+  }
+  function toolArgs(args){
+    if (!args) return '';
+    const parts = Object.entries(args).map(([k,v]) => `${v}`).join(', ');
+    return parts ? `(${parts})` : '';
+  }
+
+  function renderConvList(items){
+    const host = $('#conv-list-items'); if (!host) return;
+    if (!items.length){
+      host.innerHTML = '<div class="conv-list__empty">Sem conversas ainda.<br>Escreve na barra em baixo.</div>';
+      return;
+    }
+    host.innerHTML = '';
+    items.forEach(c => {
+      const btn = el('button', 'conv-item' + (c.id === __chat.currentConvId ? ' is-active' : ''));
+      btn.innerHTML = `
+        <div class="conv-item__title">${c.title || 'Nova conversa'}</div>
+        <div class="conv-item__preview">${c.preview || '—'}</div>
+        <div class="conv-item__time">${relativeTime(c.updated_ts)}</div>
+        <span class="conv-item__del" title="Eliminar">✕</span>`;
+      btn.addEventListener('click', (e) => {
+        if (e.target.classList.contains('conv-item__del')){ deleteConversation(c.id); return; }
+        selectConversation(c.id);
+      });
+      host.appendChild(btn);
+    });
+  }
+
+  async function loadConversations(){
+    try {
+      const items = await fetchJSON('/api/conversations');
+      __chat.conversations = items;
+      renderConvList(items);
+      if (__chat.currentConvId){
+        const found = items.find(c => c.id === __chat.currentConvId);
+        if (found) selectConversation(__chat.currentConvId);
+      } else if (items.length) {
+        selectConversation(items[0].id);
+      } else {
+        const host = $('#conv-stream');
+        if (host) host.innerHTML = '<div class="conv-stream__empty">Seleciona uma conversa ou inicia uma nova na barra em baixo</div>';
+      }
+    } catch(e){ console.error(e); }
+  }
+
+  async function selectConversation(convId){
+    __chat.currentConvId = convId;
+    $$('.conv-item').forEach(b => b.classList.toggle('is-active', b.querySelector('.conv-item__title') && b.dataset.cid === convId));
+    // Mark active on the rendered items (re-render list to reflect)
+    renderConvList(__chat.conversations);
+    try {
+      const conv = await fetchJSON(`/api/conversations/${convId}`);
+      renderConvStream(conv.messages || []);
+    } catch(e){ console.error(e); }
+  }
+
+  async function newConversation(){
+    __chat.currentConvId = null;
+    if (document.querySelector('.view.is-active[data-view="conversations"]')){
+      const host = $('#conv-stream');
+      if (host) host.innerHTML = '<div class="conv-stream__empty">Escreve na barra em baixo para começar</div>';
+      renderConvList(__chat.conversations);
+    }
+    const inp = $('#dock-input'); if (inp){ inp.focus(); }
+  }
+
+  function deleteConversation(convId){
+    confirmDialog('Eliminar conversa?',
+      'Esta acção não pode ser revertida. Tens a certeza?',
+      async () => {
+        await fetch(`/api/conversations/${convId}`, {method:'DELETE'});
+        if (__chat.currentConvId === convId) __chat.currentConvId = null;
+        loadConversations();
+      });
+  }
+
+  async function updateDockStatus(){
+    const dot = $('#dock-status'); if (!dot) return;
     try {
       const u = await fetchJSON('/api/assistant/usage');
-      const el = $('#ai-status'); if (!el) return;
       if (u.gemini_active){
-        el.textContent = `● Gemini 2.5 Flash · ${u.today.calls}/${u.daily_cap}`;
-        el.style.color = 'rgba(111,175,130,.9)';
+        dot.textContent = '●';
+        dot.className = 'dock__status';
+        dot.title = `Gemini 2.5 Flash · ${u.today.calls}/${u.daily_cap} hoje`;
       } else {
-        el.textContent = '○ Modo offline · regras locais';
-        el.style.color = 'rgba(255,255,255,.5)';
+        dot.textContent = '○';
+        dot.className = 'dock__status is-offline';
+        dot.title = 'Modo regras locais · sem chave Gemini';
       }
-    } catch(_){ /* silent — panel still opens */ }
+    } catch(_){ dot.textContent = '○'; dot.className = 'dock__status is-offline'; }
   }
 
-  function toggleAssistant(){
-    const panel = $('#ai-panel'); if (!panel) return;
-    panel.classList.toggle('is-open');
-    if (panel.classList.contains('is-open')) {
-      updateAiStatus();
-      const inp = $('#ai-input'); if (inp) inp.focus();
+  async function dockSend(){
+    const inp = $('#dock-input'); if (!inp) return;
+    const q = inp.value.trim(); if (!q) return;
+    inp.value = '';
+
+    const dot = $('#dock-status');
+    if (dot){ dot.className = 'dock__status is-thinking'; dot.textContent = '●'; }
+
+    // Navigate to conversations view before request so user sees it forming
+    if (!document.querySelector('.view.is-active[data-view="conversations"]')){
+      switchView('conversations');
     }
-  }
 
-  function addAiMsg(text, who, actions){
-    const log = $('#ai-log'); if (!log) return;
-    const msg = el('div', 'ai-msg ai-msg--' + who);
-    msg.innerHTML = text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-    if (actions && actions.length){
-      const bar = el('div', 'ai-msg__actions');
-      actions.forEach(a => {
-        if (a.kind === 'open_view'){
-          const btn = el('button', 'btn btn--ghost btn--sm');
-          btn.textContent = a.label;
-          btn.onclick = () => { switchView(a.target); toggleAssistant(); };
-          bar.appendChild(btn);
-        }
-      });
-      msg.appendChild(bar);
+    // Optimistically render user message
+    const stream = $('#conv-stream');
+    if (stream){
+      const existing = stream.querySelector('.conv-stream__empty');
+      if (existing) existing.remove();
+      const umsg = el('div', 'msg msg--user');
+      umsg.innerHTML = renderMsgText(q);
+      stream.appendChild(umsg);
+      stream.scrollTop = stream.scrollHeight;
     }
-    log.appendChild(msg);
-    log.scrollTop = log.scrollHeight;
-  }
 
-  async function aiAsk(question){
-    addAiMsg(question, 'user');
     try {
       const r = await fetchJSON('/api/assistant', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({question}),
+        body: JSON.stringify({question: q, conversation_id: __chat.currentConvId}),
       });
-      addAiMsg(r.answer, 'bot', r.actions);
-    } catch(e){ addAiMsg('Erro · backend não respondeu.', 'bot'); }
-  }
+      __chat.currentConvId = r.conversation_id;
 
-  function aiSend(){
-    const input = $('#ai-input'); if (!input) return;
-    const q = input.value.trim(); if (!q) return;
-    input.value = '';
-    aiAsk(q);
+      // Reload full conversation (includes persisted messages)
+      await loadConversations();
+
+      // Auto-navigate after tool call (with 1.2s delay)
+      const navAction = (r.actions || []).find(a => a.kind === 'open_view');
+      if (navAction){
+        setTimeout(() => switchView(navAction.target), 1200);
+      }
+    } catch(e){
+      if (stream){
+        const err = el('div', 'msg msg--bot');
+        err.textContent = 'Erro · assistente não respondeu.';
+        stream.appendChild(err);
+      }
+    } finally {
+      if (dot){ dot.className = 'dock__status'; dot.textContent = '●'; }
+      updateDockStatus();
+    }
   }
 
   // ── Init ───────────────────────────────────────────────────
@@ -1152,17 +1303,24 @@ const App = (() => {
 
     addChatMsg('Olá. Experimenta perguntas como: <i>"desempenho global"</i> · <i>"pior estação"</i> · <i>"alertas abertos"</i> · <i>"produção hoje"</i>', 'bot');
 
-    // Greeting in assistant panel
-    addAiMsg('Olá! Usa os atalhos abaixo ou escreve uma pergunta. Pressiona <strong>⌘K</strong> para abrir/fechar.', 'bot');
+    // Dock wiring
+    const dockInp = $('#dock-input');
+    const dockSnd = $('#dock-send');
+    const dockNew = $('#dock-newchat');
+    if (dockInp) dockInp.addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); dockSend(); } });
+    if (dockSnd) dockSnd.addEventListener('click', dockSend);
+    if (dockNew) dockNew.addEventListener('click', newConversation);
 
-    // Keyboard: ⌘K opens assistant · Esc closes it
+    // ⌘K / Ctrl+K focuses dock input
     document.addEventListener('keydown', e => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k'){ e.preventDefault(); toggleAssistant(); }
-      if (e.key === 'Escape'){
-        const panel = $('#ai-panel');
-        if (panel && panel.classList.contains('is-open')) toggleAssistant();
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k'){
+        e.preventDefault();
+        const inp = $('#dock-input'); if (inp){ inp.focus(); inp.select(); }
       }
     });
+
+    updateDockStatus();
+    setInterval(updateDockStatus, 30000);
 
     refreshAll();
     setInterval(refreshAll, REFRESH_MS);
@@ -1175,8 +1333,9 @@ const App = (() => {
     resolveAlert, saveThreshold,
     chatSend, refreshOptimiser, applyProposal,
     refreshConnections: renderConnections,
-    toggleAssistant, updateAiStatus, aiAsk, aiSend,
     addToCart, removeFromCart, clearCart, checkout, loadCart,
+    dockSend, newConversation, deleteConversation,
+    loadConversations, selectConversation, updateDockStatus,
   };
 })();
 

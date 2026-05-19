@@ -46,6 +46,10 @@
       </button>
     </div>
     <div class="nav__footer">
+      <button class="nav__item" data-view="conversations">
+        <svg class="nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span>Conversas</span>
+      </button>
       <button class="nav__item" data-view="settings">
         <svg class="nav__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>Definições</span>
@@ -66,9 +70,6 @@
         <div class="header__title" id="view-title">Homepage <span>·</span> Produção</div>
       </div>
       <div class="header__meta">
-        <button class="assistant-chip" id="ai-toggle" onclick="App.toggleAssistant()" title="Assistente (⌘K)">
-          Assistente <span class="assistant-chip__key">⌘K</span>
-        </button>
         <div class="header__dot"></div>
         <span id="last-refresh">sincronizado</span>
         <span>·</span>
@@ -309,6 +310,24 @@
         </div>
       </section>
 
+      <!-- ═══ CONVERSATIONS ══════════════════════════════════ -->
+      <section class="view" data-view="conversations">
+        <div class="conv-view">
+          <div class="conv-list">
+            <div class="conv-list__head">
+              <span class="conv-list__title">Conversas</span>
+              <button class="conv-list__new" onclick="App.newConversation()" title="Nova conversa">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
+            <div class="conv-list__items scroll" id="conv-list-items"></div>
+          </div>
+          <div class="conv-stream scroll" id="conv-stream">
+            <div class="conv-stream__empty">Seleciona uma conversa ou inicia uma nova na barra em baixo</div>
+          </div>
+        </div>
+      </section>
+
       <!-- ═══ SETTINGS ════════════════════════════════════════ -->
       <section class="view" data-view="settings">
         <div style="padding: 14px 18px; overflow-x:auto; overflow-y:hidden; height:100%">
@@ -390,26 +409,17 @@
   </main>
 </div>
 
-<!-- Assistente flutuante · ⌘K -->
-<div class="ai-panel" id="ai-panel">
-  <div class="ai-panel__head">
-    <div>
-      <span>Assistente</span>
-      <div class="ai-panel__status" id="ai-status">○ A carregar...</div>
-    </div>
-    <button class="ai-panel__close" onclick="App.toggleAssistant()">✕</button>
-  </div>
-  <div class="ai-panel__log scroll" id="ai-log"></div>
-  <div class="ai-panel__chips">
-    <button class="ai-chip" onclick="App.aiAsk('encomendar vidro sustentável')">Vidro eco</button>
-    <button class="ai-chip" onclick="App.aiAsk('encomendar perfis eco')">Perfis eco</button>
-    <button class="ai-chip" onclick="App.aiAsk('emissões CO₂ hoje')">CO₂ hoje</button>
-    <button class="ai-chip" onclick="App.aiAsk('reatribuir operadores')">Reatribuir</button>
-    <button class="ai-chip" onclick="App.aiAsk('pior estação')">Pior estação</button>
-  </div>
-  <div class="ai-panel__input">
-    <input id="ai-input" placeholder="Pergunta em português..." onkeydown="if(event.key==='Enter') App.aiSend()">
-    <button class="btn btn--solid btn--sm" onclick="App.aiSend()">Enviar</button>
+<!-- Dock · barra de chat persistente -->
+<div class="dock" id="dock">
+  <div class="dock__inner">
+    <button class="dock__newchat" id="dock-newchat" title="Nova conversa">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </button>
+    <input id="dock-input" placeholder="Pergunta ao assistente…" autocomplete="off">
+    <span class="dock__status" id="dock-status">●</span>
+    <button class="dock__send" id="dock-send" aria-label="Enviar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </button>
   </div>
 </div>
 
