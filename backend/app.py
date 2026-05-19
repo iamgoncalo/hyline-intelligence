@@ -494,6 +494,23 @@ def create_app() -> FastAPI:
         dlayer.conv_delete(conv_id)
         return {"ok": True}
 
+    # ── Admin · seed demo data (Railway / fresh deploys) ─────────
+    @app.post("/api/admin/seed")
+    def admin_seed() -> dict:
+        import shutil as _shutil
+        import pathlib as _pathlib
+        src   = _pathlib.Path("sample_data")
+        inbox = _pathlib.Path(c.paths.inbox)
+        inbox.mkdir(parents=True, exist_ok=True)
+        for f in src.glob("*.csv"):
+            _shutil.copy(f, inbox / f.name)
+        dlayer.seed_all()
+        dlayer.ingest_inbox()
+        with dlayer.connection() as conn:
+            events = conn.execute("SELECT COUNT(*) FROM production_events").fetchone()[0]
+            orders = conn.execute("SELECT COUNT(*) FROM orders").fetchone()[0]
+        return {"ok": True, "events": events, "orders": orders}
+
     # ── Static ───────────────────────────────────────────────────
     if static_dir.exists():
         app.mount("/static", StaticFiles(directory=static_dir), name="static")
