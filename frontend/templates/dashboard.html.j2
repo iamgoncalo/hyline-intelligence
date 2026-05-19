@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ app_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/planta.css">
+</head>
+<body>
+
+<div class="app">
+
+  <nav class="nav">
+    <div class="nav__brand">
+      <div class="nav__logo">HYLINE <em>·</em></div>
+      <div class="nav__tagline">Inteligência do Espaço</div>
+    </div>
+    <div class="nav__items">
+      <button class="nav__item is-active" data-view="home">
+        <svg class="nav__icon" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Homepage</span>
+      </button>
+      <button class="nav__item" data-view="alerts">
+        <svg class="nav__icon" viewBox="0 0 24 24"><path d="M10.3 3.86L2.64 17a2 2 0 0 0 1.72 3h15.28a2 2 0 0 0 1.72-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Alertas</span>
+        <span class="nav__pill" id="nav-alerts-count" style="display:none">0</span>
+      </button>
+      <button class="nav__item" data-view="action">
+        <svg class="nav__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+        <span>Ação</span>
+      </button>
+      <button class="nav__item" data-view="scale">
+        <svg class="nav__icon" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <span>Escala</span>
+      </button>
+      <button class="nav__item" data-view="procurement">
+        <svg class="nav__icon" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Procurement</span>
+      </button>
+      <button class="nav__item" data-view="sustain">
+        <svg class="nav__icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 2v10l7.5 7.5"/></svg>
+        <span>Sustentabilidade</span>
+      </button>
+    </div>
+    <div class="nav__footer">
+      <button class="nav__item" data-view="settings">
+        <svg class="nav__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Definições</span>
+      </button>
+      <div class="nav__user">
+        <div class="nav__avatar">JM</div>
+        <div class="nav__user-info">
+          <div class="nav__user-name">Joana Martins</div>
+          <div class="nav__user-role">Director Produção</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <header class="header">
+      <div class="header__left">
+        <div class="header__title" id="view-title">Homepage <span>·</span> Produção</div>
+      </div>
+      <div class="header__meta">
+        <button class="assistant-chip" id="ai-toggle" onclick="App.toggleAssistant()" title="Assistente (⌘K)">
+          Assistente <span class="assistant-chip__key">⌘K</span>
+        </button>
+        <div class="header__dot"></div>
+        <span id="last-refresh">sincronizado</span>
+        <span>·</span>
+        <span class="header__clock" id="clock">—</span>
+      </div>
+    </header>
+
+    <div class="view-host">
+
+      <!-- ═══ HOME: Digital Twin HERO ═══════════════════════════ -->
+      <section class="view is-active" data-view="home">
+        <div class="home">
+
+          <!-- LEFT RAIL -->
+          <aside class="rail">
+            <div class="rail__kpis">
+              <div class="kpi-card kpi-card--accent kpi-card--link" onclick="App.switchView('action')" title="Ver Ação">
+                <div class="kpi-card__live">LIVE</div>
+                <div class="kpi-card__label">m² hoje</div>
+                <div class="kpi-card__value"><span id="k-m2">—</span></div>
+                <div class="kpi-card__delta" id="k-m2-delta">—</div>
+              </div>
+              <div class="kpi-card kpi-card--link" onclick="App.switchView('action')" title="Ver Ação">
+                <div class="kpi-card__label">Desempenho</div>
+                <div class="kpi-card__value"><span id="k-f">—</span><span class="kpi-card__unit">%</span></div>
+                <div class="kpi-card__delta" id="k-f-delta">do dia</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-card__label">Obras</div>
+                <div class="kpi-card__value" id="k-orders">—</div>
+                <div class="kpi-card__delta" id="k-backlog">—</div>
+              </div>
+              <div class="kpi-card kpi-card--link" onclick="App.switchView('alerts')" title="Ver Alertas">
+                <div class="kpi-card__label">Alertas</div>
+                <div class="kpi-card__value" id="k-alerts">—</div>
+                <div class="kpi-card__delta" id="k-alerts-routed">—</div>
+              </div>
+            </div>
+
+            <div class="rail__section">
+              <div class="rail__section-head">
+                <div class="rail__section-title">Obras Activas</div>
+                <span class="rail__section-count" id="orders-total">0</span>
+              </div>
+              <div class="orders-col scroll" id="orders-col"></div>
+            </div>
+
+            <div class="rail__section" style="flex: 0 0 auto">
+              <div class="rail__section-head">
+                <div class="rail__section-title">Alertas em Curso</div>
+                <span class="rail__section-count" id="alerts-strip-count">0</span>
+              </div>
+              <div class="alerts-strip scroll" id="alerts-strip"></div>
+            </div>
+          </aside>
+
+          <!-- STAGE: full-size twin -->
+          <div class="stage">
+            <div class="stage__chips">
+              <div class="chip"><span class="chip__dot"></span><span class="chip__label">Verde</span><span class="chip__value" id="chip-green">—</span></div>
+              <div class="chip"><span class="chip__dot is-amber"></span><span class="chip__label">Amarelo</span><span class="chip__value" id="chip-amber">—</span></div>
+              <div class="chip"><span class="chip__dot is-red"></span><span class="chip__label">Vermelho</span><span class="chip__value" id="chip-red">—</span></div>
+            </div>
+
+            <div class="stage__svg-wrap twin" id="twin-host"></div>
+
+            <div class="stage__legend">
+              <div class="stage__legend-item"><span class="stage__legend-swatch" style="background:rgba(111,175,130,.35); border:1px solid #6FAF82"></span>A cumprir target</div>
+              <div class="stage__legend-item"><span class="stage__legend-swatch" style="background:rgba(217,119,6,.25); border:1px solid #D97706"></span>Abaixo do target</div>
+              <div class="stage__legend-item"><span class="stage__legend-swatch" style="background:rgba(185,28,28,.25); border:1px solid #B91C1C"></span>Crítico</div>
+              <div class="stage__legend-item"><span class="stage__legend-swatch" style="background:rgba(96,122,82,.15); border:1px dashed #607A52"></span>Buffer</div>
+              <div class="stage__legend-item" style="margin-left:14px; font-family:'DM Mono',monospace; letter-spacing:.1em">◼ 14 fiduciais AR</div>
+            </div>
+
+            <!-- Detail drawer -->
+            <aside class="detail" id="detail">
+              <button class="detail__close" onclick="App.closeDetail()">✕</button>
+              <div>
+                <div class="detail__eyebrow" id="d-sector">—</div>
+                <h2 class="detail__title" id="d-title">—</h2>
+                <div class="detail__meta" id="d-meta">—</div>
+              </div>
+              <div>
+                <div class="detail__section-title">Desempenho</div>
+                <div class="detail__fscore">
+                  <div class="detail__fscore-cell" style="grid-column:span 3"><div class="detail__fscore-label">Global da Estação</div><div class="detail__fscore-value" id="d-f">—</div></div>
+                </div>
+              </div>
+              <div>
+                <div class="detail__section-title">Factores de Desempenho</div>
+                <div class="detail__bars" id="d-bars"></div>
+              </div>
+              <div>
+                <div class="detail__section-title">Operadores</div>
+                <div id="d-ops" style="display:flex; flex-direction:column; gap:6px"></div>
+              </div>
+              <div>
+                <div class="detail__section-title">Alertas nesta Estação</div>
+                <div id="d-alerts" style="display:flex; flex-direction:column; gap:6px"></div>
+              </div>
+            </aside>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══ ALERTS ═══════════════════════════════════════════ -->
+      <section class="view" data-view="alerts">
+        <div class="view-pad">
+          <div class="alerts-grid">
+            <div class="alerts-col">
+              <div class="alerts-col__head"><div class="alerts-col__title">Director</div><span class="alerts-col__count" id="cnt-director">0</span></div>
+              <div class="alerts-col__list" id="col-director"></div>
+            </div>
+            <div class="alerts-col">
+              <div class="alerts-col__head"><div class="alerts-col__title">HST</div><span class="alerts-col__count" id="cnt-hst">0</span></div>
+              <div class="alerts-col__list" id="col-hst"></div>
+            </div>
+            <div class="alerts-col">
+              <div class="alerts-col__head"><div class="alerts-col__title">DQ</div><span class="alerts-col__count" id="cnt-dq">0</span></div>
+              <div class="alerts-col__list" id="col-dq"></div>
+            </div>
+            <div class="alerts-col">
+              <div class="alerts-col__head"><div class="alerts-col__title">Chefe de Turno</div><span class="alerts-col__count" id="cnt-chefe">0</span></div>
+              <div class="alerts-col__list" id="col-chefe"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ ACTION ═══════════════════════════════════════════ -->
+      <section class="view" data-view="action">
+        <div class="view-pad">
+          <div class="action-grid">
+            <div class="agents-bar" id="agents-bar"></div>
+            <div class="card optimiser-panel">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+              <div class="rail__section-title">Sugestões de Reatribuição · Otimização</div>
+                <button class="btn btn--ghost btn--sm" onclick="App.refreshOptimiser()">Recalcular</button>
+              </div>
+              <div class="scroll" id="optimiser-list" style="flex:1; display:flex; flex-direction:column; gap:8px"></div>
+            </div>
+            <div class="card chatbot">
+              <div class="rail__section-title">Assistente · linguagem natural</div>
+              <div class="chatbot__log" id="chat-log"></div>
+              <div class="chatbot__input">
+                <input id="chat-input" placeholder="Ex: desempenho global" onkeydown="if(event.key==='Enter') App.chatSend()">
+                <button class="btn btn--solid btn--sm" onclick="App.chatSend()">Enviar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SCALE ════════════════════════════════════════════ -->
+      <section class="view" data-view="scale">
+        <div class="view-pad">
+          <div style="display:grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: 1fr 1fr; gap:14px; height:100%; min-height:0">
+
+            <div class="card" style="grid-row: 1 / span 2; display:flex; flex-direction:column; min-height:0">
+              <div style="display:flex; justify-content:space-between; align-items:baseline">
+                <div class="rail__section-title">Mercado · Pesquisas Portugal · 12 meses</div>
+                <div id="trends-source" style="font:500 9.5px 'DM Mono',monospace; color:var(--ink-hint)"></div>
+              </div>
+              <div style="flex:1; min-height:0; margin-top:10px" id="trends-chart"></div>
+            </div>
+
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div class="rail__section-title">Sugestões para a HYLINE</div>
+              <div class="scroll" id="trends-suggestions" style="margin-top:10px; flex:1; display:flex; flex-direction:column; gap:8px"></div>
+            </div>
+
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div class="rail__section-title">Prioridades Estratégicas</div>
+              <div class="scroll" id="priorities-list" style="margin-top:10px; flex:1"></div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PROCUREMENT ════════════════════════════════════ -->
+      <section class="view" data-view="procurement">
+        <div class="proc-view">
+          <div class="proc-catalog">
+            <div class="proc-filters">
+              <button class="chip-filter is-active" data-cat="">Todos</button>
+              <button class="chip-filter" data-cat="perfis">Perfis</button>
+              <button class="chip-filter" data-cat="vidro">Vidro</button>
+              <button class="chip-filter" data-cat="ferragens">Ferragens</button>
+              <button class="chip-filter" data-cat="consumiveis">Consumíveis</button>
+              <label class="eco-toggle"><input type="checkbox" id="eco-toggle-chk"> Eco &ge;85</label>
+            </div>
+            <div class="catalog-grid scroll" id="catalog-grid"></div>
+          </div>
+          <aside class="proc-cart">
+            <div class="proc-cart__head">
+              <span>Carrinho</span>
+              <span class="cart-badge" id="cart-count">0</span>
+            </div>
+            <div class="cart-list scroll" id="cart-list"></div>
+            <div class="cart-summary" id="cart-summary">
+              <div class="cart-summary-row"><span>Total</span><span id="cart-total">0,00€</span></div>
+              <div class="cart-summary-row" style="color:var(--tertiary)"><span>Score eco</span><span id="cart-eco-score">—</span></div>
+            </div>
+            <button class="btn btn--solid" style="width:100%;margin-top:12px" onclick="App.checkout()">Confirmar Compra</button>
+            <button class="btn btn--ghost btn--sm" style="width:100%;margin-top:6px" onclick="App.clearCart()">Limpar Carrinho</button>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ═══ SUSTAINABILITY ══════════════════════════════════ -->
+      <section class="view" data-view="sustain">
+        <div class="view-pad">
+          <div class="sustain-grid">
+            <div class="sustain-card">
+              <div class="sustain-card__label">CO₂ Hoje</div>
+              <div class="sustain-card__value" id="s-co2">—</div>
+              <div class="sustain-card__unit">kg CO₂e · gerados hoje</div>
+              <div class="meter"><span id="s-co2-bar" style="width:40%"></span></div>
+              <div style="font-size:10.5px; color:var(--ink-hint); margin-top:8px" id="s-co2-target">—</div>
+            </div>
+            <div class="sustain-card">
+              <div class="sustain-card__label">Energia Hoje</div>
+              <div class="sustain-card__value" id="s-energy">—</div>
+              <div class="sustain-card__unit">kWh · consumidos hoje</div>
+              <div class="meter"><span id="s-energy-bar" style="width:55%"></span></div>
+              <div style="font-size:10.5px; color:var(--ink-hint); margin-top:8px" id="s-energy-coef">—</div>
+            </div>
+            <div class="sustain-card">
+              <div class="sustain-card__label">Reutilização</div>
+              <div class="sustain-card__value" id="s-reuse">—%</div>
+              <div class="sustain-card__unit">material reaproveitado</div>
+              <div class="meter"><span id="s-reuse-bar"></span></div>
+              <div style="font-size:10.5px; color:var(--ink-hint); margin-top:8px">meta: +<span id="s-reuse-target">—</span>% vs baseline</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SETTINGS ════════════════════════════════════════ -->
+      <section class="view" data-view="settings">
+        <div style="padding: 14px 18px; overflow-x:auto; overflow-y:hidden; height:100%">
+          <div style="display:grid; grid-template-columns: 260px 240px 320px 380px; gap:12px; height:100%; min-height:0; min-width:1240px">
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div style="display:flex; justify-content:space-between; align-items:center">
+                <div class="rail__section-title">Equipa · {{ members|length }} pessoas</div>
+                <button class="btn btn--ghost btn--sm" onclick="App.confirm('Adicionar membro', 'Funcionalidade em desenvolvimento. Queres prosseguir?', ()=>{})">+ Novo</button>
+              </div>
+              <div class="team-list scroll" id="team-list" style="margin-top:10px; flex:1; min-height:0"></div>
+            </div>
+
+            <div class="card">
+              <div class="rail__section-title">Parâmetros de Decisão</div>
+
+              <div class="threshold-row">
+                <div>
+                  <div class="threshold-row__name">Verde mínimo</div>
+                  <div class="threshold-row__desc">eficiência · abaixo: amarelo</div>
+                </div>
+                <input class="threshold-row__input" id="th-green" value="{{ thresholds.green_min }}" step="0.05" type="number">
+                <button class="btn btn--sm" onclick="App.saveThreshold('green_min', document.getElementById('th-green').value)">OK</button>
+              </div>
+              <div class="threshold-row">
+                <div>
+                  <div class="threshold-row__name">Amarelo mínimo</div>
+                  <div class="threshold-row__desc">abaixo: vermelho</div>
+                </div>
+                <input class="threshold-row__input" id="th-amber" value="{{ thresholds.amber_min }}" step="0.05" type="number">
+                <button class="btn btn--sm" onclick="App.saveThreshold('amber_min', document.getElementById('th-amber').value)">OK</button>
+              </div>
+              <div class="threshold-row">
+                <div>
+                  <div class="threshold-row__name">Janela sustentada</div>
+                  <div class="threshold-row__desc">minutos</div>
+                </div>
+                <input class="threshold-row__input" id="th-sust" value="{{ thresholds.sustained_minutes }}" type="number">
+                <button class="btn btn--sm" onclick="App.saveThreshold('sustained_minutes', document.getElementById('th-sust').value)">OK</button>
+              </div>
+              <div class="threshold-row">
+                <div>
+                  <div class="threshold-row__name">Sensibilidade</div>
+                  <div class="threshold-row__desc">curva do desempenho</div>
+                </div>
+                <input class="threshold-row__input" id="th-alpha" value="{{ afi_alpha }}" step="0.01" type="number">
+                <button class="btn btn--sm" onclick="App.saveThreshold('afi_alpha', document.getElementById('th-alpha').value)">OK</button>
+              </div>
+
+              <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--hairline)">
+                <div class="rail__section-title" style="margin-bottom:10px">Sessão</div>
+                <div style="display:flex; gap:8px">
+                  <button class="btn btn--ghost btn--sm" onclick="App.confirm('Terminar sessão', 'Tens a certeza? Serás redirecionado para o ecrã de login.', ()=>alert('Login em desenvolvimento'))">Logout</button>
+                  <button class="btn btn--danger btn--sm" onclick="App.confirm('Reset de demonstração', 'Apaga todos os dados simulados. Esta acção não pode ser revertida. Tens a certeza?', ()=>alert('Reset em desenvolvimento'))">Reset Demo</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div style="display:flex; justify-content:space-between; align-items:baseline">
+                <div class="rail__section-title">Connections · CSV</div>
+                <button class="btn btn--ghost btn--sm" onclick="App.refreshConnections()">↻</button>
+              </div>
+              <div id="conn-host" style="margin-top:12px; flex:1; overflow-y:auto; min-height:0"></div>
+              <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--hairline)">
+                <div class="rail__section-title" style="margin-bottom:10px">Exportar Dados</div>
+                <div id="export-host" style="display:flex; flex-direction:column; gap:5px"></div>
+              </div>
+            </div>
+
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div class="rail__section-title">Arquitectura · ligações</div>
+              <div id="arch-host" style="margin-top:12px; flex:1; overflow-y:auto; min-height:0"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Assistente flutuante · ⌘K -->
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-panel__head">
+    <div>
+      <span>Assistente</span>
+      <div class="ai-panel__status" id="ai-status">○ A carregar...</div>
+    </div>
+    <button class="ai-panel__close" onclick="App.toggleAssistant()">✕</button>
+  </div>
+  <div class="ai-panel__log scroll" id="ai-log"></div>
+  <div class="ai-panel__chips">
+    <button class="ai-chip" onclick="App.aiAsk('encomendar vidro sustentável')">Vidro eco</button>
+    <button class="ai-chip" onclick="App.aiAsk('encomendar perfis eco')">Perfis eco</button>
+    <button class="ai-chip" onclick="App.aiAsk('emissões CO₂ hoje')">CO₂ hoje</button>
+    <button class="ai-chip" onclick="App.aiAsk('reatribuir operadores')">Reatribuir</button>
+    <button class="ai-chip" onclick="App.aiAsk('pior estação')">Pior estação</button>
+  </div>
+  <div class="ai-panel__input">
+    <input id="ai-input" placeholder="Pergunta em português..." onkeydown="if(event.key==='Enter') App.aiSend()">
+    <button class="btn btn--solid btn--sm" onclick="App.aiSend()">Enviar</button>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="confirm" id="confirm-box">
+  <div class="confirm__box">
+    <div class="confirm__title" id="confirm-title">Are you sure?</div>
+    <div class="confirm__text" id="confirm-text">—</div>
+    <div class="confirm__actions">
+      <button class="btn btn--ghost btn--sm" onclick="App.confirmCancel()">Cancelar</button>
+      <button class="btn btn--solid btn--sm" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Injected data -->
+<script id="initial-data" type="application/json">
+{
+  "stations": {{ stations_json | safe }},
+  "members":  {{ members_json | safe }},
+  "trends":   {{ trends_json | safe }},
+  "priorities": {{ priorities_json | safe }},
+  "sustain":  {{ sustain_json | safe }},
+  "factory":  {{ factory | tojson | safe }},
+  "refresh_seconds": {{ refresh_seconds }},
+  "agents":   {{ agents | tojson | safe }},
+  "thresholds": {{ thresholds | tojson | safe }}
+}
+</script>
+<script src="/static/js/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+# ═══════════════════════════════════════════════════════════════════
+# HYLINE · Monitor de Produção — SINGLE SOURCE OF TRUTH
+# Planta Smart Homes · Inteligência do Espaço · AFI Framework Applied
+# ═══════════════════════════════════════════════════════════════════
+
+app:
+  name: "HYLINE · Inteligência do Espaço"
+  tagline: "Uma única fonte de verdade: o metro quadrado."
+  version: "2.0.0"
+  host: "0.0.0.0"
+  port: 8000
+  refresh_seconds: 1
+  dashboard_refresh_seconds: 1
+
+paths:
+  db: "data/hyline.db"
+  inbox: "data/inbox"
+  processed: "data/processed"
+  frontend: "frontend"
+
+# ── AFI · Architecture of Freedom Intelligence ─────────────────────
+# F = (P/D)^α · aplicado à produção industrial
+# P = perception (score topológico + fluxo)
+# D = distortion (média geométrica ponderada dos canais)
+# α = 1.242 (CI 95% exclui 1.0 · Deucalion)
+afi:
+  alpha: 1.242
+  d_channels:
+    # Pesos somam 1.0 — validado à startup
+    throughput:  0.35   # m²/h vs target
+    quality:     0.25   # % não-conformidades + retrabalho
+    machine:     0.15   # uptime / breakdowns
+    timeline:    0.15   # proximidade ao deadline
+    operator:    0.05   # carga / experiência
+    setup:       0.05   # tempo de changeover
+  seed: 2026
+
+# ── Factory floor · coordenadas SVG ────────────────────────────────
+factory:
+  viewbox_width: 972
+  viewbox_height: 1000
+  corridors:
+    - {id: "top",    x: 0,   y: 0,   w: 972, h: 60,  label: "Artéria Principal"}
+    - {id: "west",   x: 160, y: 60,  w: 35,  h: 740, label: "Corredor Oeste"}
+    - {id: "center", x: 405, y: 60,  w: 35,  h: 890, label: "Corredor Centro"}
+    - {id: "east",   x: 695, y: 60,  w: 35,  h: 890, label: "Corredor Leste"}
+  crosswalks:
+    - {id: "cw-east-top", x: 730, y: 60, w: 242, h: 10}
+  fiducials:
+    - {id: "F01", x: 330, y: 75}
+    - {id: "F02", x: 593, y: 75}
+    - {id: "F03", x: 887, y: 78}
+    - {id: "F04", x: 330, y: 385}
+    - {id: "F05", x: 593, y: 295}
+    - {id: "F06", x: 940, y: 295}
+    - {id: "F07", x: 156, y: 550}
+    - {id: "F08", x: 440, y: 715}
+    - {id: "F09", x: 680, y: 715}
+    - {id: "F10", x: 927, y: 730}
+    - {id: "F11", x: 332, y: 930}
+    - {id: "F12", x: 598, y: 930}
+    - {id: "F13", x: 928, y: 930}
+    - {id: "F14", x: 11,  y: 475}
+
+stations:
+  # SECTOR 1: PRÉ-PRODUÇÃO
+  - {id: "ST-PRE-00",  name: "Armazém Perfis",       sector: "pre",       target_m2_per_hour: 0,   x: 25,  y: 78,  w: 90,  h: 145, kind: "storage"}
+  - {id: "ST-PRE-01",  name: "Corte Pesado",         sector: "pre",       target_m2_per_hour: 4.5, x: 25,  y: 235, w: 130, h: 110, kind: "machine"}
+  - {id: "ST-PRE-BUF", name: "Buffer Pré-Produção",  sector: "pre",       target_m2_per_hour: 0,   x: 25,  y: 355, w: 130, h: 100, kind: "buffer"}
+  - {id: "ST-PRE-02",  name: "Prensa 01",            sector: "pre",       target_m2_per_hour: 3.2, x: 25,  y: 470, w: 130, h: 105, kind: "machine"}
+  - {id: "ST-PRE-03",  name: "Prensa 02",            sector: "pre",       target_m2_per_hour: 3.2, x: 25,  y: 590, w: 130, h: 105, kind: "machine"}
+  - {id: "ST-PRE-04",  name: "Prensa 03",            sector: "pre",       target_m2_per_hour: 3.2, x: 25,  y: 710, w: 130, h: 105, kind: "machine"}
+  # SECTOR 2: SÉRIE DE CORRER
+  - {id: "ST-COR-00",  name: "Corte Correr",         sector: "correr",    target_m2_per_hour: 4.2, x: 215, y: 95,  w: 180, h: 115, kind: "machine"}
+  - {id: "ST-COR-STG", name: "Staging Correr",       sector: "correr",    target_m2_per_hour: 0,   x: 215, y: 225, w: 180, h: 80,  kind: "buffer"}
+  - {id: "ST-COR-01",  name: "Montagem Correr 01",   sector: "correr",    target_m2_per_hour: 3.0, x: 215, y: 320, w: 125, h: 65,  kind: "assembly"}
+  - {id: "ST-COR-02",  name: "Montagem Correr 02",   sector: "correr",    target_m2_per_hour: 3.0, x: 215, y: 395, w: 125, h: 65,  kind: "assembly"}
+  - {id: "ST-COR-03",  name: "Montagem Correr 03",   sector: "correr",    target_m2_per_hour: 3.0, x: 215, y: 470, w: 125, h: 65,  kind: "assembly"}
+  - {id: "ST-COR-04",  name: "Montagem Correr 04",   sector: "correr",    target_m2_per_hour: 3.0, x: 215, y: 545, w: 125, h: 65,  kind: "assembly"}
+  - {id: "ST-COR-F1",  name: "Acabamento Correr 01", sector: "correr",    target_m2_per_hour: 2.8, x: 215, y: 800, w: 125, h: 65,  kind: "finishing"}
+  - {id: "ST-COR-F2",  name: "Acabamento Correr 02", sector: "correr",    target_m2_per_hour: 2.8, x: 215, y: 875, w: 125, h: 65,  kind: "finishing"}
+  # SECTOR 3: SÉRIE DE ABRIR
+  - {id: "ST-ABR-00",  name: "Corte Abrir",          sector: "abrir",     target_m2_per_hour: 4.0, x: 455, y: 95,  w: 235, h: 115, kind: "machine"}
+  - {id: "ST-ABR-01",  name: "Montagem Abrir 01",    sector: "abrir",     target_m2_per_hour: 3.0, x: 500, y: 280, w: 125, h: 65,  kind: "assembly"}
+  - {id: "ST-ABR-02",  name: "Montagem Abrir 02",    sector: "abrir",     target_m2_per_hour: 3.0, x: 500, y: 355, w: 125, h: 65,  kind: "assembly"}
+  - {id: "ST-ABR-03",  name: "Montagem Abrir 03",    sector: "abrir",     target_m2_per_hour: 3.0, x: 500, y: 430, w: 125, h: 65,  kind: "assembly"}
+  - {id: "ST-ABR-STG", name: "Staging Abrir",        sector: "abrir",     target_m2_per_hour: 0,   x: 455, y: 540, w: 235, h: 170, kind: "buffer"}
+  - {id: "ST-ABR-F1",  name: "Acabamento Abrir 01",  sector: "abrir",     target_m2_per_hour: 2.8, x: 455, y: 800, w: 125, h: 65,  kind: "finishing"}
+  - {id: "ST-ABR-F2",  name: "Acabamento Abrir 02",  sector: "abrir",     target_m2_per_hour: 2.8, x: 585, y: 800, w: 105, h: 65,  kind: "finishing"}
+  # SECTOR 4: EXPEDIÇÃO
+  - {id: "ST-EXP-01",  name: "Desembalagem",         sector: "expedicao", target_m2_per_hour: 5.5, x: 740, y: 95,  w: 100, h: 150, kind: "machine"}
+  - {id: "ST-EXP-STG", name: "Staging Expedição",    sector: "expedicao", target_m2_per_hour: 0,   x: 850, y: 95,  w: 115, h: 215, kind: "buffer"}
+  - {id: "ST-EXP-DSP", name: "Zona de Dispatch",     sector: "expedicao", target_m2_per_hour: 6.0, x: 740, y: 340, w: 225, h: 580, kind: "dispatch"}
+
+thresholds:
+  green_min: 0.90
+  amber_min: 0.70
+  sustained_minutes: 15
+  order_urgency_days: 7   # deadline < N dias → prioridade urgente
+
+alerts:
+  routing:
+    quality: "DQ"
+    rework: "DQ"
+    breakdown: "HST"
+    safety: "HST"
+    delay: "ChefeTurno"
+    critical_delay: "Director"
+    capacity: "Director"
+  severity_to_escalate: 4
+
+# ── Equipa HYLINE · Roles derivadas do fluxo de decisão ────────────
+teams:
+  roles:
+    - {id: "director",   name: "Director Produção",          level: 4, color: "#1B3A21"}
+    - {id: "dq",         name: "Departamento Qualidade",     level: 3, color: "#4A7C59"}
+    - {id: "hst",        name: "Departamento HST",           level: 3, color: "#AE572F"}
+    - {id: "chefe",      name: "Chefe de Turno",             level: 2, color: "#6FAF82"}
+    - {id: "operador",   name: "Operador",                   level: 1, color: "#8FC8A0"}
+  # Equipa seed · dados fictícios para demonstração (marcados SIMULADO)
+  members:
+    - {id: "U01", name: "Joana Martins",    role: "director", station_assigned: null,         initials: "JM"}
+    - {id: "U02", name: "Pedro Costa",      role: "dq",       station_assigned: null,         initials: "PC"}
+    - {id: "U03", name: "Rita Fonseca",     role: "hst",      station_assigned: null,         initials: "RF"}
+    - {id: "U04", name: "Miguel Santos",    role: "chefe",    station_assigned: null,         initials: "MS"}
+    - {id: "U05", name: "Ana Pereira",      role: "chefe",    station_assigned: null,         initials: "AP"}
+    - {id: "U06", name: "Carlos Dias",      role: "operador", station_assigned: "ST-COR-01",  initials: "CD"}
+    - {id: "U07", name: "Sofia Ribeiro",    role: "operador", station_assigned: "ST-COR-02",  initials: "SR"}
+    - {id: "U08", name: "João Ferreira",    role: "operador", station_assigned: "ST-COR-03",  initials: "JF"}
+    - {id: "U09", name: "Mariana Lopes",    role: "operador", station_assigned: "ST-COR-04",  initials: "ML"}
+    - {id: "U10", name: "Tiago Silva",      role: "operador", station_assigned: "ST-ABR-01",  initials: "TS"}
+    - {id: "U11", name: "Inês Moreira",     role: "operador", station_assigned: "ST-ABR-02",  initials: "IM"}
+    - {id: "U12", name: "Rui Alves",        role: "operador", station_assigned: "ST-ABR-03",  initials: "RA"}
+    - {id: "U13", name: "Beatriz Nunes",    role: "operador", station_assigned: "ST-PRE-01",  initials: "BN"}
+    - {id: "U14", name: "André Pinto",      role: "operador", station_assigned: "ST-PRE-02",  initials: "AP"}
+    - {id: "U15", name: "Catarina Mota",    role: "operador", station_assigned: "ST-EXP-01",  initials: "CM"}
+
+csv_schema:
+  preference:
+    ts_col: "timestamp"
+    station_col: "station_id"
+    window_col: "window_id"
+    order_col: "order_id"
+    width_col: "width_mm"
+    height_col: "height_mm"
+    phase_col: "phase"
+    status_col: "status"
+    operator_col: "operator_id"
+  primavera:
+    order_col: "order_id"
+    customer_col: "customer"
+    windows_col: "total_windows"
+    m2_col: "total_m2"
+    deadline_col: "deadline"
+    priority_col: "priority"
+    status_col: "status"
+
+# ── Escala · Google Trends + Estratégia ────────────────────────────
+# Dados SIMULADOS baseados em tendências públicas do sector janelas PVC
+# em Portugal. Substituir por dados reais via API Google Trends quando
+# ativada (pypi: pytrends). Valores 0–100 = popularidade relativa.
+scale:
+  trends_pt:
+    - {term: "janelas PVC",                series: [42, 45, 51, 58, 63, 68, 74, 72, 70, 75, 80, 85]}
+    - {term: "janelas eficiência energética", series: [22, 28, 35, 41, 48, 56, 62, 66, 71, 78, 84, 91]}
+    - {term: "janelas oscilo-batentes",    series: [35, 38, 36, 42, 45, 48, 50, 52, 48, 50, 54, 58]}
+    - {term: "reabilitação habitação",     series: [58, 62, 65, 70, 72, 75, 78, 80, 78, 82, 88, 92]}
+  strategic_priorities:
+    - {id: "SP01", title: "Eficiência energética como diferenciador", confidence: 0.92, horizon_months: 6}
+    - {id: "SP02", title: "Linha oscilo-batentes dedicada",           confidence: 0.74, horizon_months: 12}
+    - {id: "SP03", title: "Parceria com empresas de reabilitação",    confidence: 0.88, horizon_months: 9}
+    - {id: "SP04", title: "Automatização corte — redução 30% manual", confidence: 0.81, horizon_months: 18}
+
+# ── Sustentabilidade ───────────────────────────────────────────────
+sustainability:
+  # Coeficientes de emissão por m² produzido (kgCO₂e/m²) · SIMULADOS
+  # Fontes: estudos LCA PVC windows, ajustar com dados HYLINE reais.
+  carbon_per_m2_produced: 48.5
+  carbon_per_m2_rework:    62.0
+  energy_kwh_per_m2:        18.2
+  material_reuse_pct:      34.0   # target 50%+
+  targets:
+    carbon_reduction_pct: 25
+    reuse_increase_pct:   16
+
+ai:
+  gemini_model: "gemini-2.5-flash"
+  gemini_input_usd_per_m:  0.30   # USD per million input tokens
+  gemini_output_usd_per_m: 2.50   # USD per million output tokens
+  daily_cap_calls: 1400            # leave 100 below free-tier limit
+
+procurement:
+  suppliers:
+    - {id: "SUP-01", name: "REHAU Polímeros Portugal",   category: "perfis",      sustainability_score: 88, certifications: ["VinylPlus","ISO 14001"],           delivery_days: 7,  location: "Lisboa",   contact: "vendas.pt@rehau.com"}
+    - {id: "SUP-02", name: "Saint-Gobain Glass Portugal", category: "vidro",       sustainability_score: 91, certifications: ["Cradle2Cradle","ISO 14001","EPD"],  delivery_days: 5,  location: "Setúbal",  contact: "glass.pt@saint-gobain.com"}
+    - {id: "SUP-03", name: "Kömmerling Ibéria",           category: "perfis",      sustainability_score: 85, certifications: ["greenline","VinylPlus"],            delivery_days: 10, location: "Lisboa",   contact: "info.iberia@koemmerling.com"}
+    - {id: "SUP-04", name: "VEKA Portugal",               category: "perfis",      sustainability_score: 82, certifications: ["ISO 9001","VinylPlus"],             delivery_days: 8,  location: "Porto",    contact: "veka@veka.pt"}
+    - {id: "SUP-05", name: "Roto Frank Ibérica",          category: "ferragens",   sustainability_score: 78, certifications: ["ISO 14001"],                       delivery_days: 6,  location: "Lisboa",   contact: "iberia@roto-frank.com"}
+    - {id: "SUP-06", name: "MACO Portugal",               category: "ferragens",   sustainability_score: 76, certifications: ["ISO 9001"],                        delivery_days: 9,  location: "Lisboa",   contact: "portugal@maco.eu"}
+    - {id: "SUP-07", name: "EcoSeal Vedantes",            category: "consumiveis", sustainability_score: 93, certifications: ["REACH","ISO 14001","EPD"],          delivery_days: 4,  location: "Braga",    contact: "geral@ecoseal.pt"}
+    - {id: "SUP-08", name: "Vidros da Marinha",           category: "vidro",       sustainability_score: 79, certifications: ["ISO 9001"],                        delivery_days: 3,  location: "Setúbal",  contact: "comercial@vidrosmarinha.pt"}
+  catalog:
+    - {id: "CAT-01", name: "REHAU Geneo 72mm",          supplier_id: "SUP-01", category: "perfis",      unit: "m",   price_eur: 30.50, co2_per_unit: 3.20, recycled_pct: 72.0, sustainability_score: 88, stock_level: 850}
+    - {id: "CAT-02", name: "REHAU Synego 86mm",         supplier_id: "SUP-01", category: "perfis",      unit: "m",   price_eur: 38.20, co2_per_unit: 3.80, recycled_pct: 68.0, sustainability_score: 84, stock_level: 420}
+    - {id: "CAT-03", name: "Kömmerling greenline 70mm", supplier_id: "SUP-03", category: "perfis",      unit: "m",   price_eur: 27.80, co2_per_unit: 3.50, recycled_pct: 65.0, sustainability_score: 85, stock_level: 610}
+    - {id: "CAT-04", name: "SG Planitherm ONE+",        supplier_id: "SUP-02", category: "vidro",       unit: "m2",  price_eur: 28.90, co2_per_unit: 8.40, recycled_pct: 30.0, sustainability_score: 91, stock_level: 280}
+    - {id: "CAT-05", name: "SG SGG Cool-Lite SKN",      supplier_id: "SUP-02", category: "vidro",       unit: "m2",  price_eur: 44.60, co2_per_unit: 9.10, recycled_pct: 28.0, sustainability_score: 89, stock_level: 195}
+    - {id: "CAT-06", name: "Vidro Duplo Standard",      supplier_id: "SUP-08", category: "vidro",       unit: "m2",  price_eur: 18.40, co2_per_unit: 12.0, recycled_pct: 15.0, sustainability_score: 79, stock_level: 500}
+    - {id: "CAT-07", name: "Roto NT 360 Dobradiça",     supplier_id: "SUP-05", category: "ferragens",   unit: "un",  price_eur: 12.30, co2_per_unit: 0.80, recycled_pct: 45.0, sustainability_score: 78, stock_level: 1200}
+    - {id: "CAT-08", name: "MACO Multimatic Cremona",   supplier_id: "SUP-06", category: "ferragens",   unit: "un",  price_eur: 14.80, co2_per_unit: 0.90, recycled_pct: 40.0, sustainability_score: 76, stock_level: 940}
+    - {id: "CAT-09", name: "Roto Patio Classic",        supplier_id: "SUP-05", category: "ferragens",   unit: "un",  price_eur: 16.20, co2_per_unit: 1.00, recycled_pct: 42.0, sustainability_score: 80, stock_level: 380}
+    - {id: "CAT-10", name: "EcoSeal EPDM vedante 9x4",  supplier_id: "SUP-07", category: "consumiveis", unit: "m",   price_eur: 3.50,  co2_per_unit: 0.15, recycled_pct: 100.0, sustainability_score: 93, stock_level: 5000}
+    - {id: "CAT-11", name: "EcoSeal Silicone Neutro",   supplier_id: "SUP-07", category: "consumiveis", unit: "kg",  price_eur: 8.20,  co2_per_unit: 1.20, recycled_pct: 20.0,  sustainability_score: 90, stock_level: 240}
+
+brand:
+  primary: "#1B3A21"
+  secondary: "#4A7C59"
+  tertiary: "#6FAF82"
+  green_light_bg: "#F0F7F2"
+  green_whisper: "#FAFCFA"
+  white: "#FFFFFF"
+  ink_soft: "#2C3E32"
+  amber: "#D97706"
+  red: "#B91C1C"
+  corridor: "#C2BDBD"
+  buffer_green: "#607A52"
+  buffer_orange: "#AE572F"
+  buffer_yellow: "#C69D37"
+  dispatch_blue: "#B9C8CF"
+  hairline: "#E5EEE8"
+  font_display: "Cormorant Garamond"
+  font_body: "DM Sans"
+  font_mono: "DM Mono"

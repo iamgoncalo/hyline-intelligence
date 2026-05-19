@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HYLINE · Inteligência do Espaço</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+ * PLANTA · HYLINE · Design System v3 · WOW · Apple-like · Live
+ * ══════════════════════════════════════════════════════════════════ */
+
+:root{
+  --primary:    #1B3A21;
+  --primary-90: #1B3A21F2;
+  --secondary:  #4A7C59;
+  --tertiary:   #6FAF82;
+  --accent:     #8FC8A0;
+  --bg:         #FAFCFA;
+  --surface:    #FFFFFF;
+  --surface-soft:#F5F9F6;
+  --hairline:   #E5EEE8;
+  --hairline-s: #EFF4F1;
+  --ink-soft:   #2C3E32;
+  --ink-mute:   #4A7C59;
+  --ink-hint:   #8FA896;
+  --amber:      #D97706;
+  --red:        #B91C1C;
+  --corridor:   #D4D0CA;
+  --floor:      #F7F4EE;
+  --buf-g:      #607A52;
+  --buf-y:      #C69D37;
+  --dispatch:   #BCC9D0;
+
+  --shadow-1: 0 1px 2px rgba(27,58,33,.04), 0 1px 3px rgba(27,58,33,.06);
+  --shadow-2: 0 2px 6px rgba(27,58,33,.05), 0 8px 24px rgba(27,58,33,.08);
+  --shadow-3: 0 12px 40px rgba(27,58,33,.12), 0 4px 12px rgba(27,58,33,.06);
+  --shadow-lift: 0 4px 12px rgba(27,58,33,.08);
+
+  --ease:      cubic-bezier(.22,.9,.28,1);
+  --ease-out:  cubic-bezier(.16,1,.3,1);
+
+  --nav-w:     236px;
+  --header-h:  64px;
+}
+
+*, *::before, *::after{ box-sizing: border-box; }
+html, body{ margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: 'DM Sans', system-ui, -apple-system, sans-serif; }
+body{
+  color: var(--primary);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.45;
+}
+button, input{ font-family: inherit; color: inherit; }
+
+.font-display{ font-family:'Cormorant Garamond', Georgia, serif; font-weight: 500; letter-spacing: -0.015em; }
+.font-mono{ font-family:'DM Mono', ui-monospace, monospace; }
+
+/* ══════════════════════════════════════════════════════════════════
+ * APP SHELL
+ * ══════════════════════════════════════════════════════════════════ */
+.app{ display: grid; grid-template-columns: var(--nav-w) 1fr; height: 100vh; width: 100vw; }
+
+/* Left Nav */
+.nav{ background: var(--surface); border-right: 1px solid var(--hairline); display: flex; flex-direction: column; padding: 26px 14px; overflow: hidden; }
+.nav__brand{ padding: 0 10px 22px; border-bottom: 1px solid var(--hairline); margin-bottom: 18px; }
+.nav__logo{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 28px; color: var(--primary); line-height: 1; letter-spacing: -0.02em; }
+.nav__logo em{ color: var(--tertiary); font-style: normal; font-weight: 400; }
+.nav__tagline{ font-size: 9.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--secondary); margin-top: 8px; font-weight: 500; }
+.nav__items{ display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.nav__item{
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 10px;
+  font-size: 13px; font-weight: 500;
+  color: var(--ink-soft); cursor: pointer; user-select: none;
+  transition: background .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
+  border: none; background: transparent; text-align: left; width: 100%;
+}
+.nav__item:hover{ background: var(--surface-soft); }
+.nav__item:active{ transform: scale(.98); }
+.nav__item.is-active{ background: var(--primary); color: #fff; box-shadow: var(--shadow-1); }
+.nav__item.is-active .nav__icon{ stroke: #fff; }
+.nav__icon{ width: 17px; height: 17px; stroke: var(--secondary); stroke-width: 1.6; fill: none; flex-shrink: 0; stroke-linecap: round; stroke-linejoin: round; transition: stroke .2s var(--ease); }
+.nav__item .nav__pill{ margin-left: auto; font: 500 10px 'DM Mono', monospace; padding: 1px 6px; border-radius: 999px; background: var(--red); color: #fff; min-width: 18px; text-align: center; }
+.nav__item.is-active .nav__pill{ background: #fff; color: var(--red); }
+.nav__footer{ border-top: 1px solid var(--hairline); padding-top: 14px; margin-top: 10px; }
+.nav__user{ display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer; transition: background .2s var(--ease); }
+.nav__user:hover{ background: var(--surface-soft); }
+.nav__avatar{ width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; letter-spacing: .05em; flex-shrink: 0; box-shadow: var(--shadow-1); }
+.nav__user-info{ min-width: 0; }
+.nav__user-name{ font-size: 13px; font-weight: 500; color: var(--primary); }
+.nav__user-role{ font-size: 9.5px; color: var(--ink-hint); letter-spacing: .1em; text-transform: uppercase; margin-top: 1px; }
+
+/* Main shell */
+.main{ display: grid; grid-template-rows: var(--header-h) 1fr; height: 100vh; min-width: 0; position: relative; }
+.header{ display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 1px solid var(--hairline); background: var(--surface); }
+.header__left{ display: flex; align-items: baseline; gap: 12px; }
+.header__title{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 26px; line-height: 1; letter-spacing: -0.01em; }
+.header__title span{ color: var(--tertiary); margin: 0 4px; }
+.header__breadcrumb{ font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-hint); font-weight: 500; }
+.header__meta{ display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--secondary); }
+.header__dot{ width: 6px; height: 6px; border-radius: 50%; background: var(--tertiary); box-shadow: 0 0 0 3px rgba(111,175,130,.25); animation: breathe 2.4s ease-in-out infinite; }
+.header__clock{ font-family:'DM Mono', monospace; color: var(--primary); font-size: 13.5px; font-weight: 500; letter-spacing: .02em; }
+
+.view-host{ overflow: hidden; position: relative; }
+.view{ display: none; height: 100%; width: 100%; animation: fadeIn .45s var(--ease-out); }
+.view.is-active{ display: block; }
+
+@keyframes fadeIn{ from{ opacity: 0; transform: translateY(6px);} to{ opacity: 1; transform: none; } }
+@keyframes breathe{ 0%,100%{ opacity: 1; } 50%{ opacity: .5; } }
+
+/* ══════════════════════════════════════════════════════════════════
+ * HOME · digital twin is the HERO
+ * ══════════════════════════════════════════════════════════════════ */
+.home{
+  position: absolute; inset: 0; display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 0;
+  background: var(--bg);
+}
+
+/* LEFT RAIL (orders + alerts stacked) */
+.rail{ display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 18px 18px 18px 28px; min-height: 0; overflow: hidden; border-right: 1px solid var(--hairline); }
+.rail__kpis{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kpi-card{ background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px; padding: 14px 14px 12px; box-shadow: var(--shadow-1); position: relative; overflow: hidden; transition: transform .3s var(--ease), box-shadow .3s var(--ease); }
+.kpi-card:hover{ transform: translateY(-2px); box-shadow: var(--shadow-2); }
+.kpi-card__label{ font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--secondary); font-weight: 500; }
+.kpi-card__value{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 32px; line-height: 1; letter-spacing: -0.02em; margin-top: 6px; color: var(--primary); }
+.kpi-card__unit{ font: 500 11px 'DM Sans', sans-serif; color: var(--secondary); margin-left: 3px; letter-spacing: .02em; }
+.kpi-card__delta{ font: 500 10px 'DM Mono', monospace; color: var(--tertiary); margin-top: 4px; }
+.kpi-card__spark{ position: absolute; right: 10px; top: 10px; width: 44px; height: 16px; opacity: .5; }
+.kpi-card--accent{ background: linear-gradient(135deg, #fff 0%, #F0F7F2 100%); }
+
+/* Live ticker — shows actual pulse every second */
+.kpi-card__live{ position: absolute; top: 12px; right: 12px; font: 500 8.5px 'DM Mono', monospace; color: var(--tertiary); display: flex; align-items: center; gap: 4px; letter-spacing: .1em; }
+.kpi-card__live::before{ content:''; width: 5px; height: 5px; border-radius: 50%; background: var(--tertiary); animation: blink-dot 1s infinite; }
+@keyframes blink-dot{ 0%,100%{ opacity: 1; } 50%{ opacity: .3; } }
+
+.rail__section{ display: flex; flex-direction: column; min-height: 0; }
+.rail__section-head{ display: flex; align-items: center; justify-content: space-between; padding: 4px 0 10px; }
+.rail__section-title{ font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--secondary); font-weight: 600; }
+.rail__section-count{ font: 500 10.5px 'DM Mono', monospace; color: var(--ink-hint); padding: 1px 8px; background: var(--surface-soft); border-radius: 999px; }
+
+/* Order cards (rich, interactive) */
+.orders-col{ display: flex; flex-direction: column; gap: 8px; overflow-y: auto; padding-right: 4px; min-height: 0; }
+.order{
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px;
+  padding: 12px 14px; cursor: pointer;
+  transition: all .25s var(--ease);
+  position: relative; overflow: hidden;
+}
+.order:hover{ border-color: var(--primary); transform: translateX(2px); box-shadow: var(--shadow-lift); }
+.order.is-selected{ border-color: var(--primary); background: linear-gradient(135deg, #fff 0%, #F0F7F2 100%); box-shadow: var(--shadow-2); }
+.order__head{ display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.order__id{ font: 500 11px 'DM Mono', monospace; color: var(--secondary); }
+.order__prio{ font: 600 8.5px 'DM Mono', monospace; letter-spacing: .15em; text-transform: uppercase; color: var(--amber); }
+.order__prio.is-urgent{ color: var(--red); }
+.order__name{ font-size: 12.5px; font-weight: 500; margin-top: 4px; color: var(--primary); line-height: 1.3; }
+.order__meta{ display: flex; justify-content: space-between; font-size: 10px; color: var(--ink-hint); margin-top: 6px; font-family:'DM Mono',monospace; }
+.order__bar{ height: 3px; background: var(--hairline); border-radius: 999px; margin-top: 8px; overflow: hidden; }
+.order__bar > span{ display: block; height: 100%; background: linear-gradient(90deg, var(--tertiary), var(--secondary)); border-radius: 999px; transition: width .9s var(--ease-out); }
+
+/* Alerts strip */
+.alerts-strip{ display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; padding-right: 4px; }
+.alert-chip{
+  display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--hairline);
+  cursor: pointer; transition: all .2s var(--ease);
+}
+.alert-chip:hover{ border-color: var(--red); transform: translateX(2px); }
+.alert-chip__dot{ width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.alert-chip--sev4 .alert-chip__dot{ background: var(--red); box-shadow: 0 0 0 3px rgba(185,28,28,.2); animation: pulseAlert 1.6s infinite; }
+.alert-chip--sev3 .alert-chip__dot{ background: var(--amber); box-shadow: 0 0 0 3px rgba(217,119,6,.2); }
+.alert-chip--sev2 .alert-chip__dot{ background: var(--tertiary); }
+.alert-chip__body{ min-width: 0; }
+.alert-chip__station{ font-size: 12px; font-weight: 500; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alert-chip__msg{ font-size: 10px; color: var(--ink-hint); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.alert-chip__role{ font: 600 8.5px 'DM Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: var(--secondary); white-space: nowrap; padding: 2px 8px; border-radius: 999px; background: var(--surface-soft); }
+@keyframes pulseAlert{ 0%,100%{ box-shadow: 0 0 0 3px rgba(185,28,28,.25); transform: scale(1); } 50%{ box-shadow: 0 0 0 7px rgba(185,28,28,.08); transform: scale(1.1); } }
+
+/* ══════════════════════════════════════════════════════════════════
+ * DIGITAL TWIN · HERO · Full viewport with floating KPIs
+ * ══════════════════════════════════════════════════════════════════ */
+.stage{ position: relative; overflow: hidden; background: radial-gradient(ellipse at 30% 20%, #F0F7F2 0%, var(--bg) 55%, #F5F9F6 100%); }
+.stage__svg-wrap{ position: absolute; inset: 20px 20px 56px 20px; display: flex; align-items: center; justify-content: center; }
+.twin-svg{ width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 24px rgba(27,58,33,0.08)); }
+
+/* Floating KPI chips (bottom of stage) */
+.stage__chips{ position: absolute; top: 20px; right: 28px; display: flex; gap: 10px; z-index: 10; pointer-events: none; }
+.chip{ background: rgba(255,255,255,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(229,238,232,.7); border-radius: 999px; padding: 8px 14px; box-shadow: var(--shadow-1); display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.chip__label{ font: 600 9.5px 'DM Mono', monospace; letter-spacing: .15em; text-transform: uppercase; color: var(--secondary); }
+.chip__value{ font: 500 14px 'DM Mono', monospace; color: var(--primary); letter-spacing: .02em; }
+.chip__dot{ width: 6px; height: 6px; border-radius: 50%; background: var(--tertiary); }
+.chip__dot.is-amber{ background: var(--amber); }
+.chip__dot.is-red{ background: var(--red); animation: pulseAlert 1.5s infinite; }
+
+/* Stage legend (bottom) */
+.stage__legend{ position: absolute; bottom: 24px; left: 28px; display: flex; gap: 18px; font: 500 10px 'DM Sans', sans-serif; color: var(--ink-hint); z-index: 10; }
+.stage__legend-item{ display: flex; align-items: center; gap: 6px; }
+.stage__legend-swatch{ width: 10px; height: 10px; border-radius: 3px; }
+
+/* Station detail panel (slides in from right when clicked) */
+.detail{
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 360px; background: var(--surface); border-left: 1px solid var(--hairline);
+  transform: translateX(100%); transition: transform .4s var(--ease-out); z-index: 30;
+  box-shadow: var(--shadow-3);
+  padding: 22px 24px; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.detail.is-open{ transform: none; }
+.detail__close{ position: absolute; top: 16px; right: 16px; border: none; background: transparent; font-size: 22px; color: var(--secondary); cursor: pointer; line-height: 1; transition: color .2s var(--ease); }
+.detail__close:hover{ color: var(--primary); }
+.detail__eyebrow{ font: 600 9.5px 'DM Mono', monospace; letter-spacing: .22em; text-transform: uppercase; color: var(--secondary); }
+.detail__title{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 30px; line-height: 1.05; letter-spacing: -0.015em; color: var(--primary); }
+.detail__meta{ font-size: 11.5px; color: var(--ink-hint); }
+.detail__section-title{ font: 600 9.5px 'DM Mono', monospace; letter-spacing: .2em; text-transform: uppercase; color: var(--secondary); margin-bottom: 8px; }
+.detail__fscore{ display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.detail__fscore-cell{ background: var(--surface-soft); border-radius: 10px; padding: 10px 12px; text-align: center; }
+.detail__fscore-label{ font: 600 9px 'DM Mono', monospace; letter-spacing: .15em; text-transform: uppercase; color: var(--ink-hint); }
+.detail__fscore-value{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 26px; line-height: 1; margin-top: 4px; color: var(--primary); }
+.detail__bars{ display: flex; flex-direction: column; gap: 6px; }
+.detail__bar-row{ display: grid; grid-template-columns: 80px 1fr 36px; gap: 8px; align-items: center; font: 500 11px 'DM Mono', monospace; color: var(--ink-soft); }
+.detail__bar-track{ height: 4px; background: var(--hairline); border-radius: 999px; overflow: hidden; }
+.detail__bar-fill{ height: 100%; background: linear-gradient(90deg, var(--tertiary), var(--secondary)); border-radius: 999px; transition: width .6s var(--ease-out); }
+.detail__op{ display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--surface-soft); border-radius: 10px; }
+.detail__op-avatar{ width: 28px; height: 28px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font: 600 10px 'DM Sans'; }
+.detail__alert{ padding: 8px 12px; background: rgba(185,28,28,.08); border-left: 2px solid var(--red); border-radius: 6px; font-size: 11.5px; color: var(--ink-soft); }
+
+/* ══════════════════════════════════════════════════════════════════
+ * Twin · stations & corridors
+ * ══════════════════════════════════════════════════════════════════ */
+.twin .floor-bg{ fill: var(--floor); }
+.twin .corridor-rect{ fill: var(--corridor); opacity: .45; }
+.twin .crosswalk-rect{ fill: none; stroke: var(--buf-y); stroke-width: 2; stroke-dasharray: 5,4; opacity: .6; }
+
+.twin .station-rect{
+  stroke-width: 1.4; fill: #fff; stroke: var(--hairline);
+  filter: drop-shadow(0 1px 2px rgba(27,58,33,0.08));
+  transition: all .35s var(--ease);
+  cursor: pointer;
+}
+.twin .station-rect:hover{ stroke-width: 2.4; transform-origin: center; }
+
+.twin .station-rect.is-green{ fill: url(#grad-green); stroke: var(--tertiary); stroke-width: 1.8; }
+.twin .station-rect.is-amber{ fill: url(#grad-amber); stroke: var(--amber); stroke-width: 1.8; }
+.twin .station-rect.is-red{   fill: url(#grad-red);   stroke: var(--red); stroke-width: 2.2; animation: stationRed 2.2s ease-in-out infinite; }
+.twin .station-rect.is-buffer{ fill: rgba(96,122,82,.08); stroke: var(--buf-g); stroke-width: 1; stroke-dasharray: 3,2; }
+.twin .station-rect.is-storage{ fill: rgba(198,157,55,.10); stroke: var(--buf-y); stroke-width: 1; stroke-dasharray: 3,2; }
+.twin .station-rect.is-dispatch{ fill: rgba(188,201,208,.40); stroke: #8AA3AD; stroke-dasharray: 6,4; stroke-width: 1.4; }
+
+.twin .station-rect.is-selected{ stroke: var(--primary) !important; stroke-width: 3.4 !important; filter: drop-shadow(0 4px 14px rgba(27,58,33,0.22)); }
+.twin .station-rect.is-highlight{ stroke: var(--primary) !important; stroke-width: 2.6 !important; animation: ringPulse 1.4s ease-in-out 3; }
+
+@keyframes stationRed{ 0%,100%{ stroke-width: 2.2; } 50%{ stroke-width: 3.6; filter: drop-shadow(0 0 8px rgba(185,28,28,.4)); } }
+@keyframes ringPulse{ 0%,100%{ filter: drop-shadow(0 0 0 rgba(27,58,33,0)); } 50%{ filter: drop-shadow(0 0 12px rgba(27,58,33,.4)); } }
+
+/* Status dot ON station (breathing) */
+.twin .status-dot{ animation: breatheDot 2.4s ease-in-out infinite; }
+@keyframes breatheDot{ 0%,100%{ opacity: 1; r: 4; } 50%{ opacity: .6; r: 5; } }
+
+/* Flow particles — moving along corridors */
+.twin .flow-particle{ fill: var(--tertiary); opacity: .85; filter: drop-shadow(0 0 4px rgba(111,175,130,.6)); }
+
+.twin .fiducial{ fill: #fff; stroke: #191311; stroke-width: .6; }
+.twin .fiducial-in{ fill: #191311; }
+
+.twin .station-label{ font: 500 9.5px 'DM Sans'; fill: var(--primary); pointer-events: none; text-anchor: middle; }
+.twin .station-metric{ font: 500 8.5px 'DM Mono'; fill: var(--secondary); pointer-events: none; text-anchor: middle; letter-spacing: .02em; }
+.twin .sector-label{ font: 500 14px 'Cormorant Garamond', serif; fill: var(--secondary); letter-spacing: .2em; text-transform: uppercase; text-anchor: middle; opacity: .7; }
+
+/* ══════════════════════════════════════════════════════════════════
+ * Common UI
+ * ══════════════════════════════════════════════════════════════════ */
+.scroll{ overflow-y: auto; }
+.scroll::-webkit-scrollbar{ width: 4px; }
+.scroll::-webkit-scrollbar-thumb{ background: var(--hairline); border-radius: 4px; }
+.scroll::-webkit-scrollbar-thumb:hover{ background: var(--secondary); }
+
+.btn{
+  font: 500 12.5px 'DM Sans', sans-serif;
+  border: 1px solid var(--primary); background: transparent; color: var(--primary);
+  padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  transition: all .2s var(--ease);
+}
+.btn:hover{ background: var(--primary); color: #fff; }
+.btn:active{ transform: scale(.97); }
+.btn--solid{ background: var(--primary); color: #fff; }
+.btn--solid:hover{ background: var(--secondary); border-color: var(--secondary); }
+.btn--ghost{ border-color: var(--hairline); color: var(--secondary); }
+.btn--ghost:hover{ border-color: var(--secondary); background: var(--surface-soft); color: var(--primary); }
+.btn--danger{ border-color: var(--red); color: var(--red); }
+.btn--danger:hover{ background: var(--red); color: #fff; }
+.btn--sm{ padding: 5px 11px; font-size: 11px; }
+
+.badge{ display: inline-block; font: 600 9.5px 'DM Mono', monospace; letter-spacing: .12em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
+.badge--director{ background: var(--primary); color: #fff; }
+.badge--hst{ background: #FDE2E2; color: #7F1D1D; }
+.badge--dq{ background: #FFEBD4; color: #9A4B00; }
+.badge--chefe{ background: #E8F0EC; color: var(--primary); }
+.badge--op{ background: var(--surface-soft); color: var(--secondary); }
+
+/* Export CSV rows */
+.export-row{
+  display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px;
+  padding: 9px 12px; background: var(--surface-soft); border: 1px solid transparent;
+  border-radius: 8px; cursor: pointer; width: 100%; text-align: left;
+  transition: all .2s var(--ease); font-family: inherit;
+}
+.export-row:hover{ border-color: var(--primary); background: #EDF4EF; transform: translateX(2px); }
+.export-row__left{ min-width: 0; }
+.export-row__label{ font-size: 12px; font-weight: 500; color: var(--primary); }
+.export-row__desc{ font-size: 10px; color: var(--ink-hint); margin-top: 2px; }
+.export-row__right{ display: flex; align-items: center; gap: 8px; color: var(--secondary); }
+.export-row__count{ font: 500 10.5px 'DM Mono', monospace; color: var(--ink-hint); }
+.export-row.is-downloading{ opacity: .6; pointer-events: none; }
+.export-row.is-done{ background: rgba(111,175,130,.15); border-color: var(--tertiary); }
+.export-row.is-done .export-row__right::after{ content: '✓'; font-weight: 600; color: var(--tertiary); }
+
+/* ══════════════════════════════════════════════════════════════════
+ * Other views (alerts/action/scale/sustain/settings) · enhanced cards
+ * ══════════════════════════════════════════════════════════════════ */
+.view-pad{ padding: 20px 28px; height: 100%; }
+
+.card{ background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px; padding: 18px 20px; box-shadow: var(--shadow-1); }
+
+/* Alerts view · 4 routed columns */
+.alerts-grid{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; height: 100%; min-height: 0; }
+.alerts-col{ display: flex; flex-direction: column; gap: 10px; min-height: 0; padding: 16px; background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px; box-shadow: var(--shadow-1); }
+.alerts-col__head{ display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--hairline); }
+.alerts-col__title{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 22px; }
+.alerts-col__count{ font: 600 11px 'DM Mono', monospace; padding: 3px 9px; border-radius: 999px; background: var(--surface-soft); color: var(--secondary); }
+.alerts-col__list{ flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; min-height: 0; }
+
+.alert-card{ background: var(--surface-soft); border: 1px solid var(--hairline); border-radius: 10px; padding: 12px 14px; cursor: pointer; transition: all .25s var(--ease); }
+.alert-card:hover{ border-color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow-lift); }
+.alert-card__head{ display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.alert-card__station{ font-size: 13px; font-weight: 600; color: var(--primary); }
+.alert-card__msg{ font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; line-height: 1.4; }
+.alert-card__diag{ font-size: 11px; color: var(--ink-hint); margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--hairline); font-style: italic; line-height: 1.4; }
+.alert-card__foot{ display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 10px; }
+.alert-card__type{ color: var(--ink-hint); text-transform: uppercase; letter-spacing: .15em; font-weight: 500; }
+.alert-card__meta{ font-family:'DM Mono', monospace; color: var(--secondary); }
+
+/* Action view */
+.action-grid{ display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; gap: 14px; height: 100%; min-height: 0; }
+.agents-bar{ grid-column: 1/-1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.agent{ background: var(--surface); border: 1px solid var(--hairline); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow-1); position: relative; overflow: hidden; }
+.agent__status{ position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--tertiary); box-shadow: 0 0 0 3px rgba(111,175,130,.2); animation: breathe 2.4s infinite; }
+.agent__name{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 20px; line-height: 1; }
+.agent__role{ font-size: 11px; color: var(--secondary); line-height: 1.4; margin-top: 4px; }
+.agent__cost{ font: 500 10px 'DM Mono', monospace; color: var(--ink-hint); margin-top: 6px; }
+
+.optimiser-panel, .chatbot{ display: flex; flex-direction: column; min-height: 0; gap: 10px; }
+.prop-row{ display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 12px; background: var(--surface-soft); border-radius: 10px; align-items: center; transition: background .2s var(--ease); }
+.prop-row:hover{ background: #EDF4EF; }
+.prop-row__op{ font-size: 13px; font-weight: 600; }
+.prop-row__move{ font-size: 11px; color: var(--secondary); margin-top: 2px; }
+.prop-row__f{ font-family:'DM Mono', monospace; font-size: 11px; color: var(--primary); margin-right: 8px; font-weight: 500; }
+
+.chatbot__log{ flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 2px 4px 2px 2px; min-height: 0; }
+.chat-msg{ padding: 10px 14px; border-radius: 14px; font-size: 12.5px; max-width: 86%; line-height: 1.45; animation: chatIn .3s var(--ease-out); }
+.chat-msg--user{ align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+.chat-msg--bot{ align-self: flex-start; background: var(--surface-soft); color: var(--primary); border-bottom-left-radius: 4px; }
+@keyframes chatIn{ from{ opacity: 0; transform: translateY(6px); } to{ opacity: 1; transform: none; } }
+.chatbot__input{ display: flex; gap: 8px; }
+.chatbot__input input{ flex: 1; padding: 9px 14px; border: 1px solid var(--hairline); border-radius: 999px; font: inherit; font-size: 12.5px; background: var(--surface); color: var(--primary); outline: none; transition: border-color .2s var(--ease); }
+.chatbot__input input:focus{ border-color: var(--primary); }
+
+/* Scale view */
+.scale-grid{ display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; height: 100%; min-height: 0; }
+.trends-wrap{ flex: 1; min-height: 0; }
+.priority{ padding: 14px 16px; background: var(--surface-soft); border-radius: 10px; display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin-bottom: 8px; }
+.priority__title{ font-size: 13px; font-weight: 500; }
+.priority__meta{ font-size: 10.5px; color: var(--ink-hint); margin-top: 3px; font-family:'DM Mono', monospace; }
+.priority__conf{ font-family:'DM Mono', monospace; font-size: 14px; color: var(--primary); font-weight: 500; }
+
+/* Sustain view */
+.sustain-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-content: start; }
+.sustain-card{ background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow-1); }
+.sustain-card__label{ font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--secondary); font-weight: 500; }
+.sustain-card__value{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 44px; line-height: 1; letter-spacing: -0.02em; margin-top: 8px; color: var(--primary); }
+.sustain-card__unit{ font-size: 12px; color: var(--ink-hint); margin-top: 4px; }
+.meter{ height: 5px; background: var(--hairline); border-radius: 999px; overflow: hidden; margin-top: 16px; }
+.meter > span{ display: block; height: 100%; background: linear-gradient(90deg, var(--tertiary), var(--secondary)); border-radius: 999px; transition: width .8s var(--ease-out); }
+
+/* Settings view */
+.settings-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; height: 100%; min-height: 0; }
+.team-list{ display: flex; flex-direction: column; gap: 6px; overflow-y: auto; padding-right: 4px; }
+.team-row{ display: grid; grid-template-columns: 38px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; background: var(--surface-soft); border-radius: 10px; transition: background .2s var(--ease); }
+.team-row:hover{ background: #EDF4EF; }
+.team-avatar{ width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 600 10.5px 'DM Sans'; color: #fff; box-shadow: var(--shadow-1); }
+.team-row__name{ font-size: 13px; font-weight: 500; color: var(--primary); }
+.team-row__role{ font-size: 10.5px; color: var(--ink-hint); margin-top: 1px; }
+.team-row__station{ font: 500 10px 'DM Mono', monospace; color: var(--secondary); margin-top: 1px; }
+
+.threshold-row{ display: grid; grid-template-columns: 1fr 90px 70px; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--hairline); }
+.threshold-row:last-child{ border-bottom: none; }
+.threshold-row__name{ font-size: 12.5px; color: var(--primary); }
+.threshold-row__desc{ font-size: 10.5px; color: var(--ink-hint); margin-top: 2px; }
+.threshold-row__input{ padding: 6px 10px; border: 1px solid var(--hairline); border-radius: 7px; font: 500 13px 'DM Mono', monospace; width: 100%; text-align: right; color: var(--primary); background: var(--surface); outline: none; transition: border-color .2s var(--ease); }
+.threshold-row__input:focus{ border-color: var(--primary); }
+
+/* Modal (full-screen twin) */
+.modal{ position: fixed; inset: 0; background: rgba(27,58,33,.55); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); animation: fadeIn .3s var(--ease-out); }
+.modal.is-open{ display: flex; }
+.modal__box{ background: var(--surface); border-radius: 18px; padding: 28px; width: min(1280px, 94vw); height: min(90vh, 920px); display: flex; flex-direction: column; gap: 14px; box-shadow: 0 40px 100px rgba(27,58,33,.3); }
+.modal__head{ display: flex; justify-content: space-between; align-items: center; }
+.modal__title{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 34px; line-height: 1; }
+.modal__close{ border: none; background: transparent; font-size: 28px; color: var(--secondary); cursor: pointer; line-height: 1; transition: color .2s var(--ease); }
+.modal__close:hover{ color: var(--primary); }
+.modal__body{ flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+
+/* Confirm */
+.confirm{ position: fixed; inset: 0; background: rgba(27,58,33,.6); display: none; align-items: center; justify-content: center; z-index: 200; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: fadeIn .25s var(--ease-out); }
+.confirm.is-open{ display: flex; }
+.confirm__box{ background: var(--surface); border-radius: 16px; padding: 28px; width: min(440px, 92vw); box-shadow: 0 40px 100px rgba(27,58,33,.3); }
+.confirm__title{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 26px; margin-bottom: 10px; line-height: 1.1; }
+.confirm__text{ font-size: 13px; color: var(--ink-soft); margin-bottom: 22px; line-height: 1.5; }
+.confirm__actions{ display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ══════════════════════════════════════════════════════════════════
+ * KPI CARD · clickable variant
+ * ══════════════════════════════════════════════════════════════════ */
+.kpi-card--link{ cursor: pointer; }
+.kpi-card--link:active{ transform: scale(.97); }
+
+/* ══════════════════════════════════════════════════════════════════
+ * PROCUREMENT VIEW
+ * ══════════════════════════════════════════════════════════════════ */
+.proc-view{
+  padding: 20px 28px; height: 100%; box-sizing: border-box;
+  display: grid; grid-template-columns: 1fr 300px; gap: 14px; overflow: hidden;
+}
+
+.proc-catalog{ display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow: hidden; }
+
+.proc-filters{ display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; }
+.chip-filter{
+  padding: 6px 14px; border-radius: 999px; border: 1px solid var(--hairline);
+  background: var(--surface); font: 500 12px 'DM Sans', sans-serif;
+  color: var(--secondary); cursor: pointer; transition: all .2s var(--ease);
+}
+.chip-filter:hover{ border-color: var(--primary); color: var(--primary); }
+.chip-filter.is-active{ background: var(--primary); color: #fff; border-color: var(--primary); }
+.eco-toggle{
+  display: flex; align-items: center; gap: 6px;
+  font: 500 12px 'DM Sans', sans-serif; color: var(--secondary);
+  cursor: pointer; margin-left: 6px; user-select: none;
+}
+.eco-toggle input{ accent-color: var(--primary); width: 14px; height: 14px; cursor: pointer; }
+
+.catalog-grid{
+  flex: 1; overflow-y: auto;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px; padding-right: 4px; align-content: start;
+}
+.cat-card{
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px;
+  padding: 16px; box-shadow: var(--shadow-1);
+  display: flex; flex-direction: column; gap: 6px;
+  transition: all .25s var(--ease);
+}
+.cat-card:hover{ border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow-2); }
+.cat-card__head{ display: flex; justify-content: space-between; align-items: center; }
+.cat-card__cat{ font: 600 9px 'DM Mono', monospace; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-hint); }
+.score-pill{ font: 600 11px 'DM Mono', monospace; padding: 2px 8px; border-radius: 999px; }
+.cat-card__name{ font-size: 13px; font-weight: 600; color: var(--primary); line-height: 1.3; }
+.cat-card__supplier{ font-size: 11px; color: var(--secondary); }
+.cat-card__row{ display: flex; justify-content: space-between; align-items: baseline; margin-top: 4px; }
+.cat-card__price{ font: 600 13px 'DM Mono', monospace; color: var(--primary); }
+.cat-card__stock{ font: 500 10px 'DM Mono', monospace; color: var(--ink-hint); }
+.cat-card__certs{ display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.cert-tag{
+  font: 500 9px 'DM Mono', monospace; padding: 2px 7px; border-radius: 999px;
+  background: var(--surface-soft); color: var(--secondary); border: 1px solid var(--hairline);
+}
+
+.proc-cart{
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: 14px;
+  padding: 18px; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: var(--shadow-1); min-height: 0; overflow: hidden;
+}
+.proc-cart__head{ display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.proc-cart__head > span:first-child{ font-family:'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; }
+.cart-badge{
+  font: 600 11px 'DM Mono', monospace; padding: 2px 9px;
+  background: var(--primary); color: #fff; border-radius: 999px; min-width: 24px; text-align: center;
+}
+.cart-list{ flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.cart-item{ display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 10px 12px; background: var(--surface-soft); border-radius: 10px; }
+.cart-item__info{ min-width: 0; }
+.cart-item__name{ font-size: 12.5px; font-weight: 500; color: var(--primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cart-item__meta{ font: 500 10.5px 'DM Mono', monospace; color: var(--ink-hint); margin-top: 2px; }
+.cart-item__remove{
+  border: none; background: transparent; color: var(--ink-hint);
+  cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 6px;
+  transition: color .2s var(--ease), background .2s var(--ease); line-height: 1;
+}
+.cart-item__remove:hover{ color: var(--red); background: rgba(185,28,28,.08); }
+.cart-summary{ display: flex; flex-direction: column; gap: 5px; padding-top: 10px; border-top: 1px solid var(--hairline); flex-shrink: 0; }
+.cart-summary-row{ display: flex; justify-content: space-between; font: 500 13px 'DM Mono', monospace; color: var(--primary); }
+
+/* ══════════════════════════════════════════════════════════════════
+ * FLOATING ASSISTANT PANEL · ⌘K
+ * ══════════════════════════════════════════════════════════════════ */
+.assistant-chip{
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 14px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--hairline);
+  font: 500 12px 'DM Sans', sans-serif; color: var(--primary);
+  cursor: pointer; transition: all .2s var(--ease); box-shadow: var(--shadow-1);
+}
+.assistant-chip:hover{ background: var(--primary); color: #fff; border-color: var(--primary); }
+.assistant-chip__key{
+  font: 500 10px 'DM Mono', monospace; color: var(--secondary);
+  background: var(--surface-soft); padding: 2px 6px; border-radius: 6px; border: 1px solid var(--hairline);
+  transition: color .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease);
+}
+.assistant-chip:hover .assistant-chip__key{ color: rgba(255,255,255,.7); background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.2); }
+
+.ai-panel{
+  position: fixed; bottom: 24px; right: 24px; width: 380px; max-height: 560px;
+  background: var(--surface); border: 1px solid var(--hairline); border-radius: 20px;
+  box-shadow: var(--shadow-3); display: flex; flex-direction: column;
+  transform: translateY(16px) scale(.97); opacity: 0; pointer-events: none;
+  transition: all .3s var(--ease-out); z-index: 150; overflow: hidden;
+}
+.ai-panel.is-open{ transform: none; opacity: 1; pointer-events: all; }
+.ai-panel__head{
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 18px; border-bottom: 1px solid var(--hairline);
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: #fff;
+  flex-shrink: 0;
+}
+.ai-panel__head > span{ font-family:'Cormorant Garamond', serif; font-weight: 500; font-size: 20px; }
+.ai-panel__status{
+  font: 500 10px 'DM Mono', monospace; color: rgba(255,255,255,.55);
+  margin-top: 3px; letter-spacing: .04em;
+}
+.ai-panel__close{
+  border: none; background: rgba(255,255,255,.15); color: #fff; border-radius: 50%;
+  width: 28px; height: 28px; cursor: pointer; font-size: 13px;
+  display: flex; align-items: center; justify-content: center; transition: background .2s var(--ease);
+}
+.ai-panel__close:hover{ background: rgba(255,255,255,.28); }
+.ai-panel__log{ flex: 1; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-height: 100px; max-height: 260px; }
+.ai-msg{
+  padding: 9px 13px; border-radius: 12px; font-size: 12.5px; line-height: 1.45;
+  animation: chatIn .3s var(--ease-out); max-width: 92%;
+}
+.ai-msg--user{ align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+.ai-msg--bot{ align-self: flex-start; background: var(--surface-soft); color: var(--primary); border-bottom-left-radius: 4px; }
+.ai-msg__actions{ display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.ai-panel__chips{
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px;
+  border-top: 1px solid var(--hairline); background: var(--surface-soft); flex-shrink: 0;
+}
+.ai-chip{
+  font: 500 11px 'DM Sans', sans-serif; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--hairline); background: var(--surface);
+  color: var(--primary); cursor: pointer; transition: all .2s var(--ease);
+}
+.ai-chip:hover{ background: var(--primary); color: #fff; border-color: var(--primary); }
+.ai-panel__input{ display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--hairline); flex-shrink: 0; }
+.ai-panel__input input{
+  flex: 1; padding: 8px 13px; border: 1px solid var(--hairline); border-radius: 999px;
+  font: inherit; font-size: 12.5px; background: var(--surface); color: var(--primary);
+  outline: none; transition: border-color .2s var(--ease);
+}
+.ai-panel__input input:focus{ border-color: var(--primary); }
+
+/* Hide on small */
+@media (max-width: 1100px){
+  .home{ grid-template-columns: 280px 1fr; }
+  .rail{ padding: 14px 14px 14px 20px; }
+  .alerts-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+
+</style>
+
+<script>
+// ═══════ SHIM OFFLINE · intercepta fetch() e serve snapshots estáticos ═══════
+(function(){
+  const SNAP = {"/api/kpi": {"m2_today": 334.7, "stations_active": 7, "stations_total": 19, "open_alerts": 2, "m2_backlog": 1961.69, "open_orders": 30, "afi_F_global": 0.181, "ts": "2026-05-19T20:08:42Z"}, "/api/stations": [{"id": "ST-PRE-00", "name": "Armazém Perfis", "sector": "pre", "target_m2_per_hour": 0.0, "x": 25.0, "y": 78.0, "w": 90.0, "h": 145.0, "kind": "storage", "m2_per_hour": 0.0, "m2_today": 0.0, "efficiency": 0.0, "status": "idle", "windows_in_progress": 0, "current_window_id": null, "current_order_id": null, "defect_rate": 0.0, "afi_P": 0.1, "afi_D": 1.029, "afi_F": 0.055, "afi_D_attribution": {"throughput": 0.0, "quality": 0.0, "machine": 0.0, "timeline": 36.7, "operator": 46.5, "setup": 16.9}, "operators": []}, {"id": "ST-PRE-01", "name": "Corte Pesado", "sector": "pre", "target_m2_per_hour": 4.5, "x": 25.0, "y": 235.0, "w": 130.0, "h": 110.0, "kind": "machine", "m2_per_hour": 2.56, "m2_today": 30.6, "efficiency": 0.569, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000009", "current_order_id": "ORD-2026-0031", "defect_rate": 0.0, "afi_P": 0.78, "afi_D": 1.237, "afi_F": 0.564, "afi_D_attribution": {"throughput": 92.9, "quality": 0.0, "machine": 0.0, "timeline": 4.9, "operator": 0.0, "setup": 2.2}, "operators": [{"station_assigned": "ST-PRE-01", "name": "Beatriz Nunes", "initials": "BN"}]}, {"id": "ST-PRE-BUF", "name": "Buffer Pré-Produção", "sector": "pre", "target_m2_per_hour": 0.0, "x": 25.0, "y": 355.0, "w": 130.0, "h": 100.0, "kind": "buffer", "m2_per_hour": 0.0, "m2_today": 0.0, "efficiency": 0.0, "status": "idle", "windows_in_progress": 0, "current_window_id": null, "current_order_id": null, "defect_rate": 0.0, "afi_P": 0.12, "afi_D": 1.029, "afi_F": 0.069, "afi_D_attribution": {"throughput": 0.0, "quality": 0.0, "machine": 0.0, "timeline": 36.7, "operator": 46.5, "setup": 16.9}, "operators": []}, {"id": "ST-PRE-02", "name": "Prensa 01", "sector": "pre", "target_m2_per_hour": 3.2, "x": 25.0, "y": 470.0, "w": 130.0, "h": 105.0, "kind": "machine", "m2_per_hour": 0.0, "m2_today": 9.5, "efficiency": 0.0, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000024", "current_order_id": "ORD-2026-0014", "defect_rate": 0.0, "afi_P": 0.312, "afi_D": 7.645, "afi_F": 0.019, "afi_D_attribution": {"throughput": 99.3, "quality": 0.0, "machine": 0.0, "timeline": 0.5, "operator": 0.0, "setup": 0.2}, "operators": [{"station_assigned": "ST-PRE-02", "name": "André Pinto", "initials": "AP"}]}, {"id": "ST-PRE-03", "name": "Prensa 02", "sector": "pre", "target_m2_per_hour": 3.2, "x": 25.0, "y": 590.0, "w": 130.0, "h": 105.0, "kind": "machine", "m2_per_hour": 2.52, "m2_today": 18.82, "efficiency": 0.787, "status": "amber", "windows_in_progress": 0, "current_window_id": "W-000040", "current_order_id": "ORD-2026-0036", "defect_rate": 0.0, "afi_P": 0.78, "afi_D": 1.118, "afi_F": 0.639, "afi_D_attribution": {"throughput": 74.8, "quality": 0.0, "machine": 0.0, "timeline": 9.3, "operator": 11.7, "setup": 4.3}, "operators": []}, {"id": "ST-PRE-04", "name": "Prensa 03", "sector": "pre", "target_m2_per_hour": 3.2, "x": 25.0, "y": 710.0, "w": 130.0, "h": 105.0, "kind": "machine", "m2_per_hour": 0.8, "m2_today": 16.4, "efficiency": 0.25, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000053", "current_order_id": "ORD-2026-0011", "defect_rate": 0.0, "afi_P": 0.78, "afi_D": 1.671, "afi_F": 0.388, "afi_D_attribution": {"throughput": 94.5, "quality": 0.0, "machine": 0.0, "timeline": 2.0, "operator": 2.6, "setup": 0.9}, "operators": []}, {"id": "ST-COR-00", "name": "Corte Correr", "sector": "correr", "target_m2_per_hour": 4.2, "x": 215.0, "y": 95.0, "w": 180.0, "h": 115.0, "kind": "machine", "m2_per_hour": 2.52, "m2_today": 22.36, "efficiency": 0.6, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000067", "current_order_id": "ORD-2026-0026", "defect_rate": 0.667, "afi_P": 0.78, "afi_D": 1.775, "afi_F": 0.36, "afi_D_attribution": {"throughput": 31.2, "quality": 63.9, "machine": 0.0, "timeline": 1.8, "operator": 2.3, "setup": 0.8}, "operators": []}, {"id": "ST-COR-STG", "name": "Staging Correr", "sector": "correr", "target_m2_per_hour": 0.0, "x": 215.0, "y": 225.0, "w": 180.0, "h": 80.0, "kind": "buffer", "m2_per_hour": 0.0, "m2_today": 0.0, "efficiency": 0.0, "status": "idle", "windows_in_progress": 0, "current_window_id": null, "current_order_id": null, "defect_rate": 0.0, "afi_P": 0.12, "afi_D": 1.029, "afi_F": 0.069, "afi_D_attribution": {"throughput": 0.0, "quality": 0.0, "machine": 0.0, "timeline": 36.7, "operator": 46.5, "setup": 16.9}, "operators": []}, {"id": "ST-COR-01", "name": "Montagem Correr 01", "sector": "correr", "target_m2_per_hour": 3.0, "x": 215.0, "y": 320.0, "w": 125.0, "h": 65.0, "kind": "assembly", "m2_per_hour": 5.32, "m2_today": 21.84, "efficiency": 1.773, "status": "green", "windows_in_progress": 0, "current_window_id": "W-000085", "current_order_id": "ORD-2026-0006", "defect_rate": 0.0, "afi_P": 0.85, "afi_D": 1.015, "afi_F": 0.802, "afi_D_attribution": {"throughput": 0.0, "quality": 0.0, "machine": 0.0, "timeline": 68.5, "operator": 0.0, "setup": 31.5}, "operators": [{"station_assigned": "ST-COR-01", "name": "Carlos Dias", "initials": "CD"}]}, {"id": "ST-COR-02", "name": "Montagem Correr 02", "sector": "correr", "target_m2_per_hour": 3.0, "x": 215.0, "y": 395.0, "w": 125.0, "h": 65.0, "kind": "assembly", "m2_per_hour": 3.12, "m2_today": 12.6, "efficiency": 1.04, "status": "green", "windows_in_progress": 0, "current_window_id": "W-000253", "current_order_id": "ORD-2026-0003", "defect_rate": 0.0, "afi_P": 0.85, "afi_D": 1.126, "afi_F": 0.705, "afi_D_attribution": {"throughput": 0.0, "quality": 0.0, "machine": 87.3, "timeline": 8.7, "operator": 0.0, "setup": 4.0}, "operators": [{"station_assigned": "ST-COR-02", "name": "Sofia Ribeiro", "initials": "SR"}]}, {"id": "ST-COR-03", "name": "Montagem Correr 03", "sector": "correr", "target_m2_per_hour": 3.0, "x": 215.0, "y": 470.0, "w": 125.0, "h": 65.0, "kind": "assembly", "m2_per_hour": 4.64, "m2_today": 21.18, "efficiency": 1.547, "status": "green", "windows_in_progress": 0, "current_window_id": "W-000101", "current_order_id": "ORD-2026-0002", "defect_rate": 0.333, "afi_P": 0.85, "afi_D": 1.297, "afi_F": 0.591, "afi_D_attribution": {"throughput": 0.0, "quality": 94.2, "machine": 0.0, "timeline": 4.0, "operator": 0.0, "setup": 1.8}, "operators": [{"station_assigned": "ST-COR-03", "name": "João Ferreira", "initials": "JF"}]}, {"id": "ST-COR-04", "name": "Montagem Correr 04", "sector": "correr", "target_m2_per_hour": 3.0, "x": 215.0, "y": 545.0, "w": 125.0, "h": 65.0, "kind": "assembly", "m2_per_hour": 1.8, "m2_today": 16.74, "efficiency": 0.6, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000121", "current_order_id": "ORD-2026-0026", "defect_rate": 0.0, "afi_P": 0.85, "afi_D": 1.214, "afi_F": 0.642, "afi_D_attribution": {"throughput": 92.2, "quality": 0.0, "machine": 0.0, "timeline": 5.3, "operator": 0.0, "setup": 2.5}, "operators": [{"station_assigned": "ST-COR-04", "name": "Mariana Lopes", "initials": "ML"}]}, {"id": "ST-COR-F1", "name": "Acabamento Correr 01", "sector": "correr", "target_m2_per_hour": 2.8, "x": 215.0, "y": 800.0, "w": 125.0, "h": 65.0, "kind": "finishing", "m2_per_hour": 0.0, "m2_today": 17.54, "efficiency": 0.0, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000135", "current_order_id": "ORD-2026-0017", "defect_rate": 0.0, "afi_P": 0.3, "afi_D": 7.392, "afi_F": 0.019, "afi_D_attribution": {"throughput": 98.6, "quality": 0.0, "machine": 0.0, "timeline": 0.5, "operator": 0.7, "setup": 0.2}, "operators": []}, {"id": "ST-COR-F2", "name": "Acabamento Correr 02", "sector": "correr", "target_m2_per_hour": 2.8, "x": 215.0, "y": 875.0, "w": 125.0, "h": 65.0, "kind": "finishing", "m2_per_hour": 0.0, "m2_today": 19.94, "efficiency": 0.0, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000146", "current_order_id": "ORD-2026-0022", "defect_rate": 0.0, "afi_P": 0.3, "afi_D": 7.392, "afi_F": 0.019, "afi_D_attribution": {"throughput": 98.6, "quality": 0.0, "machine": 0.0, "timeline": 0.5, "operator": 0.7, "setup": 0.2}, "operators": []}, {"id": "ST-ABR-00", "name": "Corte Abrir", "sector": "abrir", "target_m2_per_hour": 4.0, "x": 455.0, "y": 95.0, "w": 235.0, "h": 115.0, "kind": "machine", "m2_per_hour": 1.8, "m2_today": 24.68, "efficiency": 0.45, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000151", "current_order_id": "ORD-2026-0038", "defect_rate": 0.0, "afi_P": 0.78, "afi_D": 1.36, "afi_F": 0.501, "afi_D_attribution": {"throughput": 90.8, "quality": 0.0, "machine": 0.0, "timeline": 3.4, "operator": 4.3, "setup": 1.5}, "operators": []}, {"id": "ST-ABR-01", "name": "Montagem Abrir 01", "sector": "abrir", "target_m2_per_hour": 3.0, "x": 500.0, "y": 280.0, "w": 125.0, "h": 65.0, "kind": "assembly", "m2_per_hour": 0.8, "m2_today": 4.16, "efficiency": 0.267, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000165", "current_order_id": "ORD-2026-0024", "defect_rate": 0.5, "afi_P": 0.85, "afi_D": 2.205, "afi_F": 0.306, "afi_D_attribution": {"throughput": 58.5, "quality": 39.6, "machine": 0.0, "timeline": 1.3, "operator": 0.0, "setup": 0.6}, "operators": [{"station_assigned": "ST-ABR-01", "name": "Tiago Silva", "initials": "TS"}]}, {"id": "ST-ABR-02", "name": "Montagem Abrir 02", "sector": "abrir", "target_m2_per_hour": 3.0, "x": 500.0, "y": 355.0, "w": 125.0, "h": 65.0, "kind": "assembly", "m2_per_hour": 0.0, "m2_today": 12.5, "efficiency": 0.0, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000171", "current_order_id": "ORD-2026-0025", "defect_rate": 0.0, "afi_P": 0.34, "afi_D": 7.474, "afi_F": 0.022, "afi_D_attribution": {"throughput": 99.2, "quality": 0.0, "machine": 0.0, "timeline": 0.5, "operator": 0.0, "setup": 0.2}, "operators": [{"station_assigned": "ST-ABR-02", "name": "Inês Moreira", "initials": "IM"}]}, {"id": "ST-ABR-03", "name": "Montagem Abrir 03", "sector": "abrir", "target_m2_per_hour": 3.0, "x": 500.0, "y": 430.0, "w": 125.0, "h": 65.0, "kind": "assembly", "m2_per_hour": 1.8, "m2_today": 20.16, "efficiency": 0.6, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000181", "current_order_id": "ORD-2026-0026", "defect_rate": 0.0, "afi_P": 0.85, "afi_D": 1.214, "afi_F": 0.642, "afi_D_attribution": {"throughput": 92.2, "quality": 0.0, "machine": 0.0, "timeline": 5.3, "operator": 0.0, "setup": 2.5}, "operators": [{"station_assigned": "ST-ABR-03", "name": "Rui Alves", "initials": "RA"}]}, {"id": "ST-ABR-STG", "name": "Staging Abrir", "sector": "abrir", "target_m2_per_hour": 0.0, "x": 455.0, "y": 540.0, "w": 235.0, "h": 170.0, "kind": "buffer", "m2_per_hour": 0.0, "m2_today": 0.0, "efficiency": 0.0, "status": "idle", "windows_in_progress": 0, "current_window_id": null, "current_order_id": null, "defect_rate": 0.0, "afi_P": 0.12, "afi_D": 1.029, "afi_F": 0.069, "afi_D_attribution": {"throughput": 0.0, "quality": 0.0, "machine": 0.0, "timeline": 36.7, "operator": 46.5, "setup": 16.9}, "operators": []}, {"id": "ST-ABR-F1", "name": "Acabamento Abrir 01", "sector": "abrir", "target_m2_per_hour": 2.8, "x": 455.0, "y": 800.0, "w": 125.0, "h": 65.0, "kind": "finishing", "m2_per_hour": 1.6, "m2_today": 11.64, "efficiency": 0.571, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000196", "current_order_id": "ORD-2026-0029", "defect_rate": 0.0, "afi_P": 0.75, "afi_D": 1.251, "afi_F": 0.53, "afi_D_attribution": {"throughput": 87.4, "quality": 0.0, "machine": 0.0, "timeline": 4.6, "operator": 5.9, "setup": 2.1}, "operators": []}, {"id": "ST-ABR-F2", "name": "Acabamento Abrir 02", "sector": "abrir", "target_m2_per_hour": 2.8, "x": 585.0, "y": 800.0, "w": 105.0, "h": 65.0, "kind": "finishing", "m2_per_hour": 0.0, "m2_today": 15.52, "efficiency": 0.0, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000204", "current_order_id": "ORD-2026-0012", "defect_rate": 0.0, "afi_P": 0.3, "afi_D": 7.392, "afi_F": 0.019, "afi_D_attribution": {"throughput": 98.6, "quality": 0.0, "machine": 0.0, "timeline": 0.5, "operator": 0.7, "setup": 0.2}, "operators": []}, {"id": "ST-EXP-01", "name": "Desembalagem", "sector": "expedicao", "target_m2_per_hour": 5.5, "x": 740.0, "y": 95.0, "w": 100.0, "h": 150.0, "kind": "machine", "m2_per_hour": 3.2, "m2_today": 21.22, "efficiency": 0.582, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000230", "current_order_id": "ORD-2026-0029", "defect_rate": 0.5, "afi_P": 0.78, "afi_D": 1.678, "afi_F": 0.386, "afi_D_attribution": {"throughput": 36.6, "quality": 60.5, "machine": 0.0, "timeline": 2.0, "operator": 0.0, "setup": 0.9}, "operators": [{"station_assigned": "ST-EXP-01", "name": "Catarina Mota", "initials": "CM"}]}, {"id": "ST-EXP-STG", "name": "Staging Expedição", "sector": "expedicao", "target_m2_per_hour": 0.0, "x": 850.0, "y": 95.0, "w": 115.0, "h": 215.0, "kind": "buffer", "m2_per_hour": 0.0, "m2_today": 0.0, "efficiency": 0.0, "status": "idle", "windows_in_progress": 0, "current_window_id": null, "current_order_id": null, "defect_rate": 0.0, "afi_P": 0.12, "afi_D": 1.029, "afi_F": 0.069, "afi_D_attribution": {"throughput": 0.0, "quality": 0.0, "machine": 0.0, "timeline": 36.7, "operator": 46.5, "setup": 16.9}, "operators": []}, {"id": "ST-EXP-DSP", "name": "Zona de Dispatch", "sector": "expedicao", "target_m2_per_hour": 6.0, "x": 740.0, "y": 340.0, "w": 225.0, "h": 580.0, "kind": "dispatch", "m2_per_hour": 0.0, "m2_today": 17.3, "efficiency": 0.0, "status": "red", "windows_in_progress": 0, "current_window_id": "W-000235", "current_order_id": "ORD-2026-0029", "defect_rate": 0.0, "afi_P": 0.28, "afi_D": 9.652, "afi_F": 0.012, "afi_D_attribution": {"throughput": 98.8, "quality": 0.0, "machine": 0.0, "timeline": 0.5, "operator": 0.6, "setup": 0.2}, "operators": []}], "/api/orders?limit=10": [{"id": "ORD-2026-0029", "customer": "Edifícios do Norte", "total_windows": 28, "total_m2": 34.51, "m2_completed": 0.0, "deadline": "2026-05-28", "priority": 1, "status": "in_progress", "progress_pct": 0.0}, {"id": "ORD-2026-0023", "customer": "Lusa Habitat", "total_windows": 9, "total_m2": 23.43, "m2_completed": 0.0, "deadline": "2026-06-03", "priority": 1, "status": "in_progress", "progress_pct": 0.0}, {"id": "ORD-2026-0007", "customer": "Atlântico Construções", "total_windows": 40, "total_m2": 76.43, "m2_completed": 0.0, "deadline": "2026-06-14", "priority": 1, "status": "in_progress", "progress_pct": 0.0}, {"id": "ORD-2026-0011", "customer": "Construtora Aveiro", "total_windows": 37, "total_m2": 112.92, "m2_completed": 0.0, "deadline": "2026-06-27", "priority": 1, "status": "in_progress", "progress_pct": 0.0}, {"id": "ORD-2026-0003", "customer": "Residencial Esposende", "total_windows": 32, "total_m2": 56.06, "m2_completed": 0.0, "deadline": "2026-06-30", "priority": 1, "status": "active", "progress_pct": 0.0}, {"id": "ORD-2026-0035", "customer": "Viana Properties", "total_windows": 16, "total_m2": 37.01, "m2_completed": 0.0, "deadline": "2026-05-23", "priority": 2, "status": "active", "progress_pct": 0.0}, {"id": "ORD-2026-0033", "customer": "Casa Porto Lda", "total_windows": 33, "total_m2": 85.0, "m2_completed": 0.0, "deadline": "2026-05-26", "priority": 2, "status": "in_progress", "progress_pct": 0.0}, {"id": "ORD-2026-0021", "customer": "Atlântico Construções", "total_windows": 21, "total_m2": 68.83, "m2_completed": 0.0, "deadline": "2026-06-14", "priority": 2, "status": "active", "progress_pct": 0.0}, {"id": "ORD-2026-0001", "customer": "Edifícios do Norte", "total_windows": 11, "total_m2": 21.28, "m2_completed": 0.0, "deadline": "2026-06-23", "priority": 2, "status": "open", "progress_pct": 0.0}, {"id": "ORD-2026-0006", "customer": "Quinta do Pinhal", "total_windows": 25, "total_m2": 35.16, "m2_completed": 0.0, "deadline": "2026-06-25", "priority": 2, "status": "in_progress", "progress_pct": 0.0}], "/api/alerts": [{"id": 2, "ts": "2026-05-19T20:02:41Z", "station_id": "ST-COR-02", "station_name": "Montagem Correr 02", "alert_type": "breakdown", "severity": 3, "routed_to": "HST", "message": "Avaria de equipamento", "m2_impact": 1.92, "ai_diagnosis": "Avaria de equipamento · produção bloqueada nesta estação.", "ai_actions": "Contactar HST para intervenção imediata | Redirecionar trabalho para estação equivalente | Abrir ordem de manutenção corretiva"}, {"id": 1, "ts": "2026-05-19T19:59:46Z", "station_id": "ST-EXP-01", "station_name": "Desembalagem", "alert_type": "quality", "severity": 3, "routed_to": "DQ", "message": "Não-conformidade · Janela W-000230 · Obra ORD-2026-0029 · 1.28 m²", "m2_impact": 1.28, "ai_diagnosis": "Não-conformidade detectada. Verificar calibração da máquina e materiais de entrada.", "ai_actions": "Parar produção na estação e isolar janela afetada | Notificar DQ para inspeção completa | Verificar último setup / ferramenta utilizada"}], "/api/production/hourly": [{"hour": "10", "sector": "abrir", "m2": 9.68}, {"hour": "10", "sector": "correr", "m2": 4.24}, {"hour": "10", "sector": "expedicao", "m2": 2.16}, {"hour": "10", "sector": "pre", "m2": 6.44}, {"hour": "11", "sector": "abrir", "m2": 5.08}, {"hour": "11", "sector": "correr", "m2": 10.26}, {"hour": "11", "sector": "expedicao", "m2": 3.2}, {"hour": "11", "sector": "pre", "m2": 7.66}, {"hour": "12", "sector": "abrir", "m2": 7.88}, {"hour": "12", "sector": "correr", "m2": 14.36}, {"hour": "12", "sector": "expedicao", "m2": 7.62}, {"hour": "12", "sector": "pre", "m2": 8.64}, {"hour": "13", "sector": "abrir", "m2": 11.62}, {"hour": "13", "sector": "correr", "m2": 18.64}, {"hour": "13", "sector": "expedicao", "m2": 8.46}, {"hour": "13", "sector": "pre", "m2": 7.36}, {"hour": "14", "sector": "abrir", "m2": 3.92}, {"hour": "14", "sector": "correr", "m2": 13.16}, {"hour": "14", "sector": "expedicao", "m2": 1.28}, {"hour": "14", "sector": "pre", "m2": 0.96}, {"hour": "15", "sector": "abrir", "m2": 8.0}, {"hour": "15", "sector": "correr", "m2": 9.06}, {"hour": "15", "sector": "expedicao", "m2": 1.92}, {"hour": "15", "sector": "pre", "m2": 4.6}, {"hour": "16", "sector": "abrir", "m2": 11.56}, {"hour": "16", "sector": "correr", "m2": 13.52}, {"hour": "16", "sector": "expedicao", "m2": 6.88}, {"hour": "16", "sector": "pre", "m2": 4.52}, {"hour": "17", "sector": "abrir", "m2": 14.12}, {"hour": "17", "sector": "correr", "m2": 15.76}, {"hour": "17", "sector": "expedicao", "m2": 2.36}, {"hour": "17", "sector": "pre", "m2": 12.02}, {"hour": "18", "sector": "abrir", "m2": 10.8}, {"hour": "18", "sector": "correr", "m2": 14.8}, {"hour": "18", "sector": "expedicao", "m2": 1.44}, {"hour": "18", "sector": "pre", "m2": 13.28}, {"hour": "19", "sector": "abrir", "m2": 4.4}, {"hour": "19", "sector": "correr", "m2": 15.88}, {"hour": "19", "sector": "expedicao", "m2": 3.2}, {"hour": "19", "sector": "pre", "m2": 9.84}, {"hour": "20", "sector": "abrir", "m2": 1.6}, {"hour": "20", "sector": "correr", "m2": 2.52}], "/api/agents/status": [{"name": "Monitorização", "role": "Lê toda a fábrica em tempo real", "ai": false, "cost_month_eur": 0.0}, {"name": "Diagnóstico", "role": "Identifica causas-raiz quando há desvios", "ai": true, "cost_month_eur": 0.36}, {"name": "Otimização", "role": "Sugere a melhor atribuição de pessoas", "ai": true, "cost_month_eur": 0.18}, {"name": "Assistente", "role": "Responde a perguntas em linguagem natural", "ai": true, "cost_month_eur": 4.88}], "/api/agents/optimiser": [{"operator_id": "U10", "operator_name": "Tiago Silva", "from_station": "ST-ABR-01", "to_station": "ST-ABR-F1", "to_station_name": "Acabamento Abrir 01", "to_station_F": 0.53, "gain_estimate": 0.47, "rationale": "Estação com F=0.53 (mais baixo) beneficia mais do operador"}, {"operator_id": "U11", "operator_name": "Inês Moreira", "from_station": "ST-ABR-02", "to_station": "ST-PRE-03", "to_station_name": "Prensa 02", "to_station_F": 0.639, "gain_estimate": 0.361, "rationale": "Estação com F=0.639 (mais baixo) beneficia mais do operador"}, {"operator_id": "U14", "operator_name": "André Pinto", "from_station": "ST-PRE-02", "to_station": "ST-ABR-00", "to_station_name": "Corte Abrir", "to_station_F": 0.501, "gain_estimate": 0.499, "rationale": "Estação com F=0.501 (mais baixo) beneficia mais do operador"}], "/api/scale/trends": {"source": "google_live", "fetched_at": "2026-05-19T20:08:42Z", "geo": "PT", "timeframe": "today 12-m", "terms": [{"term": "janelas PVC", "series": [46.6, 49.0, 58.2, 65.8, 66.5, 72.8, 74.0, 88.2, 80.5, 71.2, 62.8, 62.7]}, {"term": "janelas eficiência energética", "series": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.5, 0.0]}, {"term": "janelas oscilo-batentes", "series": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, {"term": "reabilitação habitação", "series": [4.0, 4.5, 5.6, 4.0, 0.0, 0.0, 0.0, 3.8, 3.5, 0.0, 4.8, 5.3]}], "suggestions": [{"term": "janelas eficiência energética", "delta_pct": 183.3, "current": 0.0, "priority": "act", "action": "Procura por eficiência energética sobe +183% vs trimestre anterior. Reforçar comunicação do produto eficiente."}, {"term": "reabilitação habitação", "delta_pct": 38.4, "current": 5.3, "priority": "act", "action": "Reabilitação cresce +38%. Aproximar comerciais a empresas de reabilitação urbana — janela de oportunidade."}, {"term": "janelas PVC", "delta_pct": -19.0, "current": 62.7, "priority": "watch", "action": "'janelas PVC' cai -19%. Reduzir investimento em campanhas associadas e validar com vendas."}, {"term": "janelas oscilo-batentes", "delta_pct": 0.0, "current": 0.0, "priority": "info", "action": "'janelas oscilo-batentes' mantém-se perto do pico (0/0). Estável."}]}, "/api/scale/priorities": [{"id": "SP01", "title": "Eficiência energética como diferenciador", "confidence": 0.92, "horizon_months": 6}, {"id": "SP02", "title": "Linha oscilo-batentes dedicada", "confidence": 0.74, "horizon_months": 12}, {"id": "SP03", "title": "Parceria com empresas de reabilitação", "confidence": 0.88, "horizon_months": 9}, {"id": "SP04", "title": "Automatização corte — redução 30% manual", "confidence": 0.81, "horizon_months": 18}], "/api/sustainability": {"carbon_per_m2_produced": 48.5, "carbon_per_m2_rework": 62.0, "energy_kwh_per_m2": 18.2, "material_reuse_pct": 34.0, "targets": {"carbon_reduction_pct": 25.0, "reuse_increase_pct": 16.0}, "m2_today": 334.7, "carbon_today_kg": 16232.9, "energy_today_kwh": 6091.5}, "/api/team": {"roles": [{"id": "director", "name": "Director Produção", "level": 4, "color": "#1B3A21"}, {"id": "dq", "name": "Departamento Qualidade", "level": 3, "color": "#4A7C59"}, {"id": "hst", "name": "Departamento HST", "level": 3, "color": "#AE572F"}, {"id": "chefe", "name": "Chefe de Turno", "level": 2, "color": "#6FAF82"}, {"id": "operador", "name": "Operador", "level": 1, "color": "#8FC8A0"}], "members": [{"id": "U01", "name": "Joana Martins", "role": "director", "station_assigned": null, "initials": "JM", "role_name": "Director Produção", "level": 4, "color": "#1B3A21"}, {"id": "U02", "name": "Pedro Costa", "role": "dq", "station_assigned": null, "initials": "PC", "role_name": "Departamento Qualidade", "level": 3, "color": "#4A7C59"}, {"id": "U03", "name": "Rita Fonseca", "role": "hst", "station_assigned": null, "initials": "RF", "role_name": "Departamento HST", "level": 3, "color": "#AE572F"}, {"id": "U05", "name": "Ana Pereira", "role": "chefe", "station_assigned": null, "initials": "AP", "role_name": "Chefe de Turno", "level": 2, "color": "#6FAF82"}, {"id": "U04", "name": "Miguel Santos", "role": "chefe", "station_assigned": null, "initials": "MS", "role_name": "Chefe de Turno", "level": 2, "color": "#6FAF82"}, {"id": "U14", "name": "André Pinto", "role": "operador", "station_assigned": "ST-PRE-02", "initials": "AP", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U13", "name": "Beatriz Nunes", "role": "operador", "station_assigned": "ST-PRE-01", "initials": "BN", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U06", "name": "Carlos Dias", "role": "operador", "station_assigned": "ST-COR-01", "initials": "CD", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U15", "name": "Catarina Mota", "role": "operador", "station_assigned": "ST-EXP-01", "initials": "CM", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U11", "name": "Inês Moreira", "role": "operador", "station_assigned": "ST-ABR-02", "initials": "IM", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U08", "name": "João Ferreira", "role": "operador", "station_assigned": "ST-COR-03", "initials": "JF", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U09", "name": "Mariana Lopes", "role": "operador", "station_assigned": "ST-COR-04", "initials": "ML", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U12", "name": "Rui Alves", "role": "operador", "station_assigned": "ST-ABR-03", "initials": "RA", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U07", "name": "Sofia Ribeiro", "role": "operador", "station_assigned": "ST-COR-02", "initials": "SR", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}, {"id": "U10", "name": "Tiago Silva", "role": "operador", "station_assigned": "ST-ABR-01", "initials": "TS", "role_name": "Operador", "level": 1, "color": "#8FC8A0"}]}, "/api/config/factory": {"factory": {"viewbox_width": 972.0, "viewbox_height": 1000.0, "corridors": [{"id": "top", "x": 0.0, "y": 0.0, "w": 972.0, "h": 60.0, "label": "Artéria Principal"}, {"id": "west", "x": 160.0, "y": 60.0, "w": 35.0, "h": 740.0, "label": "Corredor Oeste"}, {"id": "center", "x": 405.0, "y": 60.0, "w": 35.0, "h": 890.0, "label": "Corredor Centro"}, {"id": "east", "x": 695.0, "y": 60.0, "w": 35.0, "h": 890.0, "label": "Corredor Leste"}], "crosswalks": [{"id": "cw-east-top", "x": 730.0, "y": 60.0, "w": 242.0, "h": 10.0}], "fiducials": [{"id": "F01", "x": 330.0, "y": 75.0}, {"id": "F02", "x": 593.0, "y": 75.0}, {"id": "F03", "x": 887.0, "y": 78.0}, {"id": "F04", "x": 330.0, "y": 385.0}, {"id": "F05", "x": 593.0, "y": 295.0}, {"id": "F06", "x": 940.0, "y": 295.0}, {"id": "F07", "x": 156.0, "y": 550.0}, {"id": "F08", "x": 440.0, "y": 715.0}, {"id": "F09", "x": 680.0, "y": 715.0}, {"id": "F10", "x": 927.0, "y": 730.0}, {"id": "F11", "x": 332.0, "y": 930.0}, {"id": "F12", "x": 598.0, "y": 930.0}, {"id": "F13", "x": 928.0, "y": 930.0}, {"id": "F14", "x": 11.0, "y": 475.0}]}, "stations": [{"id": "ST-PRE-00", "name": "Armazém Perfis", "sector": "pre", "target_m2_per_hour": 0.0, "x": 25.0, "y": 78.0, "w": 90.0, "h": 145.0, "kind": "storage"}, {"id": "ST-PRE-01", "name": "Corte Pesado", "sector": "pre", "target_m2_per_hour": 4.5, "x": 25.0, "y": 235.0, "w": 130.0, "h": 110.0, "kind": "machine"}, {"id": "ST-PRE-BUF", "name": "Buffer Pré-Produção", "sector": "pre", "target_m2_per_hour": 0.0, "x": 25.0, "y": 355.0, "w": 130.0, "h": 100.0, "kind": "buffer"}, {"id": "ST-PRE-02", "name": "Prensa 01", "sector": "pre", "target_m2_per_hour": 3.2, "x": 25.0, "y": 470.0, "w": 130.0, "h": 105.0, "kind": "machine"}, {"id": "ST-PRE-03", "name": "Prensa 02", "sector": "pre", "target_m2_per_hour": 3.2, "x": 25.0, "y": 590.0, "w": 130.0, "h": 105.0, "kind": "machine"}, {"id": "ST-PRE-04", "name": "Prensa 03", "sector": "pre", "target_m2_per_hour": 3.2, "x": 25.0, "y": 710.0, "w": 130.0, "h": 105.0, "kind": "machine"}, {"id": "ST-COR-00", "name": "Corte Correr", "sector": "correr", "target_m2_per_hour": 4.2, "x": 215.0, "y": 95.0, "w": 180.0, "h": 115.0, "kind": "machine"}, {"id": "ST-COR-STG", "name": "Staging Correr", "sector": "correr", "target_m2_per_hour": 0.0, "x": 215.0, "y": 225.0, "w": 180.0, "h": 80.0, "kind": "buffer"}, {"id": "ST-COR-01", "name": "Montagem Correr 01", "sector": "correr", "target_m2_per_hour": 3.0, "x": 215.0, "y": 320.0, "w": 125.0, "h": 65.0, "kind": "assembly"}, {"id": "ST-COR-02", "name": "Montagem Correr 02", "sector": "correr", "target_m2_per_hour": 3.0, "x": 215.0, "y": 395.0, "w": 125.0, "h": 65.0, "kind": "assembly"}, {"id": "ST-COR-03", "name": "Montagem Correr 03", "sector": "correr", "target_m2_per_hour": 3.0, "x": 215.0, "y": 470.0, "w": 125.0, "h": 65.0, "kind": "assembly"}, {"id": "ST-COR-04", "name": "Montagem Correr 04", "sector": "correr", "target_m2_per_hour": 3.0, "x": 215.0, "y": 545.0, "w": 125.0, "h": 65.0, "kind": "assembly"}, {"id": "ST-COR-F1", "name": "Acabamento Correr 01", "sector": "correr", "target_m2_per_hour": 2.8, "x": 215.0, "y": 800.0, "w": 125.0, "h": 65.0, "kind": "finishing"}, {"id": "ST-COR-F2", "name": "Acabamento Correr 02", "sector": "correr", "target_m2_per_hour": 2.8, "x": 215.0, "y": 875.0, "w": 125.0, "h": 65.0, "kind": "finishing"}, {"id": "ST-ABR-00", "name": "Corte Abrir", "sector": "abrir", "target_m2_per_hour": 4.0, "x": 455.0, "y": 95.0, "w": 235.0, "h": 115.0, "kind": "machine"}, {"id": "ST-ABR-01", "name": "Montagem Abrir 01", "sector": "abrir", "target_m2_per_hour": 3.0, "x": 500.0, "y": 280.0, "w": 125.0, "h": 65.0, "kind": "assembly"}, {"id": "ST-ABR-02", "name": "Montagem Abrir 02", "sector": "abrir", "target_m2_per_hour": 3.0, "x": 500.0, "y": 355.0, "w": 125.0, "h": 65.0, "kind": "assembly"}, {"id": "ST-ABR-03", "name": "Montagem Abrir 03", "sector": "abrir", "target_m2_per_hour": 3.0, "x": 500.0, "y": 430.0, "w": 125.0, "h": 65.0, "kind": "assembly"}, {"id": "ST-ABR-STG", "name": "Staging Abrir", "sector": "abrir", "target_m2_per_hour": 0.0, "x": 455.0, "y": 540.0, "w": 235.0, "h": 170.0, "kind": "buffer"}, {"id": "ST-ABR-F1", "name": "Acabamento Abrir 01", "sector": "abrir", "target_m2_per_hour": 2.8, "x": 455.0, "y": 800.0, "w": 125.0, "h": 65.0, "kind": "finishing"}, {"id": "ST-ABR-F2", "name": "Acabamento Abrir 02", "sector": "abrir", "target_m2_per_hour": 2.8, "x": 585.0, "y": 800.0, "w": 105.0, "h": 65.0, "kind": "finishing"}, {"id": "ST-EXP-01", "name": "Desembalagem", "sector": "expedicao", "target_m2_per_hour": 5.5, "x": 740.0, "y": 95.0, "w": 100.0, "h": 150.0, "kind": "machine"}, {"id": "ST-EXP-STG", "name": "Staging Expedição", "sector": "expedicao", "target_m2_per_hour": 0.0, "x": 850.0, "y": 95.0, "w": 115.0, "h": 215.0, "kind": "buffer"}, {"id": "ST-EXP-DSP", "name": "Zona de Dispatch", "sector": "expedicao", "target_m2_per_hour": 6.0, "x": 740.0, "y": 340.0, "w": 225.0, "h": 580.0, "kind": "dispatch"}]}, "/api/connections": {"watcher_active": true, "inbox_path": "data/inbox", "processed_path": "data/processed", "pipelines": [{"source": "preference", "status": "connected", "files_pending": 0, "files_processed": 7, "schema": ["timestamp", "station_id", "window_id", "order_id", "width_mm", "height_mm", "phase", "status", "operator_id"]}, {"source": "primavera", "status": "connected", "files_pending": 0, "files_processed": 8, "schema": ["order_id", "customer", "total_windows", "total_m2", "deadline", "priority", "status"]}], "pending_files": [], "processed_files": [{"name": "20260519T200842Z__primavera_orders.csv", "size_kb": 2.6, "ts": "20260519T200842Z"}, {"name": "20260519T200842Z__preference_events.csv", "size_kb": 21.2, "ts": "20260519T200842Z"}, {"name": "20260519T195439Z__primavera_orders.csv", "size_kb": 2.6, "ts": "20260519T195439Z"}, {"name": "20260519T195439Z__preference_events.csv", "size_kb": 21.2, "ts": "20260519T195439Z"}, {"name": "20260519T193537Z__primavera_orders.csv", "size_kb": 2.6, "ts": "20260519T193537Z"}, {"name": "20260519T193537Z__preference_events.csv", "size_kb": 21.2, "ts": "20260519T193537Z"}, {"name": "20260519T193023Z__primavera_orders.csv", "size_kb": 2.6, "ts": "20260519T193023Z"}, {"name": "20260519T193023Z__preference_events.csv", "size_kb": 21.2, "ts": "20260519T193023Z"}, {"name": "20260519T192845Z__primavera_orders.csv", "size_kb": 2.6, "ts": "20260519T192845Z"}, {"name": "20260519T192845Z__preference_events.csv", "size_kb": 21.2, "ts": "20260519T192845Z"}, {"name": "20260519T191847Z__primavera_orders.csv", "size_kb": 2.6, "ts": "20260519T191847Z"}, {"name": "20260519T191847Z__preference_events.csv", "size_kb": 21.2, "ts": "20260519T191847Z"}, {"name": "20260519T191841Z__primavera_orders.csv", "size_kb": 2.6, "ts": "20260519T191841Z"}, {"name": "20260519T191841Z__preference_events.csv", "size_kb": 21.2, "ts": "20260519T191841Z"}, {"name": "20260519T191416Z__primavera_orders.csv", "size_kb": 2.6, "ts": "20260519T191416Z"}], "totals": {"events": 253, "orders": 40, "alerts_total": 2, "last_ingest": "2026-05-19T20:08:42Z"}}, "/api/architecture": {"backend_files": [{"file": "backend/config.py", "lines": 214, "role": "Carrega config.yaml · valida tudo · única fonte de verdade"}, {"file": "backend/data.py", "lines": 569, "role": "SQLite + ingestão Preference/Primavera + watcher do data/inbox"}, {"file": "backend/engine.py", "lines": 497, "role": "Cálculo de desempenho + KPIs + alertas + Google Trends"}, {"file": "backend/agents.py", "lines": 512, "role": "4 agentes: monitorização · diagnóstico · otimização · assistente"}, {"file": "backend/app.py", "lines": 483, "role": "FastAPI · serve dashboard + 18 endpoints + WebSocket-ready"}], "csv_files": [{"name": "preference_*.csv", "purpose": "Eventos chão de fábrica (todas as janelas, fases, status)", "columns": ["timestamp", "station_id", "window_id", "order_id", "width_mm", "height_mm", "phase", "status", "operator_id"], "produced_by": "Sistema Preference (linha de produção)"}, {"name": "primavera_*.csv", "purpose": "Encomendas e clientes (ERP)", "columns": ["order_id", "customer", "total_windows", "total_m2", "deadline", "priority", "status"], "produced_by": "ERP Primavera"}], "flow": [{"step": 1, "title": "CSV cai em data/inbox/", "actor": "Sistema externo / Drag-drop UI"}, {"step": 2, "title": "Watcher detecta + ingere", "actor": "backend/data.py"}, {"step": 3, "title": "SQLite armazena", "actor": "data/hyline.db"}, {"step": 4, "title": "Engine recalcula KPIs", "actor": "backend/engine.py"}, {"step": 5, "title": "Agentes processam alertas", "actor": "backend/agents.py"}, {"step": 6, "title": "API serve para o dashboard", "actor": "backend/app.py"}, {"step": 7, "title": "UI actualiza ao segundo", "actor": "frontend/static/js/app.js"}]}, "/api/procurement/catalog": [{"id": "CAT-10", "name": "EcoSeal EPDM vedante 9x4", "supplier_id": "SUP-07", "category": "consumiveis", "unit": "m", "price_eur": 3.5, "co2_per_unit": 0.15, "recycled_pct": 100.0, "sustainability_score": 93, "stock_level": 5000, "supplier_name": "EcoSeal Vedantes", "certifications": "REACH,ISO 14001,EPD", "delivery_days": 4}, {"id": "CAT-04", "name": "SG Planitherm ONE+", "supplier_id": "SUP-02", "category": "vidro", "unit": "m2", "price_eur": 28.9, "co2_per_unit": 8.4, "recycled_pct": 30.0, "sustainability_score": 91, "stock_level": 280, "supplier_name": "Saint-Gobain Glass Portugal", "certifications": "Cradle2Cradle,ISO 14001,EPD", "delivery_days": 5}, {"id": "CAT-11", "name": "EcoSeal Silicone Neutro", "supplier_id": "SUP-07", "category": "consumiveis", "unit": "kg", "price_eur": 8.2, "co2_per_unit": 1.2, "recycled_pct": 20.0, "sustainability_score": 90, "stock_level": 240, "supplier_name": "EcoSeal Vedantes", "certifications": "REACH,ISO 14001,EPD", "delivery_days": 4}, {"id": "CAT-05", "name": "SG SGG Cool-Lite SKN", "supplier_id": "SUP-02", "category": "vidro", "unit": "m2", "price_eur": 44.6, "co2_per_unit": 9.1, "recycled_pct": 28.0, "sustainability_score": 89, "stock_level": 195, "supplier_name": "Saint-Gobain Glass Portugal", "certifications": "Cradle2Cradle,ISO 14001,EPD", "delivery_days": 5}, {"id": "CAT-01", "name": "REHAU Geneo 72mm", "supplier_id": "SUP-01", "category": "perfis", "unit": "m", "price_eur": 30.5, "co2_per_unit": 3.2, "recycled_pct": 72.0, "sustainability_score": 88, "stock_level": 850, "supplier_name": "REHAU Polímeros Portugal", "certifications": "VinylPlus,ISO 14001", "delivery_days": 7}, {"id": "CAT-03", "name": "Kömmerling greenline 70mm", "supplier_id": "SUP-03", "category": "perfis", "unit": "m", "price_eur": 27.8, "co2_per_unit": 3.5, "recycled_pct": 65.0, "sustainability_score": 85, "stock_level": 610, "supplier_name": "Kömmerling Ibéria", "certifications": "greenline,VinylPlus", "delivery_days": 10}, {"id": "CAT-02", "name": "REHAU Synego 86mm", "supplier_id": "SUP-01", "category": "perfis", "unit": "m", "price_eur": 38.2, "co2_per_unit": 3.8, "recycled_pct": 68.0, "sustainability_score": 84, "stock_level": 420, "supplier_name": "REHAU Polímeros Portugal", "certifications": "VinylPlus,ISO 14001", "delivery_days": 7}, {"id": "CAT-09", "name": "Roto Patio Classic", "supplier_id": "SUP-05", "category": "ferragens", "unit": "un", "price_eur": 16.2, "co2_per_unit": 1.0, "recycled_pct": 42.0, "sustainability_score": 80, "stock_level": 380, "supplier_name": "Roto Frank Ibérica", "certifications": "ISO 14001", "delivery_days": 6}, {"id": "CAT-06", "name": "Vidro Duplo Standard", "supplier_id": "SUP-08", "category": "vidro", "unit": "m2", "price_eur": 18.4, "co2_per_unit": 12.0, "recycled_pct": 15.0, "sustainability_score": 79, "stock_level": 500, "supplier_name": "Vidros da Marinha", "certifications": "ISO 9001", "delivery_days": 3}, {"id": "CAT-07", "name": "Roto NT 360 Dobradiça", "supplier_id": "SUP-05", "category": "ferragens", "unit": "un", "price_eur": 12.3, "co2_per_unit": 0.8, "recycled_pct": 45.0, "sustainability_score": 78, "stock_level": 1200, "supplier_name": "Roto Frank Ibérica", "certifications": "ISO 14001", "delivery_days": 6}, {"id": "CAT-08", "name": "MACO Multimatic Cremona", "supplier_id": "SUP-06", "category": "ferragens", "unit": "un", "price_eur": 14.8, "co2_per_unit": 0.9, "recycled_pct": 40.0, "sustainability_score": 76, "stock_level": 940, "supplier_name": "MACO Portugal", "certifications": "ISO 9001", "delivery_days": 9}], "/api/procurement/suppliers": [{"id": "SUP-07", "name": "EcoSeal Vedantes", "category": "consumiveis", "sustainability_score": 93, "certifications": "REACH,ISO 14001,EPD", "delivery_days": 4, "location": "Braga", "contact": "geral@ecoseal.pt"}, {"id": "SUP-02", "name": "Saint-Gobain Glass Portugal", "category": "vidro", "sustainability_score": 91, "certifications": "Cradle2Cradle,ISO 14001,EPD", "delivery_days": 5, "location": "Setúbal", "contact": "glass.pt@saint-gobain.com"}, {"id": "SUP-01", "name": "REHAU Polímeros Portugal", "category": "perfis", "sustainability_score": 88, "certifications": "VinylPlus,ISO 14001", "delivery_days": 7, "location": "Lisboa", "contact": "vendas.pt@rehau.com"}, {"id": "SUP-03", "name": "Kömmerling Ibéria", "category": "perfis", "sustainability_score": 85, "certifications": "greenline,VinylPlus", "delivery_days": 10, "location": "Lisboa", "contact": "info.iberia@koemmerling.com"}, {"id": "SUP-04", "name": "VEKA Portugal", "category": "perfis", "sustainability_score": 82, "certifications": "ISO 9001,VinylPlus", "delivery_days": 8, "location": "Porto", "contact": "veka@veka.pt"}, {"id": "SUP-08", "name": "Vidros da Marinha", "category": "vidro", "sustainability_score": 79, "certifications": "ISO 9001", "delivery_days": 3, "location": "Setúbal", "contact": "comercial@vidrosmarinha.pt"}, {"id": "SUP-05", "name": "Roto Frank Ibérica", "category": "ferragens", "sustainability_score": 78, "certifications": "ISO 14001", "delivery_days": 6, "location": "Lisboa", "contact": "iberia@roto-frank.com"}, {"id": "SUP-06", "name": "MACO Portugal", "category": "ferragens", "sustainability_score": 76, "certifications": "ISO 9001", "delivery_days": 9, "location": "Lisboa", "contact": "portugal@maco.eu"}], "__chat__": {"qual é o F global?": {"answer": "Desempenho global = 18.1% · média de 19 estações produtivas.", "sources": ["engine.global_kpis"]}, "pior estação": {"answer": "A estação mais crítica é **Zona de Dispatch** · desempenho 1% · eficiência 0%.", "sources": ["ST-EXP-DSP"]}, "alertas abertos": {"answer": "2 alertas abertos. Mais urgente: Avaria de equipamento", "sources": ["alert:2"]}, "produção hoje": {"answer": "Produção hoje: 334.7 m².", "sources": ["engine.global_kpis"]}}, "__assistant__": {"encomendar vidro sustentável": {"answer": "Temos 2 tipos de vidro sustentável. O SG Planitherm ONE+ (ID CAT-04) custa 28.9 EUR/m2 e o SG SGG Cool-Lite SKN (ID CAT-05) custa 44.6 EUR/m2. Qual queres encomendar e que quantidade?", "actions": []}, "encomendar perfis eco": {"answer": "Pode indicar a pontuação ecológica mínima e a quantidade?", "actions": []}, "emissões CO₂ hoje": {"answer": "Não consigo aceder diretamente a dados de emissões de CO₂. Posso facultar os KPIs globais de produção ou outros dados de monitorização.", "actions": []}, "reatribuir operadores": {"answer": "Otimização sugere as seguintes reatribuições:\n* Mover Tiago Silva (U10) de ST-ABR-01 para Acabamento Abrir 01 (ST-ABR-F1) para aumentar o desempenho em 0.47.\n* Mover Inês Moreira (U11) de ST-ABR-02 para Prensa 02 (ST-PRE-03) para aumentar o desempenho em 0.361.\n* Mover André Pinto (U14) de ST-PRE-02 para Corte Abrir (ST-ABR-00) para aumentar o desempenho em 0.499.", "actions": []}, "pior estação": {"answer": "Não consigo identificar a pior estação. Só consigo ver o estado de uma estação específica se me deres o ID.", "actions": []}}};
+
+  // In-memory cart for demo mode
+  const _demoCart = [];
+  let _demoCartId = 0;
+
+  const origFetch = window.fetch;
+  window.fetch = async function(url, opts){
+    if (typeof url === 'string'){
+      // POST chatbot
+      if (url.endsWith('/api/agents/chatbot') && opts && opts.method === 'POST'){
+        const body = JSON.parse(opts.body);
+        const q = (body.question || '').toLowerCase();
+        const chat = SNAP.__chat__;
+        let key = 'qual é o F global?';
+        if (/pior|crítica|vermelh/.test(q))           key = 'pior estação';
+        else if (/alerta|avaria/.test(q))             key = 'alertas abertos';
+        else if (/produção|m[²2] hoje/.test(q))       key = 'produção hoje';
+        else if (/f global|f-score|freedom/.test(q))  key = 'qual é o F global?';
+        return fakeResp(chat[key] || {answer:'(modo offline) tenta: F global, pior estação, alertas abertos, produção hoje', sources:[]});
+      }
+      // POST decisions
+      if (url.endsWith('/api/decisions') && opts && opts.method === 'POST'){
+        const body = JSON.parse(opts.body);
+        if (!body.confirmed) return new Response('{"detail":"needs confirm"}', {status:400});
+        return fakeResp({ok:true, id: Math.floor(Math.random()*1000)});
+      }
+      // POST resolve alert
+      if (url.match(/\/api\/alerts\/\d+\/resolve/) && opts && opts.method === 'POST'){
+        return fakeResp({ok:true});
+      }
+      // POST upload — modo demo
+      if (url.endsWith('/api/connections/upload') && opts && opts.method === 'POST'){
+        return fakeResp({ok:true, result:{file:'(demo)', source:'demo', rows: Math.floor(Math.random()*50)+50}});
+      }
+      // Assistant usage (always offline in standalone)
+      if (url === '/api/assistant/usage'){
+        return fakeResp({
+          today: {calls:0, input_tokens:0, output_tokens:0, cost_usd:0},
+          '7d': {calls:0, cost_usd:0},
+          daily_cap: 1400,
+          gemini_active: false,
+        });
+      }
+
+      // Procurement catalog (with filter support)
+      if (url === '/api/procurement/catalog' || url.startsWith('/api/procurement/catalog?')){
+        const params = new URLSearchParams(url.includes('?') ? url.split('?')[1] : '');
+        const cat = params.get('category');
+        const minSust = parseInt(params.get('min_sustainability') || '0');
+        let items = SNAP['/api/procurement/catalog'] || [];
+        if (cat) items = items.filter(i => i.category === cat);
+        if (minSust > 0) items = items.filter(i => i.sustainability_score >= minSust);
+        return fakeResp(items);
+      }
+      if (url === '/api/procurement/suppliers'){
+        return fakeResp(SNAP['/api/procurement/suppliers'] || []);
+      }
+      // In-memory cart (demo state)
+      if (url === '/api/procurement/cart'){
+        return fakeResp(_demoCart.map(i => ({...i, subtotal_eur: +(i.price_eur * i.quantity).toFixed(2)})));
+      }
+      if (url === '/api/procurement/cart/add' && opts && opts.method === 'POST'){
+        const body = JSON.parse(opts.body);
+        const catalog = (SNAP['/api/procurement/catalog'] || []).find(c => c.id === body.catalog_id);
+        if (catalog){
+          const exist = _demoCart.find(i => i.catalog_id === body.catalog_id);
+          if (exist){ exist.quantity += (body.quantity || 1); return fakeResp({cart_id: exist.id, updated: true}); }
+          const cid = ++_demoCartId;
+          _demoCart.push({id:cid, catalog_id:catalog.id, quantity:body.quantity||1, added_ts:new Date().toISOString(),
+            name:catalog.name, category:catalog.category, unit:catalog.unit, price_eur:catalog.price_eur,
+            sustainability_score:catalog.sustainability_score, co2_per_unit:catalog.co2_per_unit,
+            recycled_pct:catalog.recycled_pct, supplier_name:catalog.supplier_name});
+          return fakeResp({cart_id: cid, updated: false});
+        }
+        return fakeResp({error:'not found'});
+      }
+      if (url.match(/\/api\/procurement\/cart\/\d+$/) && opts && opts.method === 'DELETE'){
+        const id = parseInt(url.split('/').pop());
+        const idx = _demoCart.findIndex(i => i.id === id);
+        if (idx >= 0) _demoCart.splice(idx, 1);
+        return fakeResp({ok: true});
+      }
+      if (url === '/api/procurement/checkout' && opts && opts.method === 'POST'){
+        const body = JSON.parse(opts.body);
+        if (!body.confirmed) return new Response('{"detail":"needs confirm"}', {status:400});
+        const n = _demoCart.length;
+        const tot = _demoCart.reduce((a,i) => a + i.price_eur * i.quantity, 0);
+        const eco = n > 0 ? Math.round(_demoCart.reduce((a,i) => a + i.sustainability_score, 0) / n) : 0;
+        _demoCart.length = 0;
+        return fakeResp({ok:true, action_id:Math.floor(Math.random()*1000)+1, items:n, total_eur:+tot.toFixed(2), eco_score:eco});
+      }
+      // Assistant (floating panel)
+      if (url === '/api/assistant' && opts && opts.method === 'POST'){
+        const body = JSON.parse(opts.body);
+        const q = (body.question || '').toLowerCase();
+        const asst = SNAP.__assistant__ || {};
+        let key = 'pior estação';
+        if (/vidro/.test(q))                         key = 'encomendar vidro sustentável';
+        else if (/perfil/.test(q))                   key = 'encomendar perfis eco';
+        else if (/co2|co₂|emiss|carb/.test(q))      key = 'emissões CO₂ hoje';
+        else if (/reatrib|optimiz|otimiz/.test(q))   key = 'reatribuir operadores';
+        else if (/encomendar|comprar|fornecedor/.test(q)) key = 'encomendar vidro sustentável';
+        return fakeResp(asst[key] || {answer:'(modo offline)', actions:[]});
+      }
+
+      // GET /api/export (listing)
+      if (url === '/api/export'){
+        const counts = {
+          events:     0,  // não temos eventos no snapshot
+          orders:     (SNAP['/api/orders?limit=10'] || []).length,
+          alerts:     (SNAP['/api/alerts'] || []).length,
+          stations:   (SNAP['/api/stations'] || []).length,
+          team:       ((SNAP['/api/team'] || {}).members || []).length,
+          decisions:  0,
+        };
+        return fakeResp([
+          {key:'events',    label:'Eventos de Produção', rows:counts.events,    desc:'Todas as janelas já processadas · até 10 000 linhas'},
+          {key:'orders',    label:'Encomendas',          rows:counts.orders,    desc:'Estado e progresso de cada obra'},
+          {key:'alerts',    label:'Alertas',             rows:counts.alerts,    desc:'Histórico completo de alertas'},
+          {key:'stations',  label:'Estações',            rows:counts.stations,  desc:'Configuração das 24 estações'},
+          {key:'team',      label:'Equipa',              rows:counts.team,      desc:'Membros, roles e atribuições'},
+          {key:'decisions', label:'Audit Trail',         rows:counts.decisions, desc:'Todas as decisões tomadas na plataforma'},
+        ]);
+      }
+      // GET /api/export/{dataset} — gera CSV em JS puro a partir dos snapshots
+      const mExport = url.match(/^\/api\/export\/([a-z_]+)$/);
+      if (mExport){
+        const dataset = mExport[1];
+        const csv = buildCSV(dataset);
+        const ts = new Date().toISOString().replace(/[-:]/g,'').replace('.','').slice(0,15) + 'Z';
+        const fname = `hyline_${dataset}_${ts}.csv`;
+        return new Response(csv, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': `attachment; filename="${fname}"`,
+          },
+        });
+      }
+      // GET snapshots
+      if (SNAP[url] !== undefined) return fakeResp(SNAP[url]);
+    }
+    return origFetch(url, opts);
+  };
+  function fakeResp(obj){
+    return new Response(JSON.stringify(obj), { status: 200, headers: {'Content-Type':'application/json'} });
+  }
+
+  // buildCSV: transforma snapshots em CSV puro (sem deps)
+  function buildCSV(dataset){
+    const escape = v => {
+      if (v === null || v === undefined) return '';
+      const s = String(v);
+      if (/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+      return s;
+    };
+    const toCSV = (rows) => {
+      if (!rows.length) return '';
+      const keys = Object.keys(rows[0]);
+      const out = [keys.join(',')];
+      rows.forEach(r => out.push(keys.map(k => escape(r[k])).join(',')));
+      return out.join('\n') + '\n';
+    };
+    if (dataset === 'orders')    return toCSV(SNAP['/api/orders?limit=10'] || []);
+    if (dataset === 'alerts')    return toCSV(SNAP['/api/alerts'] || []);
+    if (dataset === 'stations')  return toCSV((SNAP['/api/stations'] || []).map(s => ({
+        id:s.id, nome:s.name, sector:s.sector, tipo:s.kind,
+        target_m2_h:s.target_m2_per_hour, desempenho_pct: Math.round((s.afi_F||0)*100),
+        m2_per_hour:s.m2_per_hour||0, eficiencia:s.efficiency||0, status:s.status||'idle',
+    })));
+    if (dataset === 'team'){
+      const t = SNAP['/api/team'] || {members:[],roles:[]};
+      const rolesById = Object.fromEntries((t.roles||[]).map(r => [r.id, r]));
+      return toCSV((t.members||[]).map(m => ({
+        id:m.id, nome:m.name, role_id:m.role, role_nome:(rolesById[m.role]||{}).name||'',
+        nivel:(rolesById[m.role]||{}).level||'', estacao:m.station_assigned||'',
+      })));
+    }
+    if (dataset === 'events' || dataset === 'decisions'){
+      return '# ' + dataset + ' não disponível em modo demo (sem backend activo)\n';
+    }
+    return '';
+  }
+})();
+</script>
+
+</head>
+<body>
+
+<div class="app">
+
+  <nav class="nav">
+    <div class="nav__brand">
+      <div class="nav__logo">HYLINE <em>·</em></div>
+      <div class="nav__tagline">Inteligência do Espaço</div>
+    </div>
+    <div class="nav__items">
+      <button class="nav__item is-active" data-view="home">
+        <svg class="nav__icon" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2z"/></svg>
+        <span>Homepage</span>
+      </button>
+      <button class="nav__item" data-view="alerts">
+        <svg class="nav__icon" viewBox="0 0 24 24"><path d="M10.3 3.86L2.64 17a2 2 0 0 0 1.72 3h15.28a2 2 0 0 0 1.72-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Alertas</span>
+        <span class="nav__pill" id="nav-alerts-count" style="display:none">0</span>
+      </button>
+      <button class="nav__item" data-view="action">
+        <svg class="nav__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+        <span>Ação</span>
+      </button>
+      <button class="nav__item" data-view="scale">
+        <svg class="nav__icon" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <span>Escala</span>
+      </button>
+      <button class="nav__item" data-view="procurement">
+        <svg class="nav__icon" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Procurement</span>
+      </button>
+      <button class="nav__item" data-view="sustain">
+        <svg class="nav__icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 2v10l7.5 7.5"/></svg>
+        <span>Sustentabilidade</span>
+      </button>
+    </div>
+    <div class="nav__footer">
+      <button class="nav__item" data-view="settings">
+        <svg class="nav__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Definições</span>
+      </button>
+      <div class="nav__user">
+        <div class="nav__avatar">JM</div>
+        <div class="nav__user-info">
+          <div class="nav__user-name">Joana Martins</div>
+          <div class="nav__user-role">Director Produção</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main">
+    <header class="header">
+      <div class="header__left">
+        <div class="header__title" id="view-title">Homepage <span>·</span> Produção</div>
+      </div>
+      <div class="header__meta">
+        <button class="assistant-chip" id="ai-toggle" onclick="App.toggleAssistant()" title="Assistente (⌘K)">
+          Assistente <span class="assistant-chip__key">⌘K</span>
+        </button>
+        <div class="header__dot"></div>
+        <span id="last-refresh">sincronizado</span>
+        <span>·</span>
+        <span class="header__clock" id="clock">—</span>
+      </div>
+    </header>
+
+    <div class="view-host">
+
+      <!-- ═══ HOME: Digital Twin HERO ═══════════════════════════ -->
+      <section class="view is-active" data-view="home">
+        <div class="home">
+
+          <!-- LEFT RAIL -->
+          <aside class="rail">
+            <div class="rail__kpis">
+              <div class="kpi-card kpi-card--accent kpi-card--link" onclick="App.switchView('action')" title="Ver Ação">
+                <div class="kpi-card__live">LIVE</div>
+                <div class="kpi-card__label">m² hoje</div>
+                <div class="kpi-card__value"><span id="k-m2">—</span></div>
+                <div class="kpi-card__delta" id="k-m2-delta">—</div>
+              </div>
+              <div class="kpi-card kpi-card--link" onclick="App.switchView('action')" title="Ver Ação">
+                <div class="kpi-card__label">Desempenho</div>
+                <div class="kpi-card__value"><span id="k-f">—</span><span class="kpi-card__unit">%</span></div>
+                <div class="kpi-card__delta" id="k-f-delta">do dia</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-card__label">Obras</div>
+                <div class="kpi-card__value" id="k-orders">—</div>
+                <div class="kpi-card__delta" id="k-backlog">—</div>
+              </div>
+              <div class="kpi-card kpi-card--link" onclick="App.switchView('alerts')" title="Ver Alertas">
+                <div class="kpi-card__label">Alertas</div>
+                <div class="kpi-card__value" id="k-alerts">—</div>
+                <div class="kpi-card__delta" id="k-alerts-routed">—</div>
+              </div>
+            </div>
+
+            <div class="rail__section">
+              <div class="rail__section-head">
+                <div class="rail__section-title">Obras Activas</div>
+                <span class="rail__section-count" id="orders-total">0</span>
+              </div>
+              <div class="orders-col scroll" id="orders-col"></div>
+            </div>
+
+            <div class="rail__section" style="flex: 0 0 auto">
+              <div class="rail__section-head">
+                <div class="rail__section-title">Alertas em Curso</div>
+                <span class="rail__section-count" id="alerts-strip-count">0</span>
+              </div>
+              <div class="alerts-strip scroll" id="alerts-strip"></div>
+            </div>
+          </aside>
+
+          <!-- STAGE: full-size twin -->
+          <div class="stage">
+            <div class="stage__chips">
+              <div class="chip"><span class="chip__dot"></span><span class="chip__label">Verde</span><span class="chip__value" id="chip-green">—</span></div>
+              <div class="chip"><span class="chip__dot is-amber"></span><span class="chip__label">Amarelo</span><span class="chip__value" id="chip-amber">—</span></div>
+              <div class="chip"><span class="chip__dot is-red"></span><span class="chip__label">Vermelho</span><span class="chip__value" id="chip-red">—</span></div>
+            </div>
+
+            <div class="stage__svg-wrap twin" id="twin-host"></div>
+
+            <div class="stage__legend">
+              <div class="stage__legend-item"><span class="stage__legend-swatch" style="background:rgba(111,175,130,.35); border:1px solid #6FAF82"></span>A cumprir target</div>
+              <div class="stage__legend-item"><span class="stage__legend-swatch" style="background:rgba(217,119,6,.25); border:1px solid #D97706"></span>Abaixo do target</div>
+              <div class="stage__legend-item"><span class="stage__legend-swatch" style="background:rgba(185,28,28,.25); border:1px solid #B91C1C"></span>Crítico</div>
+              <div class="stage__legend-item"><span class="stage__legend-swatch" style="background:rgba(96,122,82,.15); border:1px dashed #607A52"></span>Buffer</div>
+              <div class="stage__legend-item" style="margin-left:14px; font-family:'DM Mono',monospace; letter-spacing:.1em">◼ 14 fiduciais AR</div>
+            </div>
+
+            <!-- Detail drawer -->
+            <aside class="detail" id="detail">
+              <button class="detail__close" onclick="App.closeDetail()">✕</button>
+              <div>
+                <div class="detail__eyebrow" id="d-sector">—</div>
+                <h2 class="detail__title" id="d-title">—</h2>
+                <div class="detail__meta" id="d-meta">—</div>
+              </div>
+              <div>
+                <div class="detail__section-title">Desempenho</div>
+                <div class="detail__fscore">
+                  <div class="detail__fscore-cell" style="grid-column:span 3"><div class="detail__fscore-label">Global da Estação</div><div class="detail__fscore-value" id="d-f">—</div></div>
+                </div>
+              </div>
+              <div>
+                <div class="detail__section-title">Factores de Desempenho</div>
+                <div class="detail__bars" id="d-bars"></div>
+              </div>
+              <div>
+                <div class="detail__section-title">Operadores</div>
+                <div id="d-ops" style="display:flex; flex-direction:column; gap:6px"></div>
+              </div>
+              <div>
+                <div class="detail__section-title">Alertas nesta Estação</div>
+                <div id="d-alerts" style="display:flex; flex-direction:column; gap:6px"></div>
+              </div>
+            </aside>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ═══ ALERTS ═══════════════════════════════════════════ -->
+      <section class="view" data-view="alerts">
+        <div class="view-pad">
+          <div class="alerts-grid">
+            <div class="alerts-col">
+              <div class="alerts-col__head"><div class="alerts-col__title">Director</div><span class="alerts-col__count" id="cnt-director">0</span></div>
+              <div class="alerts-col__list" id="col-director"></div>
+            </div>
+            <div class="alerts-col">
+              <div class="alerts-col__head"><div class="alerts-col__title">HST</div><span class="alerts-col__count" id="cnt-hst">0</span></div>
+              <div class="alerts-col__list" id="col-hst"></div>
+            </div>
+            <div class="alerts-col">
+              <div class="alerts-col__head"><div class="alerts-col__title">DQ</div><span class="alerts-col__count" id="cnt-dq">0</span></div>
+              <div class="alerts-col__list" id="col-dq"></div>
+            </div>
+            <div class="alerts-col">
+              <div class="alerts-col__head"><div class="alerts-col__title">Chefe de Turno</div><span class="alerts-col__count" id="cnt-chefe">0</span></div>
+              <div class="alerts-col__list" id="col-chefe"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ ACTION ═══════════════════════════════════════════ -->
+      <section class="view" data-view="action">
+        <div class="view-pad">
+          <div class="action-grid">
+            <div class="agents-bar" id="agents-bar"></div>
+            <div class="card optimiser-panel">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+              <div class="rail__section-title">Sugestões de Reatribuição · Otimização</div>
+                <button class="btn btn--ghost btn--sm" onclick="App.refreshOptimiser()">Recalcular</button>
+              </div>
+              <div class="scroll" id="optimiser-list" style="flex:1; display:flex; flex-direction:column; gap:8px"></div>
+            </div>
+            <div class="card chatbot">
+              <div class="rail__section-title">Assistente · linguagem natural</div>
+              <div class="chatbot__log" id="chat-log"></div>
+              <div class="chatbot__input">
+                <input id="chat-input" placeholder="Ex: desempenho global" onkeydown="if(event.key==='Enter') App.chatSend()">
+                <button class="btn btn--solid btn--sm" onclick="App.chatSend()">Enviar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SCALE ════════════════════════════════════════════ -->
+      <section class="view" data-view="scale">
+        <div class="view-pad">
+          <div style="display:grid; grid-template-columns: 1.2fr 1fr; grid-template-rows: 1fr 1fr; gap:14px; height:100%; min-height:0">
+
+            <div class="card" style="grid-row: 1 / span 2; display:flex; flex-direction:column; min-height:0">
+              <div style="display:flex; justify-content:space-between; align-items:baseline">
+                <div class="rail__section-title">Mercado · Pesquisas Portugal · 12 meses</div>
+                <div id="trends-source" style="font:500 9.5px 'DM Mono',monospace; color:var(--ink-hint)"></div>
+              </div>
+              <div style="flex:1; min-height:0; margin-top:10px" id="trends-chart"></div>
+            </div>
+
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div class="rail__section-title">Sugestões para a HYLINE</div>
+              <div class="scroll" id="trends-suggestions" style="margin-top:10px; flex:1; display:flex; flex-direction:column; gap:8px"></div>
+            </div>
+
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div class="rail__section-title">Prioridades Estratégicas</div>
+              <div class="scroll" id="priorities-list" style="margin-top:10px; flex:1"></div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ PROCUREMENT ════════════════════════════════════ -->
+      <section class="view" data-view="procurement">
+        <div class="proc-view">
+          <div class="proc-catalog">
+            <div class="proc-filters">
+              <button class="chip-filter is-active" data-cat="">Todos</button>
+              <button class="chip-filter" data-cat="perfis">Perfis</button>
+              <button class="chip-filter" data-cat="vidro">Vidro</button>
+              <button class="chip-filter" data-cat="ferragens">Ferragens</button>
+              <button class="chip-filter" data-cat="consumiveis">Consumíveis</button>
+              <label class="eco-toggle"><input type="checkbox" id="eco-toggle-chk"> Eco &ge;85</label>
+            </div>
+            <div class="catalog-grid scroll" id="catalog-grid"></div>
+          </div>
+          <aside class="proc-cart">
+            <div class="proc-cart__head">
+              <span>Carrinho</span>
+              <span class="cart-badge" id="cart-count">0</span>
+            </div>
+            <div class="cart-list scroll" id="cart-list"></div>
+            <div class="cart-summary" id="cart-summary">
+              <div class="cart-summary-row"><span>Total</span><span id="cart-total">0,00€</span></div>
+              <div class="cart-summary-row" style="color:var(--tertiary)"><span>Score eco</span><span id="cart-eco-score">—</span></div>
+            </div>
+            <button class="btn btn--solid" style="width:100%;margin-top:12px" onclick="App.checkout()">Confirmar Compra</button>
+            <button class="btn btn--ghost btn--sm" style="width:100%;margin-top:6px" onclick="App.clearCart()">Limpar Carrinho</button>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ═══ SUSTAINABILITY ══════════════════════════════════ -->
+      <section class="view" data-view="sustain">
+        <div class="view-pad">
+          <div class="sustain-grid">
+            <div class="sustain-card">
+              <div class="sustain-card__label">CO₂ Hoje</div>
+              <div class="sustain-card__value" id="s-co2">—</div>
+              <div class="sustain-card__unit">kg CO₂e · gerados hoje</div>
+              <div class="meter"><span id="s-co2-bar" style="width:40%"></span></div>
+              <div style="font-size:10.5px; color:var(--ink-hint); margin-top:8px" id="s-co2-target">—</div>
+            </div>
+            <div class="sustain-card">
+              <div class="sustain-card__label">Energia Hoje</div>
+              <div class="sustain-card__value" id="s-energy">—</div>
+              <div class="sustain-card__unit">kWh · consumidos hoje</div>
+              <div class="meter"><span id="s-energy-bar" style="width:55%"></span></div>
+              <div style="font-size:10.5px; color:var(--ink-hint); margin-top:8px" id="s-energy-coef">—</div>
+            </div>
+            <div class="sustain-card">
+              <div class="sustain-card__label">Reutilização</div>
+              <div class="sustain-card__value" id="s-reuse">—%</div>
+              <div class="sustain-card__unit">material reaproveitado</div>
+              <div class="meter"><span id="s-reuse-bar"></span></div>
+              <div style="font-size:10.5px; color:var(--ink-hint); margin-top:8px">meta: +<span id="s-reuse-target">—</span>% vs baseline</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ SETTINGS ════════════════════════════════════════ -->
+      <section class="view" data-view="settings">
+        <div style="padding: 14px 18px; overflow-x:auto; overflow-y:hidden; height:100%">
+          <div style="display:grid; grid-template-columns: 260px 240px 320px 380px; gap:12px; height:100%; min-height:0; min-width:1240px">
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div style="display:flex; justify-content:space-between; align-items:center">
+                <div class="rail__section-title">Equipa · 15 pessoas</div>
+                <button class="btn btn--ghost btn--sm" onclick="App.confirm('Adicionar membro', 'Funcionalidade em desenvolvimento. Queres prosseguir?', ()=>{})">+ Novo</button>
+              </div>
+              <div class="team-list scroll" id="team-list" style="margin-top:10px; flex:1; min-height:0"></div>
+            </div>
+
+            <div class="card">
+              <div class="rail__section-title">Parâmetros de Decisão</div>
+
+              <div class="threshold-row">
+                <div>
+                  <div class="threshold-row__name">Verde mínimo</div>
+                  <div class="threshold-row__desc">eficiência · abaixo: amarelo</div>
+                </div>
+                <input class="threshold-row__input" id="th-green" value="0.9" step="0.05" type="number">
+                <button class="btn btn--sm" onclick="App.saveThreshold('green_min', document.getElementById('th-green').value)">OK</button>
+              </div>
+              <div class="threshold-row">
+                <div>
+                  <div class="threshold-row__name">Amarelo mínimo</div>
+                  <div class="threshold-row__desc">abaixo: vermelho</div>
+                </div>
+                <input class="threshold-row__input" id="th-amber" value="0.7" step="0.05" type="number">
+                <button class="btn btn--sm" onclick="App.saveThreshold('amber_min', document.getElementById('th-amber').value)">OK</button>
+              </div>
+              <div class="threshold-row">
+                <div>
+                  <div class="threshold-row__name">Janela sustentada</div>
+                  <div class="threshold-row__desc">minutos</div>
+                </div>
+                <input class="threshold-row__input" id="th-sust" value="15" type="number">
+                <button class="btn btn--sm" onclick="App.saveThreshold('sustained_minutes', document.getElementById('th-sust').value)">OK</button>
+              </div>
+              <div class="threshold-row">
+                <div>
+                  <div class="threshold-row__name">Sensibilidade</div>
+                  <div class="threshold-row__desc">curva do desempenho</div>
+                </div>
+                <input class="threshold-row__input" id="th-alpha" value="1.242" step="0.01" type="number">
+                <button class="btn btn--sm" onclick="App.saveThreshold('afi_alpha', document.getElementById('th-alpha').value)">OK</button>
+              </div>
+
+              <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--hairline)">
+                <div class="rail__section-title" style="margin-bottom:10px">Sessão</div>
+                <div style="display:flex; gap:8px">
+                  <button class="btn btn--ghost btn--sm" onclick="App.confirm('Terminar sessão', 'Tens a certeza? Serás redirecionado para o ecrã de login.', ()=>alert('Login em desenvolvimento'))">Logout</button>
+                  <button class="btn btn--danger btn--sm" onclick="App.confirm('Reset de demonstração', 'Apaga todos os dados simulados. Esta acção não pode ser revertida. Tens a certeza?', ()=>alert('Reset em desenvolvimento'))">Reset Demo</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div style="display:flex; justify-content:space-between; align-items:baseline">
+                <div class="rail__section-title">Connections · CSV</div>
+                <button class="btn btn--ghost btn--sm" onclick="App.refreshConnections()">↻</button>
+              </div>
+              <div id="conn-host" style="margin-top:12px; flex:1; overflow-y:auto; min-height:0"></div>
+              <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--hairline)">
+                <div class="rail__section-title" style="margin-bottom:10px">Exportar Dados</div>
+                <div id="export-host" style="display:flex; flex-direction:column; gap:5px"></div>
+              </div>
+            </div>
+
+            <div class="card" style="display:flex; flex-direction:column; min-height:0">
+              <div class="rail__section-title">Arquitectura · ligações</div>
+              <div id="arch-host" style="margin-top:12px; flex:1; overflow-y:auto; min-height:0"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Assistente flutuante · ⌘K -->
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-panel__head">
+    <div>
+      <span>Assistente</span>
+      <div class="ai-panel__status" id="ai-status">○ A carregar...</div>
+    </div>
+    <button class="ai-panel__close" onclick="App.toggleAssistant()">✕</button>
+  </div>
+  <div class="ai-panel__log scroll" id="ai-log"></div>
+  <div class="ai-panel__chips">
+    <button class="ai-chip" onclick="App.aiAsk('encomendar vidro sustentável')">Vidro eco</button>
+    <button class="ai-chip" onclick="App.aiAsk('encomendar perfis eco')">Perfis eco</button>
+    <button class="ai-chip" onclick="App.aiAsk('emissões CO₂ hoje')">CO₂ hoje</button>
+    <button class="ai-chip" onclick="App.aiAsk('reatribuir operadores')">Reatribuir</button>
+    <button class="ai-chip" onclick="App.aiAsk('pior estação')">Pior estação</button>
+  </div>
+  <div class="ai-panel__input">
+    <input id="ai-input" placeholder="Pergunta em português..." onkeydown="if(event.key==='Enter') App.aiSend()">
+    <button class="btn btn--solid btn--sm" onclick="App.aiSend()">Enviar</button>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="confirm" id="confirm-box">
+  <div class="confirm__box">
+    <div class="confirm__title" id="confirm-title">Are you sure?</div>
+    <div class="confirm__text" id="confirm-text">—</div>
+    <div class="confirm__actions">
+      <button class="btn btn--ghost btn--sm" onclick="App.confirmCancel()">Cancelar</button>
+      <button class="btn btn--solid btn--sm" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Injected data -->
+<script id="initial-data" type="application/json">
+{
+  "stations": [{"id":"ST-PRE-00","name":"Armazém Perfis","sector":"pre","target_m2_per_hour":0.0,"x":25.0,"y":78.0,"w":90.0,"h":145.0,"kind":"storage"},{"id":"ST-PRE-01","name":"Corte Pesado","sector":"pre","target_m2_per_hour":4.5,"x":25.0,"y":235.0,"w":130.0,"h":110.0,"kind":"machine"},{"id":"ST-PRE-BUF","name":"Buffer Pré-Produção","sector":"pre","target_m2_per_hour":0.0,"x":25.0,"y":355.0,"w":130.0,"h":100.0,"kind":"buffer"},{"id":"ST-PRE-02","name":"Prensa 01","sector":"pre","target_m2_per_hour":3.2,"x":25.0,"y":470.0,"w":130.0,"h":105.0,"kind":"machine"},{"id":"ST-PRE-03","name":"Prensa 02","sector":"pre","target_m2_per_hour":3.2,"x":25.0,"y":590.0,"w":130.0,"h":105.0,"kind":"machine"},{"id":"ST-PRE-04","name":"Prensa 03","sector":"pre","target_m2_per_hour":3.2,"x":25.0,"y":710.0,"w":130.0,"h":105.0,"kind":"machine"},{"id":"ST-COR-00","name":"Corte Correr","sector":"correr","target_m2_per_hour":4.2,"x":215.0,"y":95.0,"w":180.0,"h":115.0,"kind":"machine"},{"id":"ST-COR-STG","name":"Staging Correr","sector":"correr","target_m2_per_hour":0.0,"x":215.0,"y":225.0,"w":180.0,"h":80.0,"kind":"buffer"},{"id":"ST-COR-01","name":"Montagem Correr 01","sector":"correr","target_m2_per_hour":3.0,"x":215.0,"y":320.0,"w":125.0,"h":65.0,"kind":"assembly"},{"id":"ST-COR-02","name":"Montagem Correr 02","sector":"correr","target_m2_per_hour":3.0,"x":215.0,"y":395.0,"w":125.0,"h":65.0,"kind":"assembly"},{"id":"ST-COR-03","name":"Montagem Correr 03","sector":"correr","target_m2_per_hour":3.0,"x":215.0,"y":470.0,"w":125.0,"h":65.0,"kind":"assembly"},{"id":"ST-COR-04","name":"Montagem Correr 04","sector":"correr","target_m2_per_hour":3.0,"x":215.0,"y":545.0,"w":125.0,"h":65.0,"kind":"assembly"},{"id":"ST-COR-F1","name":"Acabamento Correr 01","sector":"correr","target_m2_per_hour":2.8,"x":215.0,"y":800.0,"w":125.0,"h":65.0,"kind":"finishing"},{"id":"ST-COR-F2","name":"Acabamento Correr 02","sector":"correr","target_m2_per_hour":2.8,"x":215.0,"y":875.0,"w":125.0,"h":65.0,"kind":"finishing"},{"id":"ST-ABR-00","name":"Corte Abrir","sector":"abrir","target_m2_per_hour":4.0,"x":455.0,"y":95.0,"w":235.0,"h":115.0,"kind":"machine"},{"id":"ST-ABR-01","name":"Montagem Abrir 01","sector":"abrir","target_m2_per_hour":3.0,"x":500.0,"y":280.0,"w":125.0,"h":65.0,"kind":"assembly"},{"id":"ST-ABR-02","name":"Montagem Abrir 02","sector":"abrir","target_m2_per_hour":3.0,"x":500.0,"y":355.0,"w":125.0,"h":65.0,"kind":"assembly"},{"id":"ST-ABR-03","name":"Montagem Abrir 03","sector":"abrir","target_m2_per_hour":3.0,"x":500.0,"y":430.0,"w":125.0,"h":65.0,"kind":"assembly"},{"id":"ST-ABR-STG","name":"Staging Abrir","sector":"abrir","target_m2_per_hour":0.0,"x":455.0,"y":540.0,"w":235.0,"h":170.0,"kind":"buffer"},{"id":"ST-ABR-F1","name":"Acabamento Abrir 01","sector":"abrir","target_m2_per_hour":2.8,"x":455.0,"y":800.0,"w":125.0,"h":65.0,"kind":"finishing"},{"id":"ST-ABR-F2","name":"Acabamento Abrir 02","sector":"abrir","target_m2_per_hour":2.8,"x":585.0,"y":800.0,"w":105.0,"h":65.0,"kind":"finishing"},{"id":"ST-EXP-01","name":"Desembalagem","sector":"expedicao","target_m2_per_hour":5.5,"x":740.0,"y":95.0,"w":100.0,"h":150.0,"kind":"machine"},{"id":"ST-EXP-STG","name":"Staging Expedição","sector":"expedicao","target_m2_per_hour":0.0,"x":850.0,"y":95.0,"w":115.0,"h":215.0,"kind":"buffer"},{"id":"ST-EXP-DSP","name":"Zona de Dispatch","sector":"expedicao","target_m2_per_hour":6.0,"x":740.0,"y":340.0,"w":225.0,"h":580.0,"kind":"dispatch"}],
+  "members":  [{"id":"U01","name":"Joana Martins","role":"director","station_assigned":null,"initials":"JM"},{"id":"U02","name":"Pedro Costa","role":"dq","station_assigned":null,"initials":"PC"},{"id":"U03","name":"Rita Fonseca","role":"hst","station_assigned":null,"initials":"RF"},{"id":"U04","name":"Miguel Santos","role":"chefe","station_assigned":null,"initials":"MS"},{"id":"U05","name":"Ana Pereira","role":"chefe","station_assigned":null,"initials":"AP"},{"id":"U06","name":"Carlos Dias","role":"operador","station_assigned":"ST-COR-01","initials":"CD"},{"id":"U07","name":"Sofia Ribeiro","role":"operador","station_assigned":"ST-COR-02","initials":"SR"},{"id":"U08","name":"João Ferreira","role":"operador","station_assigned":"ST-COR-03","initials":"JF"},{"id":"U09","name":"Mariana Lopes","role":"operador","station_assigned":"ST-COR-04","initials":"ML"},{"id":"U10","name":"Tiago Silva","role":"operador","station_assigned":"ST-ABR-01","initials":"TS"},{"id":"U11","name":"Inês Moreira","role":"operador","station_assigned":"ST-ABR-02","initials":"IM"},{"id":"U12","name":"Rui Alves","role":"operador","station_assigned":"ST-ABR-03","initials":"RA"},{"id":"U13","name":"Beatriz Nunes","role":"operador","station_assigned":"ST-PRE-01","initials":"BN"},{"id":"U14","name":"André Pinto","role":"operador","station_assigned":"ST-PRE-02","initials":"AP"},{"id":"U15","name":"Catarina Mota","role":"operador","station_assigned":"ST-EXP-01","initials":"CM"}],
+  "trends":   [{"term":"janelas PVC","series":[42.0,45.0,51.0,58.0,63.0,68.0,74.0,72.0,70.0,75.0,80.0,85.0]},{"term":"janelas eficiência energética","series":[22.0,28.0,35.0,41.0,48.0,56.0,62.0,66.0,71.0,78.0,84.0,91.0]},{"term":"janelas oscilo-batentes","series":[35.0,38.0,36.0,42.0,45.0,48.0,50.0,52.0,48.0,50.0,54.0,58.0]},{"term":"reabilitação habitação","series":[58.0,62.0,65.0,70.0,72.0,75.0,78.0,80.0,78.0,82.0,88.0,92.0]}],
+  "priorities": [{"id":"SP01","title":"Eficiência energética como diferenciador","confidence":0.92,"horizon_months":6},{"id":"SP02","title":"Linha oscilo-batentes dedicada","confidence":0.74,"horizon_months":12},{"id":"SP03","title":"Parceria com empresas de reabilitação","confidence":0.88,"horizon_months":9},{"id":"SP04","title":"Automatização corte — redução 30% manual","confidence":0.81,"horizon_months":18}],
+  "sustain":  {"carbon_per_m2_produced":48.5,"carbon_per_m2_rework":62.0,"energy_kwh_per_m2":18.2,"material_reuse_pct":34.0,"targets":{"carbon_reduction_pct":25.0,"reuse_increase_pct":16.0}},
+  "factory":  {"corridors": [{"h": 60.0, "id": "top", "label": "Art\u00e9ria Principal", "w": 972.0, "x": 0.0, "y": 0.0}, {"h": 740.0, "id": "west", "label": "Corredor Oeste", "w": 35.0, "x": 160.0, "y": 60.0}, {"h": 890.0, "id": "center", "label": "Corredor Centro", "w": 35.0, "x": 405.0, "y": 60.0}, {"h": 890.0, "id": "east", "label": "Corredor Leste", "w": 35.0, "x": 695.0, "y": 60.0}], "crosswalks": [{"h": 10.0, "id": "cw-east-top", "w": 242.0, "x": 730.0, "y": 60.0}], "fiducials": [{"id": "F01", "x": 330.0, "y": 75.0}, {"id": "F02", "x": 593.0, "y": 75.0}, {"id": "F03", "x": 887.0, "y": 78.0}, {"id": "F04", "x": 330.0, "y": 385.0}, {"id": "F05", "x": 593.0, "y": 295.0}, {"id": "F06", "x": 940.0, "y": 295.0}, {"id": "F07", "x": 156.0, "y": 550.0}, {"id": "F08", "x": 440.0, "y": 715.0}, {"id": "F09", "x": 680.0, "y": 715.0}, {"id": "F10", "x": 927.0, "y": 730.0}, {"id": "F11", "x": 332.0, "y": 930.0}, {"id": "F12", "x": 598.0, "y": 930.0}, {"id": "F13", "x": 928.0, "y": 930.0}, {"id": "F14", "x": 11.0, "y": 475.0}], "viewbox_height": 1000.0, "viewbox_width": 972.0},
+  "refresh_seconds": 1,
+  "agents":   [{"ai": false, "cost_month_eur": 0.0, "name": "Monitoriza\u00e7\u00e3o", "role": "L\u00ea toda a f\u00e1brica em tempo real"}, {"ai": true, "cost_month_eur": 0.36, "name": "Diagn\u00f3stico", "role": "Identifica causas-raiz quando h\u00e1 desvios"}, {"ai": true, "cost_month_eur": 0.18, "name": "Otimiza\u00e7\u00e3o", "role": "Sugere a melhor atribui\u00e7\u00e3o de pessoas"}, {"ai": true, "cost_month_eur": 4.88, "name": "Assistente", "role": "Responde a perguntas em linguagem natural"}],
+  "thresholds": {"amber_min": 0.7, "green_min": 0.9, "order_urgency_days": 7, "sustained_minutes": 15}
+}
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════
+ * HYLINE · app.js · v3 · live + connected + WOW
+ * ══════════════════════════════════════════════════════════════════ */
+
+const App = (() => {
+  const INIT = JSON.parse(document.getElementById('initial-data').textContent);
+  const REFRESH_MS = (INIT.refresh_seconds || 10) * 1000;
+
+  // Live state
+  let stationsLive = [];
+  let alertsLive   = [];
+  let ordersLive   = [];
+  let kpiLive      = null;
+  let selectedStationId = null;
+  let selectedOrderId   = null;
+  let tweenValues = {};
+  let m2Rate = 0;
+  let chartTrends = null;
+
+  // Procurement state
+  let procActiveCat = '';
+  let procEcoOnly   = false;
+
+  // ── Utils ───────────────────────────────────────────────────
+  const $  = (s, el=document) => el.querySelector(s);
+  const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+  const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+  const nf = (v, d=1) => (v == null ? '—' : Number(v).toLocaleString('pt-PT', { minimumFractionDigits: d, maximumFractionDigits: d }));
+  const f3 = v => (v == null ? '—' : Number(v).toFixed(3));
+  const f2 = v => (v == null ? '—' : Number(v).toFixed(2));
+  const fetchJSON = async (url, opts) => {
+    const r = await fetch(url, opts);
+    if (!r.ok) throw new Error(`${url} → ${r.status}`);
+    return r.json();
+  };
+
+  // Number tween — animates a text element's value smoothly
+  function tweenNumber(elId, target, decimals = 1, duration = 800){
+    const node = $('#' + elId);
+    if (!node) return;
+    const start = tweenValues[elId] != null ? tweenValues[elId] : (parseFloat(node.textContent.replace(',','.')) || 0);
+    if (!Number.isFinite(start) || !Number.isFinite(target)){ node.textContent = nf(target, decimals); tweenValues[elId] = target; return; }
+    const t0 = performance.now();
+    function step(t){
+      const p = Math.min(1, (t - t0) / duration);
+      const e = 1 - Math.pow(1 - p, 3); // ease-out-cubic
+      const v = start + (target - start) * e;
+      node.textContent = nf(v, decimals);
+      if (p < 1) requestAnimationFrame(step);
+      else tweenValues[elId] = target;
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ── Navigation ─────────────────────────────────────────────
+  function switchView(name){
+    $$('.nav__item').forEach(b => b.classList.toggle('is-active', b.dataset.view === name));
+    $$('.view').forEach(v => v.classList.toggle('is-active', v.dataset.view === name));
+    const titles = {
+      home:        ['Homepage','Produção'],
+      alerts:      ['Alertas','Monitorização'],
+      action:      ['Ação','4 Agentes'],
+      scale:       ['Escala','Mercado & Estratégia'],
+      procurement: ['Procurement','Catálogo Sustentável'],
+      sustain:     ['Sustentabilidade','Circularidade'],
+      settings:    ['Definições','Equipa & Parâmetros'],
+    }[name] || ['—','—'];
+    $('#view-title').innerHTML = `${titles[0]} <span>·</span> ${titles[1]}`;
+    if (name === 'scale')       renderTrendsChart();
+    if (name === 'settings')    { renderConnections(); renderArchitecture(); renderExport(); }
+    if (name === 'procurement') renderProcurement();
+  }
+
+  // ── Clock + live m² ticker (runs every second) ────────────
+  function tickClock(){
+    const now = new Date();
+    $('#clock').textContent = now.toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    // Tick the m² value up at the estimated production rate
+    if (kpiLive && m2Rate > 0){
+      const prev = tweenValues['k-m2'] != null ? tweenValues['k-m2'] : kpiLive.m2_today;
+      const next = prev + m2Rate;
+      tweenValues['k-m2'] = next;
+      const node = $('#k-m2');
+      if (node) node.textContent = nf(next, 1);
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // DIGITAL TWIN
+  // ══════════════════════════════════════════════════════════
+  function buildTwinSVG(hostEl){
+    const f = INIT.factory;
+    const vbw = f.viewbox_width, vbh = f.viewbox_height;
+    const snapById = Object.fromEntries(stationsLive.map(s => [s.id, s]));
+
+    // Defs: gradient fills for station statuses
+    const defs = `
+      <defs>
+        <linearGradient id="grad-green" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#CFEAD9" stop-opacity="0.92"/>
+          <stop offset="100%" stop-color="#A6D5B7" stop-opacity="0.75"/>
+        </linearGradient>
+        <linearGradient id="grad-amber" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FBD9A0" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#F3B870" stop-opacity="0.7"/>
+        </linearGradient>
+        <linearGradient id="grad-red" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#F6B5B5" stop-opacity="0.85"/>
+          <stop offset="100%" stop-color="#E28B8B" stop-opacity="0.7"/>
+        </linearGradient>
+        <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#1B3A21" flood-opacity="0.12"/>
+        </filter>
+      </defs>
+    `;
+
+    // Floor background with subtle grid
+    const floor = `<rect class="floor-bg" x="0" y="0" width="${vbw}" height="${vbh}" rx="4"/>`;
+
+    // Corridors
+    const corridors = f.corridors.map(c =>
+      `<rect class="corridor-rect" x="${c.x}" y="${c.y}" width="${c.w}" height="${c.h}" rx="2"/>`
+    ).join('');
+    const crosswalks = f.crosswalks.map(c =>
+      `<rect class="crosswalk-rect" x="${c.x}" y="${c.y}" width="${c.w}" height="${c.h}"/>`
+    ).join('');
+
+    // Stations
+    const stations = INIT.stations.map(s => {
+      const live = snapById[s.id] || {};
+      const kind = s.kind;
+      let cls = 'station-rect';
+      if (kind === 'buffer')        cls += ' is-buffer';
+      else if (kind === 'storage')  cls += ' is-storage';
+      else if (kind === 'dispatch') cls += ' is-dispatch';
+      else {
+        const st = live.status || 'idle';
+        cls += ' is-' + st;
+      }
+      if (selectedStationId === s.id) cls += ' is-selected';
+
+      const cx = s.x + s.w / 2;
+      const cy = s.y + s.h / 2;
+      const isProd = s.target_m2_per_hour > 0;
+      const showMetric = isProd && live.m2_per_hour != null;
+      const metric = showMetric
+        ? `<text class="station-metric" x="${cx}" y="${cy + 10}">${nf(live.m2_per_hour, 2)}/${nf(s.target_m2_per_hour, 1)} m²/h</text>`
+        : '';
+      const fBadge = (isProd && live.afi_F != null)
+        ? `<text class="station-metric" x="${cx}" y="${cy + 22}" style="font-weight:600">${Math.round(live.afi_F * 100)}%</text>`
+        : '';
+      // Breathing dot for active stations
+      const statusDot = (isProd && live.status && live.status !== 'idle')
+        ? `<circle class="status-dot" cx="${s.x + s.w - 10}" cy="${s.y + 10}" r="4"
+            fill="${live.status === 'green' ? '#6FAF82' : live.status === 'amber' ? '#D97706' : '#B91C1C'}"/>`
+        : '';
+      return `
+        <g data-station="${s.id}">
+          <rect class="${cls}" x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="3"
+                data-sid="${s.id}"/>
+          <text class="station-label" x="${cx}" y="${cy - 4}">${s.name}</text>
+          ${metric}
+          ${fBadge}
+          ${statusDot}
+        </g>`;
+    }).join('');
+
+    // Fiducials
+    const fids = f.fiducials.map(fd => `
+      <g>
+        <rect class="fiducial" x="${fd.x}" y="${fd.y}" width="10" height="10"/>
+        <rect class="fiducial-in" x="${fd.x+1}" y="${fd.y+1}" width="4" height="4"/>
+        <rect class="fiducial-in" x="${fd.x+5}" y="${fd.y+5}" width="4" height="4"/>
+      </g>`).join('');
+
+    // Sector labels
+    const sectors = `
+      <text class="sector-label" x="85"  y="${vbh - 14}">Pré-Produção</text>
+      <text class="sector-label" x="305" y="${vbh - 14}">Série de Correr</text>
+      <text class="sector-label" x="565" y="${vbh - 14}">Série de Abrir</text>
+      <text class="sector-label" x="855" y="${vbh - 14}">Expedição</text>
+    `;
+
+    // Flow particles (group for animation)
+    const particles = `<g id="flow-particles"></g>`;
+
+    hostEl.innerHTML = `
+<svg class="twin-svg" viewBox="0 0 ${vbw} ${vbh}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  ${defs}
+  ${floor}
+  ${corridors}
+  ${crosswalks}
+  ${particles}
+  ${stations}
+  ${fids}
+  ${sectors}
+</svg>`;
+
+    // Attach click handlers
+    $$('[data-sid]', hostEl).forEach(rect => {
+      rect.addEventListener('click', () => selectStation(rect.dataset.sid));
+    });
+
+    startFlowAnimation();
+  }
+
+  // Flow particles — travel along corridors, feels like material moving
+  let flowAnimHandle = null;
+  const FLOW_PATHS = [
+    // [startX, startY, endX, endY, duration_ms]
+    // corridor top (west to east)
+    { from: [20, 30],  to: [960, 30],  dur: 8000 },
+    // corridor west (top to bottom)
+    { from: [177, 70], to: [177, 790], dur: 6000 },
+    // corridor center
+    { from: [422, 70], to: [422, 940], dur: 7000 },
+    // corridor east
+    { from: [712, 70], to: [712, 940], dur: 7500 },
+    // extra short flows (into stations)
+    { from: [200, 320], to: [200, 610], dur: 4000 },
+    { from: [495, 280], to: [495, 490], dur: 3500 },
+  ];
+  function startFlowAnimation(){
+    if (flowAnimHandle) cancelAnimationFrame(flowAnimHandle);
+    const host = $('#flow-particles');
+    if (!host) return;
+    host.innerHTML = '';
+    const particles = FLOW_PATHS.map((p, i) => {
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('class', 'flow-particle');
+      c.setAttribute('r', 2.8);
+      c.setAttribute('cx', p.from[0]);
+      c.setAttribute('cy', p.from[1]);
+      host.appendChild(c);
+      return { node: c, path: p, offset: (i / FLOW_PATHS.length) };
+    });
+    const t0 = performance.now();
+    function tick(t){
+      particles.forEach(pt => {
+        const elapsed = (t - t0) + pt.offset * pt.path.dur;
+        const p = ((elapsed % pt.path.dur) / pt.path.dur);
+        const x = pt.path.from[0] + (pt.path.to[0] - pt.path.from[0]) * p;
+        const y = pt.path.from[1] + (pt.path.to[1] - pt.path.from[1]) * p;
+        pt.node.setAttribute('cx', x);
+        pt.node.setAttribute('cy', y);
+        pt.node.setAttribute('opacity', 0.4 + 0.6 * Math.sin(p * Math.PI));
+      });
+      flowAnimHandle = requestAnimationFrame(tick);
+    }
+    flowAnimHandle = requestAnimationFrame(tick);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // STATION SELECTION / DETAIL DRAWER
+  // ══════════════════════════════════════════════════════════
+  function selectStation(id){
+    selectedStationId = id;
+    const s = stationsLive.find(x => x.id === id) || INIT.stations.find(x => x.id === id);
+    if (!s) return;
+    const live = stationsLive.find(x => x.id === id) || {};
+
+    // Update SVG highlight
+    $$('.twin .station-rect').forEach(r => r.classList.toggle('is-selected', r.dataset.sid === id));
+
+    // Populate drawer
+    $('#d-sector').textContent = (s.sector || '').toUpperCase();
+    $('#d-title').textContent  = s.name;
+    $('#d-meta').textContent   = s.target_m2_per_hour > 0
+      ? `Target ${nf(s.target_m2_per_hour, 1)} m²/h · eficiência actual ${nf((live.efficiency||0)*100, 0)}% · ${live.windows_in_progress||0} em curso`
+      : `Zona estrutural · ${s.kind}`;
+
+    $('#d-f').textContent = live.afi_F != null ? `${Math.round(live.afi_F * 100)}%` : '—';
+
+    const attr = live.afi_D_attribution || {};
+    const keys = ['throughput','quality','machine','timeline','operator','setup'];
+    const factorName = {
+      throughput: 'cadência',
+      quality:    'qualidade',
+      machine:    'equipamento',
+      timeline:   'prazo',
+      operator:   'operador',
+      setup:      'setup',
+    };
+    $('#d-bars').innerHTML = keys.map(k => {
+      const v = attr[k] || 0;
+      return `<div class="detail__bar-row">
+        <span>${factorName[k]}</span>
+        <span class="detail__bar-track"><span class="detail__bar-fill" style="width:${Math.min(100,v)}%"></span></span>
+        <span style="text-align:right">${Math.round(v)}%</span>
+      </div>`;
+    }).join('');
+
+    // Operators
+    const ops = (live.operators || []).length > 0 ? live.operators : (INIT.members.filter(m => m.station_assigned === id));
+    $('#d-ops').innerHTML = ops.length
+      ? ops.map(o => `<div class="detail__op">
+            <div class="detail__op-avatar">${o.initials || (o.name||'').split(' ').map(x=>x[0]).slice(0,2).join('')}</div>
+            <div><div style="font-size:12.5px; font-weight:500">${o.name}</div><div style="font-size:10.5px; color:var(--ink-hint)">Operador</div></div>
+         </div>`).join('')
+      : '<div style="font-size:11.5px; color:var(--ink-hint); padding:6px 2px">Sem operador atribuído.</div>';
+
+    // Alerts for this station
+    const stationAlerts = alertsLive.filter(a => a.station_id === id);
+    $('#d-alerts').innerHTML = stationAlerts.length
+      ? stationAlerts.map(a => `<div class="detail__alert"><strong>${a.alert_type.toUpperCase()}</strong> · ${a.message}</div>`).join('')
+      : '<div style="font-size:11.5px; color:var(--ink-hint); padding:6px 2px">Zero alertas abertos nesta estação.</div>';
+
+    $('#detail').classList.add('is-open');
+  }
+  function closeDetail(){
+    selectedStationId = null;
+    $$('.twin .station-rect.is-selected').forEach(r => r.classList.remove('is-selected'));
+    $('#detail').classList.remove('is-open');
+  }
+
+  // Highlight stations by order (click order in rail)
+  function selectOrder(orderId){
+    selectedOrderId = orderId;
+    $$('.order').forEach(o => o.classList.toggle('is-selected', o.dataset.oid === orderId));
+    // Find stations currently processing this order
+    const matching = stationsLive.filter(s => s.current_order_id === orderId).map(s => s.id);
+    $$('.twin .station-rect').forEach(r => {
+      r.classList.remove('is-highlight');
+      if (matching.includes(r.dataset.sid)) r.classList.add('is-highlight');
+    });
+    // auto-remove highlight after 3s
+    setTimeout(() => $$('.twin .station-rect.is-highlight').forEach(r => r.classList.remove('is-highlight')), 3000);
+  }
+
+  // Highlight station via alert click
+  function selectAlertStation(stationId){
+    selectStation(stationId);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // DATA REFRESH PIPELINE
+  // ══════════════════════════════════════════════════════════
+  async function refreshAll(){
+    try {
+      const [kpi, stations, alerts, orders] = await Promise.all([
+        fetchJSON('/api/kpi'),
+        fetchJSON('/api/stations'),
+        fetchJSON('/api/alerts'),
+        fetchJSON('/api/orders?limit=10'),
+      ]);
+      const prevM2 = kpiLive ? kpiLive.m2_today : null;
+      kpiLive = kpi;
+      stationsLive = stations;
+      alertsLive = alerts;
+      ordersLive = orders;
+
+      // Estimate m² production rate per second for live ticker
+      // (sum of all green/amber stations' m²/h divided by 3600)
+      const totalHourly = stations.filter(s => s.target_m2_per_hour > 0).reduce((a,s) => a + (s.m2_per_hour || 0), 0);
+      m2Rate = totalHourly / 3600;
+
+      // Tween KPI numbers
+      tweenNumber('k-m2', kpi.m2_today, 1);
+      tweenValues['k-m2'] = kpi.m2_today;
+      $('#k-m2-delta').textContent = prevM2 != null ? `+${nf(kpi.m2_today - prevM2, 1)} desde última sync` : 'a sincronizar...';
+      // Desempenho as percentage
+      const fPct = (kpi.afi_F_global || 0) * 100;
+      tweenNumber('k-f', fPct, 1);
+      $('#k-orders').textContent = kpi.open_orders;
+      $('#k-backlog').textContent = `${nf(kpi.m2_backlog, 0)} m² em carteira`;
+      $('#k-alerts').textContent = kpi.open_alerts;
+
+      // Count alerts by role
+      const byRole = { Director:0, HST:0, DQ:0, ChefeTurno:0 };
+      alerts.forEach(a => byRole[a.routed_to] = (byRole[a.routed_to]||0) + 1);
+      const parts = Object.entries(byRole).filter(([_,n]) => n > 0).map(([k,n]) => `${k} ${n}`);
+      $('#k-alerts-routed').textContent = parts.length ? parts.join(' · ') : 'zero · sistema estável';
+
+      // Station status counts for chips
+      const cnt = { green:0, amber:0, red:0 };
+      stations.filter(s => s.target_m2_per_hour > 0).forEach(s => { if (cnt[s.status] != null) cnt[s.status]++; });
+      $('#chip-green').textContent = cnt.green;
+      $('#chip-amber').textContent = cnt.amber;
+      $('#chip-red').textContent = cnt.red;
+
+      // Nav badge
+      const np = $('#nav-alerts-count');
+      if (kpi.open_alerts > 0){ np.style.display='inline-block'; np.textContent = kpi.open_alerts; }
+      else { np.style.display='none'; }
+
+      buildTwinSVG($('#twin-host'));
+      renderOrdersRail(orders);
+      renderAlertsStrip(alerts);
+      renderAlertsBoard(alerts);
+
+      // If detail is open, re-populate with fresh data
+      if (selectedStationId) selectStation(selectedStationId);
+
+      $('#last-refresh').textContent = 'sincronizado';
+    } catch(e){
+      console.error('refreshAll falhou:', e);
+      $('#last-refresh').textContent = 'erro · backend offline';
+    }
+  }
+
+  // ── Rail: orders (clickable → highlights twin) ────────────
+  function renderOrdersRail(orders){
+    const host = $('#orders-col');
+    host.innerHTML = '';
+    $('#orders-total').textContent = orders.length;
+    if (!orders.length){
+      host.innerHTML = '<div style="padding:14px; color:var(--ink-hint); font-size:11px">Zero obras activas.</div>';
+      return;
+    }
+    orders.forEach(o => {
+      const pct = Math.round(o.progress_pct || 0);
+      const daysLeft = o.deadline ? Math.ceil((new Date(o.deadline) - Date.now()) / 86400000) : null;
+      const urgent = daysLeft != null && daysLeft < 7;
+      const row = el('div', 'order' + (selectedOrderId === o.id ? ' is-selected' : ''));
+      row.dataset.oid = o.id;
+      row.innerHTML = `
+        <div class="order__head">
+          <span class="order__id">${o.id}</span>
+          <span class="order__prio ${urgent ? 'is-urgent':''}">P${o.priority||'—'}${daysLeft!=null?` · ${daysLeft}d`:''}</span>
+        </div>
+        <div class="order__name">${o.customer || '—'} · ${o.total_windows} janelas</div>
+        <div class="order__meta">
+          <span>${nf(o.total_m2, 1)} m²</span>
+          <span>${pct}%</span>
+        </div>
+        <div class="order__bar"><span style="width:${Math.min(pct, 100)}%"></span></div>
+      `;
+      row.addEventListener('click', () => selectOrder(o.id));
+      host.appendChild(row);
+    });
+  }
+
+  // ── Rail: alerts strip (clickable → selects station) ──────
+  function renderAlertsStrip(alerts){
+    const host = $('#alerts-strip');
+    $('#alerts-strip-count').textContent = alerts.length;
+    host.innerHTML = '';
+    if (!alerts.length){
+      host.innerHTML = '<div style="padding:14px; color:var(--ink-hint); font-size:11px">Zero alertas abertos.</div>';
+      return;
+    }
+    alerts.slice(0, 6).forEach(a => {
+      const sev = a.severity >= 4 ? 4 : a.severity >= 3 ? 3 : 2;
+      const chip = el('div', `alert-chip alert-chip--sev${sev}`);
+      chip.innerHTML = `
+        <div class="alert-chip__dot"></div>
+        <div class="alert-chip__body">
+          <div class="alert-chip__station">${a.station_name}</div>
+          <div class="alert-chip__msg">${a.message}</div>
+        </div>
+        <div class="alert-chip__role">${a.routed_to}</div>
+      `;
+      chip.addEventListener('click', () => selectAlertStation(a.station_id));
+      host.appendChild(chip);
+    });
+  }
+
+  // ── Alerts board (full view) ───────────────────────────────
+  function renderAlertsBoard(alerts){
+    const cols = { Director: $('#col-director'), HST: $('#col-hst'), DQ: $('#col-dq'), ChefeTurno: $('#col-chefe') };
+    Object.values(cols).forEach(c => c && (c.innerHTML = ''));
+    const counts = { Director:0, HST:0, DQ:0, ChefeTurno:0 };
+
+    alerts.forEach(a => {
+      const col = cols[a.routed_to] || cols.ChefeTurno;
+      if (!col) return;
+      counts[a.routed_to] = (counts[a.routed_to]||0) + 1;
+      const time = new Date(a.ts).toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
+      const card = el('div', 'alert-card');
+      card.innerHTML = `
+        <div class="alert-card__head">
+          <div class="alert-card__station">${a.station_name}</div>
+          <div class="alert-chip__dot" style="background:${a.severity >= 4 ? '#B91C1C' : a.severity >= 3 ? '#D97706' : '#6FAF82'}; width:8px; height:8px; border-radius:50%"></div>
+        </div>
+        <div class="alert-card__msg">${a.message}</div>
+        ${a.ai_diagnosis ? `<div class="alert-card__diag">IA · ${a.ai_diagnosis}</div>` : ''}
+        <div class="alert-card__foot">
+          <span class="alert-card__type">${a.alert_type} · sev ${a.severity}</span>
+          <span class="alert-card__meta">${time}</span>
+        </div>
+        <div style="margin-top:10px; display:flex; gap:6px; justify-content:flex-end">
+          <button class="btn btn--ghost btn--sm" onclick="event.stopPropagation(); App.switchView('home'); setTimeout(()=>App.selectAlertStation('${a.station_id}'), 300)">Ver no Twin</button>
+          <button class="btn btn--sm" onclick="event.stopPropagation(); App.resolveAlert(${a.id}, '${a.station_name.replace(/'/g,'')}')">Resolver</button>
+        </div>
+      `;
+      cols[a.routed_to] && cols[a.routed_to].appendChild(card);
+    });
+
+    $('#cnt-director').textContent = counts.Director;
+    $('#cnt-hst').textContent = counts.HST;
+    $('#cnt-dq').textContent = counts.DQ;
+    $('#cnt-chefe').textContent = counts.ChefeTurno;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // OTHER VIEWS
+  // ══════════════════════════════════════════════════════════
+  function renderAgents(){
+    const host = $('#agents-bar'); if (!host) return;
+    host.innerHTML = '';
+    INIT.agents.forEach(a => {
+      const card = el('div', 'agent');
+      card.innerHTML = `
+        <div class="agent__status"></div>
+        <div class="agent__name">${a.name}</div>
+        <div class="agent__role">${a.role}</div>
+      `;
+      host.appendChild(card);
+    });
+  }
+
+  function renderPriorities(){
+    const host = $('#priorities-list'); if (!host) return;
+    host.innerHTML = '';
+    INIT.priorities.forEach(p => {
+      const r = el('div', 'priority');
+      r.innerHTML = `
+        <div>
+          <div class="priority__title">${p.title}</div>
+          <div class="priority__meta">horizonte ${p.horizon_months}m · ${p.id}</div>
+        </div>
+        <div class="priority__conf">${Math.round(p.confidence * 100)}%</div>
+      `;
+      host.appendChild(r);
+    });
+  }
+
+  async function renderTeam(){
+    try {
+      const t = await fetchJSON('/api/team');
+      const rolesById = Object.fromEntries(t.roles.map(r => [r.id, r]));
+      const host = $('#team-list'); if (!host) return;
+      host.innerHTML = '';
+      t.members.forEach(m => {
+        const role = rolesById[m.role] || { name: m.role, color: '#4A7C59' };
+        const badgeCls = { director:'director', hst:'hst', dq:'dq', chefe:'chefe' }[m.role] || 'op';
+        const row = el('div', 'team-row');
+        row.innerHTML = `
+          <div class="team-avatar" style="background: linear-gradient(135deg, ${role.color}, ${role.color}CC)">${m.initials}</div>
+          <div>
+            <div class="team-row__name">${m.name}</div>
+            <div class="team-row__role">${role.name}</div>
+            ${m.station_assigned ? `<div class="team-row__station">${m.station_assigned}</div>` : ''}
+          </div>
+          <span class="badge badge--${badgeCls}">L${role.level}</span>
+        `;
+        host.appendChild(row);
+      });
+    } catch(e) { console.error(e); }
+  }
+
+  async function renderSustain(){
+    try {
+      const s = await fetchJSON('/api/sustainability');
+      $('#s-co2').textContent = nf(s.carbon_today_kg, 0);
+      $('#s-energy').textContent = nf(s.energy_today_kwh, 0);
+      $('#s-energy-coef').textContent = `coef. ${s.energy_kwh_per_m2} kWh/m²`;
+      $('#s-reuse').textContent = nf(s.material_reuse_pct, 0) + '%';
+      $('#s-reuse-bar').style.width = s.material_reuse_pct + '%';
+      $('#s-reuse-target').textContent = s.targets.reuse_increase_pct;
+      $('#s-co2-target').textContent = `meta: -${s.targets.carbon_reduction_pct}% vs baseline`;
+    } catch(e) { console.error(e); }
+  }
+
+  async function refreshOptimiser(){
+    try {
+      const props = await fetchJSON('/api/agents/optimiser');
+      const host = $('#optimiser-list'); if (!host) return;
+      host.innerHTML = '';
+      if (!props.length){
+        host.innerHTML = '<div style="padding:18px; color:var(--ink-hint); font-size:12px">Configuração actual é óptima. Zero reatribuições sugeridas.</div>';
+        return;
+      }
+      props.forEach(p => {
+        const row = el('div', 'prop-row');
+        row.innerHTML = `
+          <div>
+            <div class="prop-row__op">${p.operator_name}</div>
+            <div class="prop-row__move">${p.from_station || '(sem estação)'} → <b>${p.to_station_name}</b></div>
+          </div>
+          <div style="display:flex; align-items:center">
+            <span class="prop-row__f">${Math.round(p.to_station_F * 100)}%</span>
+            <button class="btn btn--solid btn--sm">Aplicar</button>
+          </div>`;
+        row.querySelector('button').addEventListener('click', () => applyProposal(p));
+        host.appendChild(row);
+      });
+    } catch(e) { console.error(e); }
+  }
+
+  function applyProposal(p){
+    confirmDialog('Aplicar reatribuição?',
+      `Mover <b>${p.operator_name}</b> de <b>${p.from_station || '(sem estação)'}</b> para <b>${p.to_station_name}</b> (desempenho ${Math.round(p.to_station_F*100)}%).<br><br>Esta acção fica no audit trail.`,
+      async () => {
+        await fetchJSON('/api/decisions', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ member_id: p.operator_id, kind:'reassign_operator', target: p.to_station, payload:{from:p.from_station, to:p.to_station}, confirmed:true }),
+        });
+        addChatMsg(`Reatribuição aplicada · ${p.operator_name} → ${p.to_station_name}`, 'bot');
+      });
+  }
+
+  // Native SVG line chart — usa nova estrutura {source, terms, suggestions}
+  async function renderTrendsChart(){
+    const host = $('#trends-chart'); if (!host) return;
+    let data;
+    try { data = await fetchJSON('/api/scale/trends'); }
+    catch(e){ host.innerHTML = '<div style="padding:20px; color:var(--ink-hint)">Erro ao carregar trends.</div>'; return; }
+
+    // Source pill
+    const srcEl = $('#trends-source');
+    if (srcEl){
+      const labels = { google_live: '● LIGADO · Google Trends', config_fallback: '○ FALLBACK · snapshot' };
+      const colors = { google_live: 'var(--tertiary)',         config_fallback: 'var(--amber)' };
+      srcEl.textContent = (labels[data.source] || data.source) + ' · ' + (data.geo || '');
+      srcEl.style.color = colors[data.source] || 'var(--ink-hint)';
+    }
+
+    // Render suggestions
+    renderTrendsSuggestions(data.suggestions || []);
+
+    // Chart
+    const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const colors = ['#1B3A21','#4A7C59','#6FAF82','#AE572F'];
+    const trends = data.terms || [];
+
+    const W = 900, H = 420, PAD_L = 56, PAD_R = 24, PAD_T = 30, PAD_B = 90;
+    const innerW = W - PAD_L - PAD_R;
+    const innerH = H - PAD_T - PAD_B;
+    if (trends.length === 0 || !trends[0].series.length){
+      host.innerHTML = '<div style="padding:20px; color:var(--ink-hint)">Sem dados de trends.</div>';
+      return;
+    }
+    const xStep = innerW / (months.length - 1);
+    const yMax = 100, yMin = 0;
+    const scaleY = v => PAD_T + innerH * (1 - (v - yMin) / (yMax - yMin));
+    const scaleX = i => PAD_L + i * xStep;
+
+    let svg = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="font-family:'DM Mono',monospace">`;
+
+    [0, 25, 50, 75, 100].forEach(v => {
+      const y = scaleY(v);
+      svg += `<line x1="${PAD_L}" y1="${y}" x2="${W - PAD_R}" y2="${y}" stroke="#E5EEE8" stroke-width="1"/>`;
+      svg += `<text x="${PAD_L - 12}" y="${y + 4}" text-anchor="end" font-size="11" fill="#8FA896">${v}</text>`;
+    });
+    months.forEach((m, i) => {
+      svg += `<text x="${scaleX(i)}" y="${H - PAD_B + 20}" text-anchor="middle" font-size="11" fill="#8FA896">${m}</text>`;
+    });
+    trends.forEach((t, idx) => {
+      const color = colors[idx % colors.length];
+      const pts = t.series.map((v, i) => `${scaleX(i)},${scaleY(v)}`).join(' ');
+      const areaPath = `M ${scaleX(0)},${scaleY(0)} L ${pts.split(' ').join(' L ')} L ${scaleX(months.length-1)},${scaleY(0)} Z`;
+      svg += `<path d="${areaPath}" fill="${color}" opacity="0.04"/>`;
+      svg += `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`;
+      t.series.forEach((v, i) => {
+        svg += `<circle cx="${scaleX(i)}" cy="${scaleY(v)}" r="3" fill="#fff" stroke="${color}" stroke-width="2"/>`;
+      });
+    });
+    const legendY = H - 40;
+    let legendX = PAD_L;
+    const legendItemWidth = innerW / Math.max(trends.length, 1);
+    trends.forEach((t, idx) => {
+      const color = colors[idx % colors.length];
+      const cx = legendX + legendItemWidth / 2;
+      svg += `<line x1="${cx - 40}" y1="${legendY}" x2="${cx - 20}" y2="${legendY}" stroke="${color}" stroke-width="2.4"/>`;
+      svg += `<circle cx="${cx - 30}" cy="${legendY}" r="3" fill="#fff" stroke="${color}" stroke-width="2"/>`;
+      svg += `<text x="${cx - 12}" y="${legendY + 4}" font-family="DM Sans" font-size="11.5" fill="#4A7C59" font-weight="500">${t.term}</text>`;
+      legendX += legendItemWidth;
+    });
+    svg += `</svg>`;
+    host.innerHTML = svg;
+  }
+
+  function renderTrendsSuggestions(suggestions){
+    const host = $('#trends-suggestions'); if (!host) return;
+    if (!suggestions.length){
+      host.innerHTML = '<div style="padding:14px; color:var(--ink-hint); font-size:11.5px">Sem sugestões accionáveis no momento. Mercado estável.</div>';
+      return;
+    }
+    const palette = {
+      act:   { color:'#B91C1C', bg:'rgba(185,28,28,0.06)',  label:'AGIR'    },
+      watch: { color:'#D97706', bg:'rgba(217,119,6,0.06)',  label:'VIGIAR' },
+      info:  { color:'#4A7C59', bg:'rgba(74,124,89,0.06)',  label:'INFO'   },
+    };
+    host.innerHTML = suggestions.map(s => {
+      const p = palette[s.priority] || palette.info;
+      const arrow = s.delta_pct >= 0 ? '↑' : '↓';
+      return `
+        <div style="padding:12px 14px; background:${p.bg}; border-left:3px solid ${p.color}; border-radius:8px">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px">
+            <span style="font:600 9.5px 'DM Mono',monospace; letter-spacing:.18em; color:${p.color}">${p.label}</span>
+            <span style="font:500 11px 'DM Mono',monospace; color:${p.color}">${arrow} ${Math.abs(s.delta_pct).toFixed(0)}%</span>
+          </div>
+          <div style="font-size:12.5px; font-weight:500; color:var(--primary); margin-bottom:4px">${s.term}</div>
+          <div style="font-size:11.5px; color:var(--ink-soft); line-height:1.45">${s.action}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Architecture (Definições) ─────────────────────────────
+  async function renderArchitecture(){
+    try {
+      const a = await fetchJSON('/api/architecture');
+      const host = $('#arch-host'); if (!host) return;
+      host.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div class="rail__section-title" style="font-size:9.5px; margin-bottom:8px">Backend · 5 ficheiros</div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              ${a.backend_files.map(f => `
+                <div style="display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:8px 10px;background:var(--surface-soft);border-radius:7px">
+                  <span style="font:500 11px 'DM Mono',monospace; color:var(--primary)">${f.file}</span>
+                  <span style="font-size:11px; color:var(--ink-soft); line-height:1.35">${f.role}</span>
+                  <span style="font:500 10px 'DM Mono',monospace; color:var(--ink-hint)">${f.lines}L</span>
+                </div>`).join('')}
+            </div>
+          </div>
+
+          <div>
+            <div class="rail__section-title" style="font-size:9.5px; margin-bottom:8px">CSVs · entradas</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              ${a.csv_files.map(c => `
+                <div style="padding:10px 12px;background:var(--surface-soft);border-radius:8px">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                    <span style="font:500 11.5px 'DM Mono',monospace; color:var(--primary)">${c.name}</span>
+                    <span style="font-size:9.5px; color:var(--ink-hint); letter-spacing:.1em; text-transform:uppercase">${c.produced_by}</span>
+                  </div>
+                  <div style="font-size:11px; color:var(--ink-soft); margin-bottom:4px">${c.purpose}</div>
+                  <div style="font:500 9.5px 'DM Mono',monospace; color:var(--secondary); line-height:1.5">${c.columns.join(' · ')}</div>
+                </div>`).join('')}
+            </div>
+          </div>
+
+          <div>
+            <div class="rail__section-title" style="font-size:9.5px; margin-bottom:8px">Fluxo · do CSV ao ecrã</div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              ${a.flow.map((s, i, arr) => `
+                <div style="display:grid;grid-template-columns:24px 1fr; gap:10px; align-items:start; padding:6px 0">
+                  <div style="width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font:600 10px 'DM Mono',monospace">${s.step}</div>
+                  <div>
+                    <div style="font-size:11.5px; font-weight:500; color:var(--primary)">${s.title}</div>
+                    <div style="font:500 9.5px 'DM Mono',monospace; color:var(--ink-hint); margin-top:1px">${s.actor}</div>
+                  </div>
+                </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    } catch(e){ console.error(e); }
+  }
+
+  // ── Chatbot ────────────────────────────────────────────────
+  function addChatMsg(text, who){
+    const log = $('#chat-log'); if (!log) return;
+    const msg = el('div', 'chat-msg chat-msg--' + who);
+    msg.innerHTML = text;
+    log.appendChild(msg);
+    log.scrollTop = log.scrollHeight;
+  }
+  async function chatSend(){
+    const input = $('#chat-input'); const q = input.value.trim(); if (!q) return;
+    input.value = '';
+    addChatMsg(q, 'user');
+    try {
+      const r = await fetchJSON('/api/agents/chatbot', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question:q}) });
+      addChatMsg(r.answer, 'bot');
+    } catch(e) { addChatMsg('Erro · backend não respondeu.', 'bot'); }
+  }
+
+  // ── Confirm dialog ─────────────────────────────────────────
+  let pendingConfirm = null;
+  function confirmDialog(title, text, onOk){
+    $('#confirm-title').textContent = title;
+    $('#confirm-text').innerHTML = text;
+    pendingConfirm = onOk;
+    $('#confirm-box').classList.add('is-open');
+  }
+  function confirmOk(){ const f = pendingConfirm; pendingConfirm = null; $('#confirm-box').classList.remove('is-open'); if (f) f(); }
+  function confirmCancel(){ pendingConfirm = null; $('#confirm-box').classList.remove('is-open'); }
+  function confirm(title, text, onOk){ confirmDialog(title, text, onOk); }
+
+  function resolveAlert(id, stationName){
+    confirmDialog('Resolver alerta?',
+      `Confirma resolução do alerta em <b>${stationName}</b>? Esta acção fica no audit trail.`,
+      async () => {
+        await fetchJSON(`/api/alerts/${id}/resolve`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({note:'Resolvido via UI', resolved_by:'U01', confirmed:true}) });
+        refreshAll();
+      });
+  }
+
+  function saveThreshold(key, value){
+    confirmDialog('Guardar parâmetro?',
+      `Alterar <b>${key}</b> para <b>${value}</b>?<br><br>No modo demo, a alteração fica no audit trail (o config.yaml persiste).`,
+      async () => {
+        await fetchJSON('/api/decisions', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({kind:'update_threshold', target:key, payload:{key,value}, confirmed:true}) });
+      });
+  }
+
+  // ── Connections (Definições · CSV pipeline) ───────────────
+  async function renderConnections(){
+    try {
+      const c = await fetchJSON('/api/connections');
+      const host = $('#conn-host'); if (!host) return;
+
+      const badge = (status) => {
+        const m = { connected: ['#6FAF82', 'Ligado'], awaiting: ['#D97706', 'À espera'] };
+        const [color, text] = m[status] || ['#8FA896', status];
+        return `<span style="display:inline-flex;align-items:center;gap:6px;font:500 10.5px 'DM Mono',monospace;color:${color}">
+          <span style="width:7px;height:7px;border-radius:50%;background:${color};box-shadow:0 0 0 3px ${color}22"></span>
+          ${text.toUpperCase()}
+        </span>`;
+      };
+
+      let html = `
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            ${c.pipelines.map(p => `
+              <div style="padding:14px 16px;background:var(--surface-soft);border-radius:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                  <div style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:18px;text-transform:capitalize">${p.source}</div>
+                  ${badge(p.status)}
+                </div>
+                <div style="font-size:10.5px;color:var(--ink-hint);line-height:1.5">
+                  Colunas esperadas · <span style="font-family:'DM Mono',monospace;color:var(--secondary)">${p.schema.join(' · ')}</span>
+                </div>
+                <div style="margin-top:8px;font:500 11px 'DM Mono',monospace;color:var(--secondary)">
+                  ${p.files_processed} processados · ${p.files_pending} pendentes
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div style="padding:14px 16px;background:var(--surface-soft);border-radius:12px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+              <div class="rail__section-title">Drop-zone</div>
+              <div style="font:500 10px 'DM Mono',monospace;color:var(--ink-hint)">${c.inbox_path}</div>
+            </div>
+            <label id="conn-drop" style="display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px;border:2px dashed var(--hairline);border-radius:10px;cursor:pointer;transition:border-color .2s,background .2s">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4A7C59" stroke-width="1.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              <div style="font-size:12.5px;color:var(--primary);font-weight:500">Clica para upload · ou arrasta um CSV</div>
+              <div style="font-size:10.5px;color:var(--ink-hint)">Nomes: <span class="font-mono">preference_*.csv</span> · <span class="font-mono">primavera_*.csv</span></div>
+              <input id="conn-file" type="file" accept=".csv" style="display:none">
+            </label>
+            <div id="conn-upload-status" style="margin-top:8px;font-size:11px;color:var(--ink-hint);min-height:16px"></div>
+          </div>
+
+          <div style="padding:14px 16px;background:var(--surface-soft);border-radius:12px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+              <div class="rail__section-title">Últimos processados</div>
+              <div style="font:500 10px 'DM Mono',monospace;color:var(--ink-hint)">${c.totals.events.toLocaleString('pt-PT')} eventos · ${c.totals.orders} encomendas</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto">
+              ${c.processed_files.length === 0
+                ? '<div style="font-size:11px;color:var(--ink-hint);padding:4px">Nenhum ficheiro processado ainda.</div>'
+                : c.processed_files.map(f => `
+                    <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:6px 10px;background:#fff;border-radius:7px;font-family:'DM Mono',monospace;font-size:10.5px">
+                      <span style="color:var(--primary)">${f.name}</span>
+                      <span style="color:var(--ink-hint)">${f.size_kb} KB</span>
+                      <span style="color:var(--tertiary)">✓</span>
+                    </div>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+      host.innerHTML = html;
+
+      // Wire upload
+      const fileInput = $('#conn-file');
+      const drop = $('#conn-drop');
+      const status = $('#conn-upload-status');
+      if (fileInput && drop){
+        fileInput.addEventListener('change', async () => {
+          const f = fileInput.files[0]; if (!f) return;
+          status.textContent = 'A enviar ' + f.name + '...';
+          const fd = new FormData(); fd.append('file', f);
+          try {
+            const r = await fetch('/api/connections/upload', { method:'POST', body: fd });
+            if (!r.ok){ status.textContent = 'Erro · ' + (await r.text()); status.style.color='var(--red)'; return; }
+            const res = await r.json();
+            status.textContent = `✓ ${f.name} · ${res.result.rows || 0} linhas ingeridas`;
+            status.style.color = 'var(--tertiary)';
+            setTimeout(() => { renderConnections(); refreshAll(); }, 500);
+          } catch(e){ status.textContent = 'Erro: ' + e.message; status.style.color='var(--red)'; }
+          fileInput.value = '';
+        });
+        drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor='var(--primary)'; drop.style.background='#EDF4EF'; });
+        drop.addEventListener('dragleave', () => { drop.style.borderColor=''; drop.style.background=''; });
+        drop.addEventListener('drop', e => {
+          e.preventDefault(); drop.style.borderColor=''; drop.style.background='';
+          const f = e.dataTransfer.files[0]; if (f){ fileInput.files = e.dataTransfer.files; fileInput.dispatchEvent(new Event('change')); }
+        });
+      }
+    } catch(e){ console.error(e); }
+  }
+
+  // ── Export CSV (Python-generated, downloadable) ────────────
+  async function renderExport(){
+    try {
+      const list = await fetchJSON('/api/export');
+      const host = $('#export-host'); if (!host) return;
+      host.innerHTML = list.map(e => `
+        <button class="export-row" data-key="${e.key}">
+          <div class="export-row__left">
+            <div class="export-row__label">${e.label}</div>
+            <div class="export-row__desc">${e.desc}</div>
+          </div>
+          <div class="export-row__right">
+            <span class="export-row__count">${e.rows.toLocaleString('pt-PT')}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+        </button>
+      `).join('');
+      $$('.export-row', host).forEach(btn => {
+        btn.addEventListener('click', () => downloadCSV(btn.dataset.key, list.find(x => x.key === btn.dataset.key)));
+      });
+    } catch(e){ console.error(e); }
+  }
+
+  async function downloadCSV(key, meta){
+    const btn = $(`.export-row[data-key="${key}"]`);
+    if (btn){ btn.classList.add('is-downloading'); }
+    try {
+      const r = await fetch(`/api/export/${key}`);
+      if (!r.ok) throw new Error(`${r.status}`);
+      const blob = await r.blob();
+      const cd = r.headers.get('content-disposition') || '';
+      const match = /filename="([^"]+)"/.exec(cd);
+      const fname = match ? match[1] : `hyline_${key}.csv`;
+      // Trigger download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      if (btn){ btn.classList.remove('is-downloading'); btn.classList.add('is-done'); setTimeout(() => btn.classList.remove('is-done'), 1400); }
+    } catch(e){
+      if (btn){ btn.classList.remove('is-downloading'); }
+      alert('Erro ao exportar: ' + e.message);
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // PROCUREMENT
+  // ══════════════════════════════════════════════════════════
+  function catLabel(cat){
+    return {perfis:'Perfis', vidro:'Vidro', ferragens:'Ferragens', consumiveis:'Consumíveis'}[cat] || cat;
+  }
+
+  async function renderProcurement(){
+    await Promise.all([loadCatalog(), loadCart()]);
+    $$('.chip-filter').forEach(btn => {
+      btn.onclick = () => {
+        $$('.chip-filter').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        procActiveCat = btn.dataset.cat;
+        loadCatalog();
+      };
+    });
+    const ecoChk = $('#eco-toggle-chk');
+    if (ecoChk) ecoChk.onchange = () => { procEcoOnly = ecoChk.checked; loadCatalog(); };
+  }
+
+  async function loadCatalog(){
+    const minSust = procEcoOnly ? 85 : 0;
+    let url = `/api/procurement/catalog?min_sustainability=${minSust}`;
+    if (procActiveCat) url += `&category=${procActiveCat}`;
+    try {
+      const items = await fetchJSON(url);
+      const grid = $('#catalog-grid'); if (!grid) return;
+      if (!items.length){
+        grid.innerHTML = '<div style="padding:24px;color:var(--ink-hint);font-size:12.5px">Sem itens com estes filtros.</div>';
+        return;
+      }
+      grid.innerHTML = '';
+      items.forEach(item => {
+        const ecoColor = item.sustainability_score >= 85 ? 'var(--tertiary)' : item.sustainability_score >= 70 ? 'var(--amber)' : 'var(--red)';
+        const certs = item.certifications ? item.certifications.split(',').map(c => `<span class="cert-tag">${c.trim()}</span>`).join('') : '';
+        const card = el('div', 'cat-card');
+        card.innerHTML = `
+          <div class="cat-card__head">
+            <span class="cat-card__cat">${catLabel(item.category)}</span>
+            <span class="score-pill" style="background:${ecoColor}22;color:${ecoColor};border:1px solid ${ecoColor}44">${item.sustainability_score}</span>
+          </div>
+          <div class="cat-card__name">${item.name}</div>
+          <div class="cat-card__supplier">${item.supplier_name}</div>
+          <div class="cat-card__row">
+            <span class="cat-card__price">${nf(item.price_eur,2)}€/${item.unit}</span>
+            <span class="cat-card__stock">${item.stock_level.toLocaleString('pt-PT')} un.</span>
+          </div>
+          <div class="cat-card__certs">${certs}</div>
+          <button class="btn btn--solid btn--sm" style="width:100%;margin-top:10px">+ Adicionar</button>`;
+        card.querySelector('button').addEventListener('click', () => addToCart(item.id));
+        grid.appendChild(card);
+      });
+    } catch(e){ console.error(e); }
+  }
+
+  async function addToCart(catalogId){
+    try {
+      await fetchJSON('/api/procurement/cart/add', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({catalog_id: catalogId, quantity: 1}),
+      });
+      loadCart();
+    } catch(e){ console.error(e); }
+  }
+
+  async function loadCart(){
+    try {
+      const items = await fetchJSON('/api/procurement/cart');
+      const list = $('#cart-list'); const countEl = $('#cart-count');
+      const totalEl = $('#cart-total'); const ecoEl = $('#cart-eco-score');
+      if (!list) return;
+      if (countEl) countEl.textContent = items.length;
+      if (!items.length){
+        list.innerHTML = '<div style="padding:14px 4px;color:var(--ink-hint);font-size:11.5px">Carrinho vazio.</div>';
+        if (totalEl) totalEl.textContent = '0,00€';
+        if (ecoEl)   ecoEl.textContent = '—';
+        return;
+      }
+      const total   = items.reduce((a, i) => a + i.subtotal_eur, 0);
+      const ecoAvg  = Math.round(items.reduce((a, i) => a + i.sustainability_score, 0) / items.length);
+      list.innerHTML = '';
+      items.forEach(item => {
+        const row = el('div', 'cart-item');
+        row.innerHTML = `
+          <div class="cart-item__info">
+            <div class="cart-item__name">${item.name}</div>
+            <div class="cart-item__meta">${item.quantity} ${item.unit} · ${nf(item.subtotal_eur,2)}€</div>
+          </div>
+          <button class="cart-item__remove" title="Remover">✕</button>`;
+        row.querySelector('button').addEventListener('click', () => removeFromCart(item.id));
+        list.appendChild(row);
+      });
+      if (totalEl) totalEl.textContent = nf(total,2) + '€';
+      if (ecoEl){
+        ecoEl.textContent = ecoAvg + '/100';
+        ecoEl.style.color = ecoAvg >= 85 ? 'var(--tertiary)' : 'var(--amber)';
+      }
+    } catch(e){ console.error(e); }
+  }
+
+  function removeFromCart(cartId){
+    confirmDialog('Remover do carrinho?', 'Remover este item do carrinho?',
+      async () => {
+        await fetch(`/api/procurement/cart/${cartId}`, {method:'DELETE'});
+        loadCart();
+      });
+  }
+
+  function clearCart(){
+    confirmDialog('Limpar carrinho?', 'Remover todos os itens? Esta acção não pode ser revertida.',
+      async () => {
+        const items = await fetchJSON('/api/procurement/cart');
+        await Promise.all(items.map(i => fetch(`/api/procurement/cart/${i.id}`, {method:'DELETE'})));
+        loadCart();
+      });
+  }
+
+  function checkout(){
+    confirmDialog('Confirmar compra?',
+      'Confirmar encomenda de todos os itens no carrinho? Esta acção fica no audit trail.',
+      async () => {
+        const r = await fetchJSON('/api/procurement/checkout', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({confirmed: true}),
+        });
+        loadCart();
+        if (r.ok) addAiMsg(`Encomenda registada · ${r.items} itens · ${nf(r.total_eur,2)}€ · score eco ${r.eco_score}/100.`, 'bot');
+      });
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // FLOATING ASSISTANT (⌘K)
+  // ══════════════════════════════════════════════════════════
+  async function updateAiStatus(){
+    try {
+      const u = await fetchJSON('/api/assistant/usage');
+      const el = $('#ai-status'); if (!el) return;
+      if (u.gemini_active){
+        el.textContent = `● Gemini 2.5 Flash · ${u.today.calls}/${u.daily_cap}`;
+        el.style.color = 'rgba(111,175,130,.9)';
+      } else {
+        el.textContent = '○ Modo offline · regras locais';
+        el.style.color = 'rgba(255,255,255,.5)';
+      }
+    } catch(_){ /* silent — panel still opens */ }
+  }
+
+  function toggleAssistant(){
+    const panel = $('#ai-panel'); if (!panel) return;
+    panel.classList.toggle('is-open');
+    if (panel.classList.contains('is-open')) {
+      updateAiStatus();
+      const inp = $('#ai-input'); if (inp) inp.focus();
+    }
+  }
+
+  function addAiMsg(text, who, actions){
+    const log = $('#ai-log'); if (!log) return;
+    const msg = el('div', 'ai-msg ai-msg--' + who);
+    msg.innerHTML = text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+    if (actions && actions.length){
+      const bar = el('div', 'ai-msg__actions');
+      actions.forEach(a => {
+        if (a.kind === 'open_view'){
+          const btn = el('button', 'btn btn--ghost btn--sm');
+          btn.textContent = a.label;
+          btn.onclick = () => { switchView(a.target); toggleAssistant(); };
+          bar.appendChild(btn);
+        }
+      });
+      msg.appendChild(bar);
+    }
+    log.appendChild(msg);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  async function aiAsk(question){
+    addAiMsg(question, 'user');
+    try {
+      const r = await fetchJSON('/api/assistant', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({question}),
+      });
+      addAiMsg(r.answer, 'bot', r.actions);
+    } catch(e){ addAiMsg('Erro · backend não respondeu.', 'bot'); }
+  }
+
+  function aiSend(){
+    const input = $('#ai-input'); if (!input) return;
+    const q = input.value.trim(); if (!q) return;
+    input.value = '';
+    aiAsk(q);
+  }
+
+  // ── Init ───────────────────────────────────────────────────
+  function init(){
+    $$('.nav__item').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
+
+    tickClock();
+    setInterval(tickClock, 1000);  // ← ticks every SECOND. m² value increments in real-time.
+
+    renderAgents();
+    renderPriorities();
+    renderTeam();
+    renderSustain();
+    renderConnections();
+    renderArchitecture();
+    renderExport();
+    refreshOptimiser();
+
+    addChatMsg('Olá. Experimenta perguntas como: <i>"desempenho global"</i> · <i>"pior estação"</i> · <i>"alertas abertos"</i> · <i>"produção hoje"</i>', 'bot');
+
+    // Greeting in assistant panel
+    addAiMsg('Olá! Usa os atalhos abaixo ou escreve uma pergunta. Pressiona <strong>⌘K</strong> para abrir/fechar.', 'bot');
+
+    // Keyboard: ⌘K opens assistant · Esc closes it
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k'){ e.preventDefault(); toggleAssistant(); }
+      if (e.key === 'Escape'){
+        const panel = $('#ai-panel');
+        if (panel && panel.classList.contains('is-open')) toggleAssistant();
+      }
+    });
+
+    refreshAll();
+    setInterval(refreshAll, REFRESH_MS);
+  }
+
+  return {
+    init, switchView,
+    selectStation, selectOrder, selectAlertStation, closeDetail,
+    confirm, confirmOk, confirmCancel,
+    resolveAlert, saveThreshold,
+    chatSend, refreshOptimiser, applyProposal,
+    refreshConnections: renderConnections,
+    toggleAssistant, updateAiStatus, aiAsk, aiSend,
+    addToCart, removeFromCart, clearCart, checkout, loadCart,
+  };
+})();
+
+window.App = App;
+document.addEventListener('DOMContentLoaded', () => {
+  App.init();
+  document.getElementById('confirm-ok').addEventListener('click', App.confirmOk);
+});
+
+</script>
+</body>
+</html>
