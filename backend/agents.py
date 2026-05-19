@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from datetime import datetime, timezone
 
 import numpy as np
@@ -235,14 +236,47 @@ class ChatbotAgent:
 # Agent 5 · ASSISTANT (floating panel · ⌘K · intent + actions)
 # ═══════════════════════════════════════════════════════════════════
 
-_SYSTEM_PROMPT = (
-    "És o assistente da HYLINE Intelligence, uma plataforma de monitorização "
-    "de produção de janelas em PVC. Respondes sempre em português europeu, "
-    "conciso e directo. Quando o utilizador pede acções (encomendar, abrir, "
-    "ver), invoca as ferramentas apropriadas. Nunca menciones jargão técnico "
-    "interno (F, P, D, alpha, scipy). Usa 'Desempenho' para qualidade global, "
-    "'cadência' para throughput, 'fricção' para distorção."
-)
+_SYSTEM_PROMPT = """És o assistente da HYLINE Intelligence — uma plataforma de
+monitorização de produção de janelas. O teu nome é simplesmente
+"Assistente".
+
+PERSONALIDADE
+- Fala como um colega inteligente e descontraído, não como um robot.
+- Tom: directo, caloroso, sem formalidades excessivas.
+- Podes fazer humor leve se a conversa pedir.
+- Nunca digas que és o Google, Gemini, ou um modelo de linguagem.
+- Se alguém perguntar quem és: "Sou o assistente da HYLINE. Conheço
+  esta fábrica melhor do que ninguém."
+
+INTELIGÊNCIA
+- Podes falar de qualquer assunto — mas tens contexto único sobre esta
+  fábrica, estas encomendas, estes operadores.
+- Quando tens dados relevantes, usa as ferramentas PRIMEIRO, depois
+  responde. Não inventes números.
+- Quando a pergunta é geral (conversa, opinião, curiosidade), responde
+  directamente sem chamar ferramentas.
+
+ACÇÕES
+- Se o utilizador quer ver algo → open_view() e menciona que navegaste.
+- Se quer encomendar → search_catalog() e mostra as opções.
+- Se quer saber o estado → get_station_status() ou global_kpis().
+- Nunca navegues sem o utilizador pedir. Não sejas intrusivo.
+
+ESTILO DE RESPOSTA
+- Máximo 4 linhas por resposta. Sem listas com asteriscos.
+- Usa português europeu natural. Podes usar "é que", "tipo", "pronto"
+  quando o registo for informal.
+- Se não souberes algo: diz que não sabes, sem drama.
+- Nunca mostres IDs técnicos, pesos, ou termos internos do sistema."""
+
+
+def _clean(text: str) -> str:
+    """Remove markdown formatting so chat bubbles render plain text."""
+    text = re.sub(r'\*\*(.*?)\*\*', r'\1', text)
+    text = re.sub(r'\*(.*?)\*',     r'\1', text)
+    text = re.sub(r'^\s*[\*\-]\s+', '',   text, flags=re.MULTILINE)
+    text = re.sub(r'\n{3,}',        '\n\n', text)
+    return text.strip()
 
 
 class AssistantAgent:
@@ -284,7 +318,10 @@ class AssistantAgent:
         else:
             result = self._answer_rules(question, context)
 
-        # 6. Persist assistant response
+        # 6. Strip markdown from rules-path answers (Gemini path already cleaned)
+        result["answer"] = _clean(result["answer"])
+
+        # 7. Persist assistant response
         dlayer.conv_add_message(
             conversation_id, "assistant", result["answer"],
             tool_calls=result.get("tool_calls"),
@@ -360,8 +397,10 @@ class AssistantAgent:
             _tool_calls.append({"name": name, "args": dict(args)})
             if name == "open_view":
                 t = str(args.get("target", "home"))
-                _actions.append({"kind": "open_view", "target": t, "label": f"Abrir {t}"})
-                return {"ok": True, "navigated_to": t}
+                action = {"kind": "open_view", "target": t, "label": f"Abrir {t}"}
+                _actions.append(action)
+                log.debug("open_view called → %s (actions so far: %d)", t, len(_actions))
+                return {"ok": True, "navigated_to": t, "_action": action}
             if name == "search_catalog":
                 items = dlayer.fetch_catalog(
                     category=str(args["category"]) if args.get("category") else None,
@@ -407,12 +446,23 @@ class AssistantAgent:
             fn_calls = [p.function_call for p in (response.candidates[0].content.parts or []) if p.function_call]
             if not fn_calls:
                 break
-            # Feed results back
+            # Feed results back — capture each result and scan for _action
             contents.append(response.candidates[0].content)
-            contents.append(types.Content(role="user", parts=[
-                types.Part(function_response=types.FunctionResponse(name=fc.name, response=_exec(fc.name, dict(fc.args))))
-                for fc in fn_calls
-            ]))
+            fn_parts = []
+            for fc in fn_calls:
+                result = _exec(fc.name, dict(fc.args))
+                if "_action" in result and result["_action"] not in _actions:
+                    _actions.append(result["_action"])
+                    log.debug("_action collected from %s: %s", fc.name, result["_action"])
+                fn_parts.append(types.Part(function_response=types.FunctionResponse(name=fc.name, response=result)))
+            contents.append(types.Content(role="user", parts=fn_parts))
+
+        # Log finish reason for debugging empty responses
+        if response:
+            for cand in (response.candidates or []):
+                reason = getattr(cand, "finish_reason", None)
+                log.debug("Gemini finish_reason=%s text_len=%s fn_calls_executed=%d",
+                          reason, len(response.text or ""), len(_tool_calls))
 
         # Cost accounting
         um = response.usage_metadata if response else None
@@ -421,8 +471,21 @@ class AssistantAgent:
         cost = (in_tok * c.ai.gemini_input_usd_per_m + out_tok * c.ai.gemini_output_usd_per_m) / 1_000_000
         dlayer.log_assistant_call(c.ai.gemini_model, in_tok, out_tok, round(cost, 8))
 
+        raw_answer = (response.text if response else None) or ""
+        if not raw_answer:
+            # Gemini produced no text — synthesise a minimal acknowledgment
+            if _actions:
+                t = _actions[0]["target"]
+                raw_answer = f"A navegar para {t}."
+            elif _tool_calls:
+                raw_answer = "Concluído."
+            else:
+                # Truly empty — fall back to rules so user always gets an answer
+                log.warning("Gemini returned empty response for: %s", question[:80])
+                return self._answer_rules(question, context)
+
         return {
-            "answer":      (response.text if response else None) or "Sem resposta do assistente.",
+            "answer":      _clean(raw_answer),
             "actions":     _actions,
             "tool_calls":  _tool_calls,
         }
@@ -434,6 +497,25 @@ class AssistantAgent:
         from .engine import global_kpis
 
         q = (question or "").lower().strip()
+
+        # Navigation shortcuts — explicit view requests
+        _NAV = [
+            (["procurement", "catálogo sustent", "catálog"],      "procurement", "Abrir Procurement"),
+            (["alertas", "alerta", "avaria"],                      "alerts",      "Ver Alertas"),
+            (["ação", "agentes", "otimizador", "reatribu"],        "action",      "Abrir Ação"),
+            (["escala", "mercado", "tendência"],                   "scale",       "Ver Escala"),
+            (["sustentabilidade"],                                 "sustain",     "Ver Sustentabilidade"),
+            (["definições", "definicoes", "parâmetros"],           "settings",    "Ver Definições"),
+            (["homepage", "início", "home"],                       "home",        "Ver Homepage"),
+        ]
+        nav_verbs = ["mostra", "abre", "vai para", "navega", "vai ao", "vai à", "ver o", "quero o", "quero ver"]
+        if any(v in q for v in nav_verbs):
+            for kws, target, label in _NAV:
+                if any(k in q for k in kws):
+                    return {
+                        "answer":  f"A navegar para {target}.",
+                        "actions": [{"kind": "open_view", "target": target, "label": label}],
+                    }
 
         # Procurement
         if any(k in q for k in ["encomendar", "comprar", "fornecedor", "vidro", "perfil", "ferrag", "vedante"]):
