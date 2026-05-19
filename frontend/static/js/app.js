@@ -154,6 +154,9 @@ const App = (() => {
       const fBadge = (isProd && live.afi_F != null)
         ? `<text class="station-metric" x="${cx}" y="${cy + 22}" style="font-weight:600">${Math.round(live.afi_F * 100)}%</text>`
         : '';
+      const perfBar = (isProd && live.afi_F != null && s.w > 60)
+        ? `<rect class="station-perf-bar" x="${s.x + 2}" y="${s.y + s.h - 5}" width="${Math.max(2, (s.w - 4) * live.afi_F)}" height="3" rx="1.5"/>`
+        : '';
       // Breathing dot for active stations
       const statusDot = (isProd && live.status && live.status !== 'idle')
         ? `<circle class="status-dot" cx="${s.x + s.w - 10}" cy="${s.y + 10}" r="4"
@@ -166,6 +169,7 @@ const App = (() => {
           <text class="station-label" x="${cx}" y="${cy - 4}">${s.name}</text>
           ${metric}
           ${fBadge}
+          ${perfBar}
           ${statusDot}
         </g>`;
     }).join('');
@@ -389,6 +393,7 @@ const App = (() => {
       else { np.style.display='none'; }
 
       buildTwinSVG($('#twin-host'));
+      renderLiveFeed();
       renderOrdersRail(orders);
       renderAlertsStrip(alerts);
       renderAlertsBoard(alerts);
@@ -485,6 +490,7 @@ const App = (() => {
         </div>
         <div style="margin-top:10px; display:flex; gap:6px; justify-content:flex-end">
           <button class="btn btn--ghost btn--sm" onclick="event.stopPropagation(); App.switchView('home'); setTimeout(()=>App.selectAlertStation('${a.station_id}'), 300)">Ver no Twin</button>
+          <button class="btn btn--ghost btn--sm" onclick="event.stopPropagation(); App.transferAlert(${a.id}, '${a.routed_to}')">↗ Transferir</button>
           <button class="btn btn--sm" onclick="event.stopPropagation(); App.resolveAlert(${a.id}, '${a.station_name.replace(/'/g,'')}')">Resolver</button>
         </div>
       `;
@@ -1285,6 +1291,118 @@ const App = (() => {
     }
   }
 
+  // ── Alert Transfer ─────────────────────────────────────────
+  function transferAlert(alertId, currentRole){
+    const roles = ['HST','DQ','Director','ChefeTurno'].filter(r => r !== currentRole);
+    const menu = el('div', 'transfer-menu');
+    menu.style.cssText = 'position:fixed;background:var(--surface);border:1px solid var(--hairline);border-radius:10px;box-shadow:0 8px 24px rgba(27,58,33,.15);padding:6px;z-index:300';
+    menu.innerHTML = roles.map(r => `<button class="btn btn--ghost btn--sm" style="display:block;width:100%;text-align:left;margin-bottom:2px" onclick="App._doTransfer(${alertId},'${r}',this.closest('.transfer-menu'))">${r}</button>`).join('');
+    document.body.appendChild(menu);
+    menu.style.top = '50%'; menu.style.left = '50%'; menu.style.transform = 'translate(-50%,-50%)';
+    const close = () => { if (menu.parentNode) menu.parentNode.removeChild(menu); };
+    setTimeout(() => document.addEventListener('click', close, {once:true}), 100);
+  }
+
+  async function _doTransfer(alertId, toRole, menuEl){
+    if (menuEl && menuEl.parentNode) menuEl.parentNode.removeChild(menuEl);
+    await fetchJSON(`/api/alerts/${alertId}/transfer`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({to_role: toRole}),
+    });
+    const toast = el('div');
+    toast.style.cssText = 'position:fixed;bottom:90px;right:24px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;z-index:400;animation:msgIn .3s ease-out';
+    toast.textContent = `Alerta transferido para ${toRole}`;
+    document.body.appendChild(toast);
+    setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 2000);
+    refreshAll();
+  }
+
+  // ── Mission 8: Import CSV ──────────────────────────────────
+  async function importFile(type, input){
+    const file = input.files[0]; if (!file) return;
+    const statusEl = $(`#import-${type}-status`);
+    if (statusEl) statusEl.textContent = 'A importar...';
+    const fd = new FormData(); fd.append('file', file);
+    try {
+      const r = await fetch(`/api/import/${type}`, { method: 'POST', body: fd });
+      const d = await r.json();
+      if (statusEl) statusEl.textContent = `✓ ${d.records} registos`;
+      setTimeout(() => refreshAll(), 500);
+    } catch(e) {
+      if (statusEl){ statusEl.textContent = 'Erro'; statusEl.style.color = 'var(--red)'; }
+    }
+    input.value = '';
+  }
+
+  // ── Mission 9: Role Switcher ───────────────────────────────
+  const ROLES = {
+    director: {av:'JM', name:'Joana Martins',  title:'Director Produção',   highlight:['Director']},
+    chefe:    {av:'CS', name:'Carlos Silva',    title:'Chefe de Turno',      highlight:['ChefeTurno']},
+    dq:       {av:'AF', name:'Ana Ferreira',    title:'Departamento Qualidade', highlight:['DQ']},
+    hst:      {av:'PR', name:'Pedro Rocha',     title:'HST',                 highlight:['HST']},
+  };
+  let currentRole = 'director';
+
+  function toggleRoleMenu(){
+    const m = $('#role-menu');
+    if (m) m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function setRole(role){
+    currentRole = role;
+    const r = ROLES[role];
+    const av = $('#role-avatar'); if (av) av.textContent = r.av;
+    const nm = $('#role-name');   if (nm) nm.textContent = r.name;
+    const ti = $('#role-title');  if (ti) ti.textContent = r.title;
+    const menu = $('#role-menu'); if (menu) menu.style.display = 'none';
+    localStorage.setItem('hyline_role', role);
+    // Highlight relevant alert columns
+    $$('.alerts-col').forEach(col => {
+      const title = col.querySelector('.alerts-col__title')?.textContent || '';
+      const active = role === 'director' || r.highlight.some(h => title.includes(h.replace('ChefeTurno','Chefe')));
+      col.style.opacity = active ? '1' : '0.45';
+    });
+    renderAlertsBoard(alertsLive);
+  }
+
+  document.addEventListener('click', e => {
+    const menu = $('#role-menu');
+    const btn  = $('#role-btn');
+    if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)){
+      menu.style.display = 'none';
+    }
+  });
+
+  // ── Mission 2: Live Feed ───────────────────────────────────
+  async function renderLiveFeed(){
+    try {
+      const events = await fetchJSON('/api/events?limit=20');
+      const host = $('#live-feed-list'); if (!host) return;
+      host.innerHTML = '';
+      if (!events.length){
+        host.innerHTML = '<div style="padding:14px;color:var(--ink-hint);font-size:11px">Sem eventos recentes.</div>';
+        return;
+      }
+      events.forEach(ev => {
+        const isOk   = ev.status === 'completed';
+        const isWarn = ['defect','rework'].includes(ev.status);
+        const isErr  = ['breakdown','safety'].includes(ev.status);
+        const statusCls = isOk ? 'ok' : isWarn ? 'warn' : 'err';
+        const statusLabel = {completed:'✓', defect:'NC', rework:'RW', breakdown:'AVA', safety:'SEG'}[ev.status] || ev.status;
+        const ts = ev.ts || ev.timestamp || ev.created_at || '';
+        const time = ts ? new Date(ts).toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'}) : '--:--';
+        const m2 = ev.area_m2 ? `${(+ev.area_m2).toFixed(2)}m²` : '';
+        const stationName = ev.station_name || ev.station_id || '—';
+        const row = el('div', `feed-event feed-event--${ev.status || 'completed'}`);
+        row.innerHTML = `
+          <span class="feed-time">${time}</span>
+          <div><div class="feed-station">${stationName}</div><div style="font-size:9px;color:var(--ink-hint)">${m2}</div></div>
+          <span class="feed-status feed-status--${statusCls}">${statusLabel}</span>`;
+        host.appendChild(row);
+      });
+    } catch(e){ /* silent */ }
+  }
+
   // ── Init ───────────────────────────────────────────────────
   function init(){
     $$('.nav__item').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
@@ -1322,6 +1440,10 @@ const App = (() => {
     updateDockStatus();
     setInterval(updateDockStatus, 30000);
 
+    // Restore saved role
+    const savedRole = localStorage.getItem('hyline_role');
+    if (savedRole && ROLES[savedRole]) setRole(savedRole);
+
     refreshAll();
     setInterval(refreshAll, REFRESH_MS);
   }
@@ -1336,6 +1458,8 @@ const App = (() => {
     addToCart, removeFromCart, clearCart, checkout, loadCart,
     dockSend, newConversation, deleteConversation,
     loadConversations, selectConversation, updateDockStatus,
+    transferAlert, _doTransfer,
+    importFile, toggleRoleMenu, setRole,
   };
 })();
 

@@ -54,12 +54,31 @@
         <svg class="nav__icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>Definições</span>
       </button>
-      <div class="nav__user">
-        <div class="nav__avatar">JM</div>
+      <div class="nav__user role-switcher" id="role-btn" onclick="App.toggleRoleMenu()">
+        <div class="nav__avatar" id="role-avatar">JM</div>
         <div class="nav__user-info">
-          <div class="nav__user-name">Joana Martins</div>
-          <div class="nav__user-role">Director Produção</div>
+          <div class="nav__user-name" id="role-name">Joana Martins</div>
+          <div class="nav__user-role" id="role-title">Director Produção</div>
         </div>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:auto;opacity:.4"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="role-menu" id="role-menu" style="display:none">
+        <button class="role-menu__item" onclick="App.setRole('director')">
+          <span class="role-menu__av" style="background:linear-gradient(135deg,#1B3A21,#4A7C59)">JM</span>
+          <span><div style="font-size:12px;font-weight:500">Joana Martins</div><div style="font-size:10px;color:var(--ink-hint)">Director Produção</div></span>
+        </button>
+        <button class="role-menu__item" onclick="App.setRole('chefe')">
+          <span class="role-menu__av" style="background:linear-gradient(135deg,#4A7C59,#6FAF82)">CS</span>
+          <span><div style="font-size:12px;font-weight:500">Carlos Silva</div><div style="font-size:10px;color:var(--ink-hint)">Chefe de Turno</div></span>
+        </button>
+        <button class="role-menu__item" onclick="App.setRole('dq')">
+          <span class="role-menu__av" style="background:linear-gradient(135deg,#C9821A,#E8A93A)">AF</span>
+          <span><div style="font-size:12px;font-weight:500">Ana Ferreira</div><div style="font-size:10px;color:var(--ink-hint)">Departamento Qualidade</div></span>
+        </button>
+        <button class="role-menu__item" onclick="App.setRole('hst')">
+          <span class="role-menu__av" style="background:linear-gradient(135deg,#C0392B,#E74C3C)">PR</span>
+          <span><div style="font-size:12px;font-weight:500">Pedro Rocha</div><div style="font-size:10px;color:var(--ink-hint)">HST</div></span>
+        </button>
       </div>
     </div>
   </nav>
@@ -144,7 +163,7 @@
               <div class="stage__legend-item" style="margin-left:14px; font-family:'DM Mono',monospace; letter-spacing:.1em">◼ 14 fiduciais AR</div>
             </div>
 
-            <!-- Detail drawer -->
+            <!-- Detail drawer  -->
             <aside class="detail" id="detail">
               <button class="detail__close" onclick="App.closeDetail()">✕</button>
               <div>
@@ -172,6 +191,17 @@
               </div>
             </aside>
           </div>
+
+          <!-- RIGHT COLUMN: Live events feed -->
+          <aside class="live-feed">
+            <div class="live-feed__head">
+              <div class="rail__section-title">Eventos em Tempo Real</div>
+              <div class="live-feed__dot"></div>
+            </div>
+            <div class="live-feed__list scroll" id="live-feed-list">
+              <div style="padding:14px;color:var(--ink-hint);font-size:11px">A carregar...</div>
+            </div>
+          </aside>
 
         </div>
       </section>
@@ -391,6 +421,33 @@
                 <button class="btn btn--ghost btn--sm" onclick="App.refreshConnections()">↻</button>
               </div>
               <div id="conn-host" style="margin-top:12px; flex:1; overflow-y:auto; min-height:0"></div>
+              <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--hairline)">
+                <div class="rail__section-title" style="margin-bottom:10px">Importar Dados</div>
+                <div style="display:flex; flex-direction:column; gap:8px">
+                  <div style="padding:10px 12px; background:var(--surface-soft); border-radius:8px">
+                    <div style="font-size:12px; font-weight:500; color:var(--primary); margin-bottom:4px">Primavera ERP · Encomendas</div>
+                    <div style="font-size:10px; color:var(--ink-hint); margin-bottom:8px">Ficheiro: primavera_orders.csv</div>
+                    <label style="cursor:pointer">
+                      <span class="btn btn--ghost btn--sm">Importar CSV</span>
+                      <input type="file" accept=".csv" style="display:none" onchange="App.importFile('orders', this)">
+                    </label>
+                    <span id="import-orders-status" style="font:500 10px 'DM Mono',monospace; color:var(--tertiary); margin-left:8px"></span>
+                  </div>
+                  <div style="padding:10px 12px; background:var(--surface-soft); border-radius:8px">
+                    <div style="font-size:12px; font-weight:500; color:var(--primary); margin-bottom:4px">Preference · Eventos de Produção</div>
+                    <div style="font-size:10px; color:var(--ink-hint); margin-bottom:8px">Ficheiro: preference_events.csv</div>
+                    <label style="cursor:pointer">
+                      <span class="btn btn--ghost btn--sm">Importar CSV</span>
+                      <input type="file" accept=".csv" style="display:none" onchange="App.importFile('events', this)">
+                    </label>
+                    <span id="import-events-status" style="font:500 10px 'DM Mono',monospace; color:var(--tertiary); margin-left:8px"></span>
+                  </div>
+                  <div style="padding:10px 12px; background:var(--surface-soft); border-radius:8px; opacity:.5">
+                    <div style="font-size:12px; font-weight:500; color:var(--primary); margin-bottom:2px">Google Sheets</div>
+                    <div style="font-size:10px; color:var(--ink-hint)">Em desenvolvimento &mdash; disponível Q3 2026</div>
+                  </div>
+                </div>
+              </div>
               <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--hairline)">
                 <div class="rail__section-title" style="margin-bottom:10px">Exportar Dados</div>
                 <div id="export-host" style="display:flex; flex-direction:column; gap:5px"></div>

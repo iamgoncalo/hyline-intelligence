@@ -78,7 +78,7 @@ button, input{ font-family: inherit; color: inherit; }
 .nav__icon{ width: 17px; height: 17px; stroke: var(--secondary); stroke-width: 1.6; fill: none; flex-shrink: 0; stroke-linecap: round; stroke-linejoin: round; transition: stroke .2s var(--ease); }
 .nav__item .nav__pill{ margin-left: auto; font: 500 10px 'DM Mono', monospace; padding: 1px 6px; border-radius: 999px; background: var(--red); color: #fff; min-width: 18px; text-align: center; }
 .nav__item.is-active .nav__pill{ background: #fff; color: var(--red); }
-.nav__footer{ border-top: 1px solid var(--hairline); padding-top: 14px; margin-top: 10px; }
+.nav__footer{ border-top: 1px solid var(--hairline); padding-top: 14px; margin-top: 10px; position: relative; }
 .nav__user{ display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer; transition: background .2s var(--ease); }
 .nav__user:hover{ background: var(--surface-soft); }
 .nav__avatar{ width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; letter-spacing: .05em; flex-shrink: 0; box-shadow: var(--shadow-1); }
@@ -109,7 +109,7 @@ button, input{ font-family: inherit; color: inherit; }
  * ══════════════════════════════════════════════════════════════════ */
 .home{
   position: absolute; inset: 0; display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 280px 1fr 240px;
   gap: 0;
   background: var(--bg);
 }
@@ -712,6 +712,57 @@ button, input{ font-family: inherit; color: inherit; }
 .view{ padding-bottom: 80px; }
 .view-pad{ padding-bottom: 80px; }
 
+/* ── Mission 6: micro-polish ── */
+.btn:hover{ transform: translateY(-1px); }
+.card:hover{ border-color: var(--tertiary); }
+#dock-input{ transition: width .3s var(--ease); }
+.twin .station-perf-bar{ fill: var(--tertiary); opacity:.7; }
+
+/* ── Mission 2: Live Feed ── */
+.live-feed{
+  border-left:1px solid var(--hairline); display:flex; flex-direction:column;
+  padding:16px 14px; min-height:0; overflow:hidden; background:var(--surface);
+}
+.live-feed__head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-shrink:0; }
+.live-feed__dot{ width:6px; height:6px; border-radius:50%; background:var(--tertiary); animation:breathe 2.4s ease-in-out infinite; }
+.live-feed__list{ flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:4px; }
+.feed-event{
+  padding:8px 10px; border-radius:8px; background:var(--surface-soft);
+  display:grid; grid-template-columns:auto 1fr auto; gap:8px; align-items:center;
+  font-size:10.5px; animation:feedIn .3s var(--ease-out);
+}
+.feed-event--completed{ border-left:2px solid var(--tertiary); }
+.feed-event--defect,.feed-event--rework{ border-left:2px solid var(--amber); }
+.feed-event--breakdown,.feed-event--safety{ border-left:2px solid var(--red); }
+.feed-time{ font:500 9px 'DM Mono',monospace; color:var(--ink-hint); }
+.feed-station{ font-weight:500; color:var(--primary); font-size:10px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.feed-status{ font:600 8.5px 'DM Mono',monospace; letter-spacing:.08em; text-transform:uppercase; }
+.feed-status--ok{ color:var(--tertiary); }
+.feed-status--warn{ color:var(--amber); }
+.feed-status--err{ color:var(--red); }
+@keyframes feedIn{ from{ opacity:0; transform:translateY(-4px); } to{ opacity:1; transform:none; } }
+
+/* ── Mission 9: Role Menu ── */
+.role-switcher{ cursor:pointer; }
+.role-menu{
+  position:absolute; bottom:100%; left:0; right:0;
+  background:var(--surface); border:1px solid var(--hairline);
+  border-radius:12px; margin-bottom:6px; padding:6px;
+  box-shadow:0 8px 24px rgba(27,58,33,.12); z-index:50;
+}
+.role-menu__item{
+  display:flex; align-items:center; gap:10px; width:100%;
+  padding:8px 10px; border-radius:8px; border:none;
+  background:transparent; cursor:pointer; text-align:left;
+  transition:background .15s var(--ease); font-family:inherit;
+}
+.role-menu__item:hover{ background:var(--surface-soft); }
+.role-menu__av{
+  width:28px; height:28px; border-radius:50%; color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font:600 10px 'DM Sans'; flex-shrink:0;
+}
+
 /* Mobile dock */
 @media (max-width: 900px){
   .dock{ width: calc(100vw - 20px); }
@@ -719,7 +770,8 @@ button, input{ font-family: inherit; color: inherit; }
 
 /* Hide on small */
 @media (max-width: 1100px){
-  .home{ grid-template-columns: 280px 1fr; }
+  .home{ grid-template-columns: 260px 1fr; }
+  .live-feed{ display: none; }
   .rail{ padding: 14px 14px 14px 20px; }
   .alerts-grid{ grid-template-columns: repeat(2, 1fr); }
 }

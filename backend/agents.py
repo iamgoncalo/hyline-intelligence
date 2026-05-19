@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import numpy as np
 
@@ -236,6 +236,41 @@ class ChatbotAgent:
 # Agent 5 · ASSISTANT (floating panel · ⌘K · intent + actions)
 # ═══════════════════════════════════════════════════════════════════
 
+_FACTORY_KNOWLEDGE = """
+CONHECIMENTO DA FÁBRICA HYLINE — Esposende, Portugal:
+
+LINHAS DE PRODUÇÃO:
+- Série de Correr: janelas deslizantes. Refs: SC-60, SC-70, SC-82.
+  Fases: Corte → Mecanização → Pré-montagem → Montagem → Colagem Vidro → Embalamento
+- Série de Abrir: janelas de batente. Refs: AB-58, AB-68, AB-78.
+  Mesmas 6 fases, linha paralela à Série Correr.
+Ala auxiliar: linha de ferro e projectos especiais.
+
+MÉTRICAS-CHAVE:
+- Target normal por estação: 2.5–3.5 m²/h
+- Desempenho saudável: >75% (Desempenho = eficiência composta)
+- Não conformidades aceitáveis: <3% das unidades
+
+FLUXO DE DECISÃO (cadeia de responsabilidade):
+- Avaria de equipamento → alerta HST → intervenção ≤30 min
+- Não conformidade / qualidade → alerta DQ → registo e análise de causa
+- Produção abaixo de target por >15 min → alerta Chefe de Turno → reatribuição
+- Qualquer escalada grave → Director de Produção (Filipe Gonçalves)
+
+OPERADORES EM TURNO:
+- Linha Correr: Carlos Silva, Ana Ferreira, Rui Martins
+- Linha Abrir: João Santos, Marta Costa, Beatriz Cruz
+- Turno tarde: Pedro Alves, Sofia Nunes, Miguel Rocha, Inês Lopes
+
+CONTEXTO AMBIENTAL — ESPOSENDE (Maio 2026):
+- Temperatura exterior: ~16°C, Humidade: 73%
+- Rede eléctrica Portugal: 71% renováveis → ~0.118 kgCO₂/kWh (maio, hidroelétrica alta)
+- Verão aproxima-se: prever maior consumo de energia em Junho/Julho
+
+QUANDO TE PERGUNTAM SOBRE PRODUÇÃO: usa SEMPRE as ferramentas primeiro.
+NUNCA inventes números. Se não há dados: "Ainda sem dados para este período."
+"""
+
 _SYSTEM_PROMPT = """És o assistente da HYLINE Intelligence — uma plataforma de
 monitorização de produção de janelas. O teu nome é simplesmente
 "Assistente".
@@ -255,6 +290,8 @@ INTELIGÊNCIA
   responde. Não inventes números.
 - Quando a pergunta é geral (conversa, opinião, curiosidade), responde
   directamente sem chamar ferramentas.
+""" + _FACTORY_KNOWLEDGE + """
+CONTEXTO (continua a partir daqui):
 
 ACÇÕES
 - Se o utilizador quer ver algo → open_view() e menciona que navegaste.
@@ -391,6 +428,19 @@ class AssistantAgent:
                 description="KPIs globais: m² produzidos hoje, Desempenho global %, alertas abertos.",
                 parameters=S(type=T.OBJECT, properties={}),
             ),
+            types.FunctionDeclaration(
+                name="station_m2_by_hour",
+                description="Devolve m² produzidos por hora numa estação nas últimas N horas. Útil para ver tendência de produção.",
+                parameters=S(type=T.OBJECT, properties={
+                    "station_id": S(type=T.STRING, description="ID da estação ex: ST-COR-01"),
+                    "hours": S(type=T.NUMBER, description="Número de horas a analisar (default 8)"),
+                }, required=["station_id"]),
+            ),
+            types.FunctionDeclaration(
+                name="worst_station",
+                description="Encontra a estação produtiva com pior Desempenho actual. Usa para responder a 'pior estação', 'mais crítica', 'maior problema'.",
+                parameters=S(type=T.OBJECT, properties={}),
+            ),
         ])
 
         def _exec(name: str, args: dict) -> dict:
@@ -423,6 +473,41 @@ class AssistantAgent:
             if name == "global_kpis":
                 from .engine import global_kpis as _k
                 return _k()
+            if name == "station_m2_by_hour":
+                from .data import connection
+                from .engine import _utcnow, _iso
+                import math
+                sid = str(args.get("station_id", ""))
+                hrs = int(args.get("hours", 8))
+                now = _utcnow()
+                result_hours, result_m2 = [], []
+                for h in range(hrs, 0, -1):
+                    ts_start = _iso(now - timedelta(hours=h))
+                    ts_end   = _iso(now - timedelta(hours=h-1))
+                    with connection() as conn:
+                        row = conn.execute(
+                            "SELECT COALESCE(SUM(area_m2),0) AS m2 FROM production_events "
+                            "WHERE station_id=? AND ts>=? AND ts<? AND status='completed'",
+                            (sid, ts_start, ts_end),
+                        ).fetchone()
+                    result_hours.append(f"{now.hour - h:02d}h")
+                    result_m2.append(round(float(row["m2"]), 2))
+                return {"station": sid, "hours": result_hours, "m2": result_m2, "total": sum(result_m2)}
+            if name == "worst_station":
+                snap = station_snapshot()
+                productive = [s for s in snap if s["target_m2_per_hour"] > 0 and s["afi_F"] is not None]
+                if not productive:
+                    return {"error": "sem dados de estações produtivas"}
+                worst = min(productive, key=lambda s: s["afi_F"])
+                return {
+                    "station_id": worst["id"],
+                    "name": worst["name"],
+                    "desempenho_pct": round(worst["afi_F"] * 100, 1),
+                    "status": worst["status"],
+                    "m2_per_hour": worst["m2_per_hour"],
+                    "target_m2_per_hour": worst["target_m2_per_hour"],
+                    "operators": worst.get("operators", []),
+                }
             return {"error": f"ferramenta desconhecida: {name}"}
 
         # Build contents: conversation history + current question

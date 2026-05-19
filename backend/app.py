@@ -94,6 +94,10 @@ class ConvRenameBody(BaseModel):
     title: str
 
 
+class AlertTransferBody(BaseModel):
+    to_role: str
+
+
 # ═══════════════════════════════════════════════════════════════════
 # App factory
 # ═══════════════════════════════════════════════════════════════════
@@ -204,6 +208,27 @@ def create_app() -> FastAPI:
         )
         return {"ok": True, "id": alert_id}
 
+    @app.patch("/api/alerts/{alert_id}/transfer")
+    def alert_transfer(alert_id: int, body: AlertTransferBody) -> dict:
+        to_role = body.to_role
+        valid_roles = {"HST", "DQ", "Director", "ChefeTurno"}
+        if to_role not in valid_roles:
+            raise HTTPException(400, f"Role inválido. Opções: {valid_roles}")
+        with dlayer.connection() as conn:
+            existing = conn.execute(
+                "SELECT a.id, s.name AS station_name FROM alerts a JOIN stations s ON s.id=a.station_id WHERE a.id=?",
+                (alert_id,),
+            ).fetchone()
+            if not existing:
+                raise HTTPException(404, "Alerta não encontrado")
+            conn.execute("UPDATE alerts SET routed_to=? WHERE id=?", (to_role, alert_id))
+        dlayer.record_decision(
+            member_id="U01", kind="transfer_alert",
+            target=str(alert_id),
+            payload=json.dumps({"to_role": to_role}, ensure_ascii=False),
+        )
+        return {"ok": True, "alert_id": alert_id, "to_role": to_role}
+
     @app.get("/api/production/hourly")
     def production_hourly() -> list[dict]:
         return engine.hourly_production_today()
@@ -284,6 +309,53 @@ def create_app() -> FastAPI:
             {"step": 7, "title": "UI actualiza ao segundo",    "actor": "frontend/static/js/app.js"},
         ]
         return {"backend_files": backend_files, "csv_files": csv_files, "flow": flow}
+
+    # ── Environment · Esposende / Minho ──────────────────────────
+    @app.get("/api/environment")
+    def environment() -> dict:
+        return engine.get_environmental_context()
+
+    # ── Live events feed (for homepage right column) ──────────────
+    @app.get("/api/events")
+    def events_feed(limit: int = 20) -> list[dict]:
+        with dlayer.connection() as conn:
+            rows = conn.execute(
+                "SELECT e.ts, s.name AS station_name, e.status, e.area_m2, "
+                "e.operator_id, e.order_id "
+                "FROM production_events e JOIN stations s ON s.id=e.station_id "
+                "ORDER BY e.ts DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        return [dict(r) for r in rows]
+
+    # ── Import endpoints (Mission 8) ──────────────────────────────
+    @app.post("/api/import/orders")
+    async def import_orders(file: UploadFile = File(...)) -> dict:
+        if not (file.filename or "").lower().endswith(".csv"):
+            raise HTTPException(400, "Só ficheiros CSV são aceites.")
+        inbox = Path(c.paths.inbox); inbox.mkdir(parents=True, exist_ok=True)
+        dest = inbox / "primavera_orders.csv"
+        with dest.open("wb") as out:
+            shutil.copyfileobj(file.file, out)
+        try:
+            res = dlayer.ingest_file(dest)
+        except Exception as e:
+            raise HTTPException(422, f"Falhou ingestão: {e}")
+        return {"ok": True, "records": res.get("rows", 0)}
+
+    @app.post("/api/import/events")
+    async def import_events(file: UploadFile = File(...)) -> dict:
+        if not (file.filename or "").lower().endswith(".csv"):
+            raise HTTPException(400, "Só ficheiros CSV são aceites.")
+        inbox = Path(c.paths.inbox); inbox.mkdir(parents=True, exist_ok=True)
+        dest = inbox / "preference_events.csv"
+        with dest.open("wb") as out:
+            shutil.copyfileobj(file.file, out)
+        try:
+            res = dlayer.ingest_file(dest)
+        except Exception as e:
+            raise HTTPException(422, f"Falhou ingestão: {e}")
+        return {"ok": True, "records": res.get("rows", 0)}
 
     # ── Sustainability ───────────────────────────────────────────
     @app.get("/api/sustainability")

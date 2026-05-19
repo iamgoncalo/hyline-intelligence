@@ -55,6 +55,8 @@ snapshots = {
     "/api/architecture":         get("/api/architecture"),
     "/api/procurement/catalog":  get("/api/procurement/catalog"),
     "/api/procurement/suppliers": get("/api/procurement/suppliers"),
+    "/api/events":               get("/api/events?limit=20"),
+    "/api/environment":          get("/api/environment"),
     # Chatbot pre-answers
     "__chat__": {
         "qual é o F global?":        post("/api/agents/chatbot", {"question": "qual é o F global?"}),
@@ -146,6 +148,15 @@ shim = """
       if (url.endsWith('/api/connections/upload') && opts && opts.method === 'POST'){
         return fakeResp({ok:true, result:{file:'(demo)', source:'demo', rows: Math.floor(Math.random()*50)+50}});
       }
+      // Live events feed (pre-cached, strip query param)
+      if (url === '/api/events' || url.startsWith('/api/events?')){
+        return fakeResp(SNAP['/api/events'] || []);
+      }
+      // Environment data
+      if (url === '/api/environment'){
+        return fakeResp(SNAP['/api/environment'] || {});
+      }
+
       // Assistant usage (always offline in standalone)
       if (url === '/api/assistant/usage'){
         return fakeResp({
