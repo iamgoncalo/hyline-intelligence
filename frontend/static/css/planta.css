@@ -607,6 +607,7 @@ button, input{ font-family: inherit; color: inherit; }
   font: 600 9px 'DM Mono', monospace; color: var(--tertiary);
   margin-right: 2px; opacity: .85; flex-shrink: 0; letter-spacing: .05em;
 }
+.dock__status.is-online{  color: var(--tertiary); animation: pulse 2.4s ease-in-out infinite; }
 .dock__status.is-offline{ color: var(--amber); }
 .dock__status.is-thinking{
   color: var(--primary);

@@ -56,20 +56,26 @@ const App = (() => {
   }
 
   // ── Navigation ─────────────────────────────────────────────
+  const VIEW_META = {
+    home:          {t:'Homepage',         s:'Produção',             i:'🏭', c:'var(--primary)'},
+    alerts:        {t:'Alertas',          s:'Monitorização',        i:'⚠',  c:'#C0392B'},
+    action:        {t:'Ação',             s:'4 Agentes',            i:'⚡', c:'var(--secondary)'},
+    scale:         {t:'Escala',           s:'Mercado & Estratégia', i:'📈', c:'#1793CE'},
+    procurement:   {t:'Procurement',      s:'Catálogo Sustentável', i:'📦', c:'#6B8E23'},
+    sustain:       {t:'Sustentabilidade', s:'Circularidade',        i:'🌱', c:'#2E7D32'},
+    conversations: {t:'Conversas',        s:'Histórico',            i:'💬', c:'var(--secondary)'},
+    settings:      {t:'Definições',       s:'Equipa & Parâmetros',  i:'⚙',  c:'var(--ink-hint)'},
+  };
+
   function switchView(name){
     $$('.nav__item').forEach(b => b.classList.toggle('is-active', b.dataset.view === name));
     $$('.view').forEach(v => v.classList.toggle('is-active', v.dataset.view === name));
-    const titles = {
-      home:          ['Homepage','Produção'],
-      alerts:        ['Alertas','Monitorização'],
-      action:        ['Ação','4 Agentes'],
-      scale:         ['Escala','Mercado & Estratégia'],
-      procurement:   ['Procurement','Catálogo Sustentável'],
-      sustain:       ['Sustentabilidade','Circularidade'],
-      conversations: ['Conversas','Histórico do Assistente'],
-      settings:      ['Definições','Equipa & Parâmetros'],
-    }[name] || ['—','—'];
-    $('#view-title').innerHTML = `${titles[0]} <span>·</span> ${titles[1]}`;
+    const m = VIEW_META[name] || {t:name, s:'', i:'', c:'var(--primary)'};
+    $('#view-title').innerHTML =
+      `${m.i} ${m.t} <span style="color:${m.c}">·</span> <span style="color:${m.c};font-size:.78em;letter-spacing:.04em">${m.s}</span>`;
+    // Per-view accent border
+    const host = $('.view-host');
+    if (host) host.style.borderLeft = `2px solid ${m.c}`;
     if (name === 'scale')         renderTrendsChart();
     if (name === 'settings')      { renderConnections(); renderArchitecture(); renderExport(); }
     if (name === 'procurement')   renderProcurement();
@@ -773,8 +779,19 @@ const App = (() => {
     input.value = '';
     addChatMsg(q, 'user');
     try {
-      const r = await fetchJSON('/api/agents/chatbot', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question:q}) });
+      const r = await fetchJSON('/api/assistant', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({question: q, conversation_id: null}),
+      });
       addChatMsg(r.answer, 'bot');
+      // Tool call chips
+      const log = $('#chat-log');
+      (r.tool_calls || []).forEach(tc => {
+        const chip = el('div', 'chat-msg chat-msg--bot');
+        chip.style.cssText = 'background:rgba(111,175,130,.1);border:1px solid rgba(111,175,130,.3);font:500 10.5px \'DM Mono\',monospace;padding:5px 12px;margin-top:2px';
+        chip.textContent = `↳ ${tc.name}`;
+        if (log){ log.appendChild(chip); log.scrollTop = log.scrollHeight; }
+      });
     } catch(e) { addChatMsg('Erro · backend não respondeu.', 'bot'); }
   }
 
@@ -1230,14 +1247,14 @@ const App = (() => {
       const u = await fetchJSON('/api/assistant/usage');
       if (u.gemini_active){
         dot.textContent = '●';
-        dot.className = 'dock__status';
-        dot.title = `Gemini 2.5 Flash · ${u.today.calls}/${u.daily_cap} hoje`;
+        dot.className = 'dock__status is-online';
+        dot.title = `Gemini 2.5 Flash · ${u.today.calls}/${u.daily_cap}`;
       } else {
         dot.textContent = '○';
         dot.className = 'dock__status is-offline';
-        dot.title = 'Modo regras locais · sem chave Gemini';
+        dot.title = 'Modo regras locais';
       }
-    } catch(_){ dot.textContent = '○'; dot.className = 'dock__status is-offline'; }
+    } catch(_){ dot.textContent = '○'; dot.className = 'dock__status is-offline'; dot.title = 'Sem ligação'; }
   }
 
   async function dockSend(){
@@ -1406,6 +1423,7 @@ const App = (() => {
   // ── Init ───────────────────────────────────────────────────
   function init(){
     $$('.nav__item').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
+    switchView('home');  // apply icon + accent border on initial load
 
     tickClock();
     setInterval(tickClock, 1000);  // ← ticks every SECOND. m² value increments in real-time.
