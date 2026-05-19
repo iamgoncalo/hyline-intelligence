@@ -300,13 +300,15 @@ def create_app() -> FastAPI:
              "produced_by": "ERP Primavera"},
         ]
         flow = [
-            {"step": 1, "title": "CSV cai em data/inbox/",     "actor": "Sistema externo / Drag-drop UI"},
+            {"step": 1, "title": "CSV cai em data/inbox/",     "actor": "Primavera ERP / Preference"},
             {"step": 2, "title": "Watcher detecta + ingere",   "actor": "backend/data.py"},
             {"step": 3, "title": "SQLite armazena",            "actor": "data/hyline.db"},
             {"step": 4, "title": "Engine recalcula KPIs",      "actor": "backend/engine.py"},
             {"step": 5, "title": "Agentes processam alertas",  "actor": "backend/agents.py"},
-            {"step": 6, "title": "API serve para o dashboard", "actor": "backend/app.py"},
-            {"step": 7, "title": "UI actualiza ao segundo",    "actor": "frontend/static/js/app.js"},
+            {"step": 6, "title": "Gemini responde perguntas",  "actor": "Gemini 2.5 Flash · API"},
+            {"step": 7, "title": "API serve para o dashboard", "actor": "backend/app.py · FastAPI"},
+            {"step": 8, "title": "UI actualiza ao segundo",    "actor": "frontend/js/app.js"},
+            {"step": 9, "title": "Deploy em Railway",          "actor": "railway.app · auto-deploy"},
         ]
         return {"backend_files": backend_files, "csv_files": csv_files, "flow": flow}
 

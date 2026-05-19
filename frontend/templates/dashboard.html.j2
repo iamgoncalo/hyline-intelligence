@@ -126,6 +126,16 @@
                 <div class="kpi-card__value" id="k-alerts">—</div>
                 <div class="kpi-card__delta" id="k-alerts-routed">—</div>
               </div>
+              <div class="kpi-card">
+                <div class="kpi-card__label">Temp. Exterior</div>
+                <div class="kpi-card__value"><span id="k-temp">—</span><span class="kpi-card__unit">°C</span></div>
+                <div class="kpi-card__delta">Esposende</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-card__label">CO₂ Rede PT</div>
+                <div class="kpi-card__value"><span id="k-co2grid">—</span><span class="kpi-card__unit">kg/kWh</span></div>
+                <div class="kpi-card__delta" id="k-renew">—</div>
+              </div>
             </div>
 
             <div class="rail__section">
@@ -243,7 +253,12 @@
               <div class="scroll" id="optimiser-list" style="flex:1; display:flex; flex-direction:column; gap:8px"></div>
             </div>
             <div class="card chatbot">
-              <div class="rail__section-title">Assistente · linguagem natural</div>
+              <div class="rail__section-title">Assistente Gemini · linguagem natural</div>
+              <div class="action-suggestions" id="action-chips">
+                <button class="action-chip" onclick="App.chatChip('qual a pior estação?')">pior estação</button>
+                <button class="action-chip" onclick="App.chatChip('produção de hoje')">produção hoje</button>
+                <button class="action-chip" onclick="App.chatChip('alertas em aberto')">alertas abertos</button>
+              </div>
               <div class="chatbot__log" id="chat-log"></div>
               <div class="chatbot__input">
                 <input id="chat-input" placeholder="Ex: desempenho global" onkeydown="if(event.key==='Enter') App.chatSend()">
@@ -278,6 +293,20 @@
             </div>
 
           </div>
+          <div class="card" style="margin-top:14px; padding:18px 24px">
+            <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px">
+              <div class="rail__section-title">Contexto Ambiental · Esposende</div>
+              <div style="font:500 9.5px 'DM Mono',monospace; color:var(--ink-hint)" id="env-source">—</div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px" id="env-grid">
+              <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--ink-hint)">Temperatura</div><div style="font:600 22px 'DM Mono',monospace;color:var(--primary)" id="env-temp">—</div></div>
+              <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--ink-hint)">Humidade</div><div style="font:600 22px 'DM Mono',monospace;color:var(--primary)" id="env-hum">—</div></div>
+              <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--ink-hint)">CO₂ Rede PT</div><div style="font:600 22px 'DM Mono',monospace;color:var(--primary)" id="env-co2">—</div></div>
+              <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--ink-hint)">Renováveis</div><div style="font:600 22px 'DM Mono',monospace;color:var(--tertiary)" id="env-ren">—</div></div>
+              <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--ink-hint)">Horas Sol</div><div style="font:600 22px 'DM Mono',monospace;color:var(--primary)" id="env-sun">—</div></div>
+              <div><div style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--ink-hint)">Dias Chuva</div><div style="font:600 22px 'DM Mono',monospace;color:var(--primary)" id="env-rain">—</div></div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -291,7 +320,10 @@
               <button class="chip-filter" data-cat="vidro">Vidro</button>
               <button class="chip-filter" data-cat="ferragens">Ferragens</button>
               <button class="chip-filter" data-cat="consumiveis">Consumíveis</button>
-              <label class="eco-toggle"><input type="checkbox" id="eco-toggle-chk"> Eco &ge;85</label>
+              <label class="eco-toggle" title="Filtrar apenas itens com score de sustentabilidade ≥85">
+                <input type="checkbox" id="eco-toggle-chk">
+                <span class="eco-toggle__pill">Apenas eco ≥85</span>
+              </label>
             </div>
             <div class="catalog-grid scroll" id="catalog-grid"></div>
           </div>
@@ -337,6 +369,24 @@
               <div style="font-size:10.5px; color:var(--ink-hint); margin-top:8px">meta: +<span id="s-reuse-target">—</span>% vs baseline</div>
             </div>
           </div>
+          <div style="margin-top:24px">
+            <div class="rail__section-title" style="margin-bottom:14px">Contexto Ambiental · <span id="sustain-month">—</span></div>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px" id="sustain-env-grid">
+              <div class="card" style="padding:16px 20px; text-align:center">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-hint);margin-bottom:8px">Temp. Exterior</div>
+                <div style="font:600 28px 'DM Mono',monospace;color:var(--primary)" id="senv-temp">—</div>
+              </div>
+              <div class="card" style="padding:16px 20px; text-align:center">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-hint);margin-bottom:8px">CO₂ Rede PT</div>
+                <div style="font:600 28px 'DM Mono',monospace;color:var(--primary)" id="senv-co2">—</div>
+              </div>
+              <div class="card" style="padding:16px 20px; text-align:center">
+                <div style="font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-hint);margin-bottom:8px">Renováveis PT</div>
+                <div style="font:600 28px 'DM Mono',monospace;color:var(--tertiary)" id="senv-ren">—</div>
+              </div>
+            </div>
+            <div style="font:500 9.5px 'DM Mono',monospace; color:var(--ink-hint); margin-top:8px" id="senv-source">—</div>
+          </div>
         </div>
       </section>
 
@@ -345,7 +395,10 @@
         <div class="conv-view">
           <div class="conv-list">
             <div class="conv-list__head">
-              <span class="conv-list__title">Conversas</span>
+              <div>
+                <span class="conv-list__title">Conversas</span>
+                <div style="font:500 9.5px 'DM Mono',monospace;color:var(--ink-hint);margin-top:2px" id="conv-gemini-status">—</div>
+              </div>
               <button class="conv-list__new" onclick="App.newConversation()" title="Nova conversa">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </button>

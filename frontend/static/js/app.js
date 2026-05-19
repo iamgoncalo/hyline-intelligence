@@ -76,7 +76,7 @@ const App = (() => {
     // Per-view accent border
     const host = $('.view-host');
     if (host) host.style.borderLeft = `2px solid ${m.c}`;
-    if (name === 'scale')         renderTrendsChart();
+    if (name === 'scale')         { renderTrendsChart(); renderEnvironment(); }
     if (name === 'settings')      { renderConnections(); renderArchitecture(); renderExport(); }
     if (name === 'procurement')   renderProcurement();
     if (name === 'conversations') loadConversations();
@@ -407,6 +407,13 @@ const App = (() => {
       // If detail is open, re-populate with fresh data
       if (selectedStationId) selectStation(selectedStationId);
 
+      // Environment KPI cards (Esposende weather + grid CO₂)
+      fetchJSON('/api/environment').then(env => {
+        const tempEl = $('#k-temp'); if (tempEl) tempEl.textContent = env.outdoor_temp_c;
+        const co2El = $('#k-co2grid'); if (co2El) co2El.textContent = env.co2_grid_kg_kwh;
+        const renewEl = $('#k-renew'); if (renewEl) renewEl.textContent = `${env.renewables_pct_2024}% renováveis`;
+      }).catch(()=>{});
+
       $('#last-refresh').textContent = 'sincronizado';
     } catch(e){
       console.error('refreshAll falhou:', e);
@@ -482,7 +489,9 @@ const App = (() => {
       if (!col) return;
       counts[a.routed_to] = (counts[a.routed_to]||0) + 1;
       const time = new Date(a.ts).toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' });
-      const card = el('div', 'alert-card');
+      const sev = a.severity || 2;
+      const sevClass = sev >= 4 ? 'sev-4' : sev >= 3 ? 'sev-3' : 'sev-2';
+      const card = el('div', `alert-card ${sevClass}`);
       card.innerHTML = `
         <div class="alert-card__head">
           <div class="alert-card__station">${a.station_name}</div>
@@ -577,6 +586,15 @@ const App = (() => {
       $('#s-reuse-target').textContent = s.targets.reuse_increase_pct;
       $('#s-co2-target').textContent = `meta: -${s.targets.carbon_reduction_pct}% vs baseline`;
     } catch(e) { console.error(e); }
+    fetchJSON('/api/environment').then(env => {
+      const months = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+      const mEl = $('#sustain-month'); if (mEl) mEl.textContent = `${months[env.month-1]} ${new Date().getFullYear()}`;
+      const s2 = (id,v) => { const el2 = $(`#${id}`); if (el2) el2.textContent = v; };
+      s2('senv-temp', `${env.outdoor_temp_c}°C`);
+      s2('senv-co2',  `${env.co2_grid_kg_kwh} kg/kWh`);
+      s2('senv-ren',  `${env.renewables_pct_2024}%`);
+      const srcEl = $('#senv-source'); if (srcEl) srcEl.textContent = env.data_source;
+    }).catch(()=>{});
   }
 
   async function refreshOptimiser(){
@@ -774,25 +792,54 @@ const App = (() => {
     log.appendChild(msg);
     log.scrollTop = log.scrollHeight;
   }
+
+  let _chatConvId = null;
+
+  function chatChip(q){
+    const input = $('#chat-input');
+    if (input){ input.value = q; App.chatSend(); }
+  }
+
   async function chatSend(){
     const input = $('#chat-input'); const q = input.value.trim(); if (!q) return;
     input.value = '';
     addChatMsg(q, 'user');
+    // Hide suggestion chips after first send
+    const chips = $('#action-chips'); if (chips) chips.style.display = 'none';
+    // Typing indicator
+    const log = $('#chat-log');
+    const typing = el('div', 'chat-msg chat-msg--bot chat-typing');
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    if (log){ log.appendChild(typing); log.scrollTop = log.scrollHeight; }
     try {
       const r = await fetchJSON('/api/assistant', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({question: q, conversation_id: null}),
+        body: JSON.stringify({question: q, conversation_id: _chatConvId}),
       });
+      _chatConvId = r.conversation_id;
+      if (typing.parentNode) typing.parentNode.removeChild(typing);
       addChatMsg(r.answer, 'bot');
       // Tool call chips
-      const log = $('#chat-log');
       (r.tool_calls || []).forEach(tc => {
         const chip = el('div', 'chat-msg chat-msg--bot');
         chip.style.cssText = 'background:rgba(111,175,130,.1);border:1px solid rgba(111,175,130,.3);font:500 10.5px \'DM Mono\',monospace;padding:5px 12px;margin-top:2px';
         chip.textContent = `↳ ${tc.name}`;
         if (log){ log.appendChild(chip); log.scrollTop = log.scrollHeight; }
       });
-    } catch(e) { addChatMsg('Erro · backend não respondeu.', 'bot'); }
+      // Action buttons
+      (r.actions || []).forEach(a => {
+        if (a.kind === 'open_view'){
+          const btn = el('button','btn btn--ghost btn--sm');
+          btn.style.marginTop = '6px';
+          btn.textContent = a.label;
+          btn.onclick = () => switchView(a.target);
+          if (log){ log.appendChild(btn); log.scrollTop = log.scrollHeight; }
+        }
+      });
+    } catch(e) {
+      if (typing.parentNode) typing.parentNode.removeChild(typing);
+      addChatMsg('Erro · assistente não respondeu.', 'bot');
+    }
   }
 
   // ── Confirm dialog ─────────────────────────────────────────
@@ -1174,7 +1221,7 @@ const App = (() => {
   function renderConvList(items){
     const host = $('#conv-list-items'); if (!host) return;
     if (!items.length){
-      host.innerHTML = '<div class="conv-list__empty">Sem conversas ainda.<br>Escreve na barra em baixo.</div>';
+      host.innerHTML = '<div class="conv-list__empty">Ainda sem conversas.<br>Começa a perguntar na barra em baixo.</div>';
       return;
     }
     host.innerHTML = '';
@@ -1205,7 +1252,7 @@ const App = (() => {
         selectConversation(items[0].id);
       } else {
         const host = $('#conv-stream');
-        if (host) host.innerHTML = '<div class="conv-stream__empty">Seleciona uma conversa ou inicia uma nova na barra em baixo</div>';
+        if (host) host.innerHTML = '<div class="conv-stream__empty">Pergunta algo à fábrica.</div>';
       }
     } catch(e){ console.error(e); }
   }
@@ -1225,7 +1272,7 @@ const App = (() => {
     __chat.currentConvId = null;
     if (document.querySelector('.view.is-active[data-view="conversations"]')){
       const host = $('#conv-stream');
-      if (host) host.innerHTML = '<div class="conv-stream__empty">Escreve na barra em baixo para começar</div>';
+      if (host) host.innerHTML = '<div class="conv-stream__empty">Pergunta algo à fábrica.</div>';
       renderConvList(__chat.conversations);
     }
     const inp = $('#dock-input'); if (inp){ inp.focus(); }
@@ -1254,6 +1301,8 @@ const App = (() => {
         dot.className = 'dock__status is-offline';
         dot.title = 'Modo regras locais';
       }
+      const convStatus = $('#conv-gemini-status');
+      if (convStatus) convStatus.textContent = u.gemini_active ? `Gemini 2.5 Flash · ${u.today.calls}/${u.daily_cap}` : 'Modo regras';
     } catch(_){ dot.textContent = '○'; dot.className = 'dock__status is-offline'; dot.title = 'Sem ligação'; }
   }
 
@@ -1420,6 +1469,21 @@ const App = (() => {
     } catch(e){ /* silent */ }
   }
 
+  // ── Environment widget ─────────────────────────────────────
+  async function renderEnvironment(){
+    try {
+      const e = await fetchJSON('/api/environment');
+      const s = (id, val) => { const el2 = $(`#${id}`); if (el2) el2.textContent = val; };
+      s('env-temp', `${e.outdoor_temp_c}°C`);
+      s('env-hum',  `${e.outdoor_humidity_pct}%`);
+      s('env-co2',  `${e.co2_grid_kg_kwh}`);
+      s('env-ren',  `${e.renewables_pct_2024}%`);
+      s('env-sun',  `${e.solar_hours_day}h`);
+      s('env-rain', `${e.rain_days_month}d`);
+      const src = $('#env-source'); if (src) src.textContent = e.data_source;
+    } catch(e){ /* silent */ }
+  }
+
   // ── Init ───────────────────────────────────────────────────
   function init(){
     $$('.nav__item').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
@@ -1471,13 +1535,14 @@ const App = (() => {
     selectStation, selectOrder, selectAlertStation, closeDetail,
     confirm, confirmOk, confirmCancel,
     resolveAlert, saveThreshold,
-    chatSend, refreshOptimiser, applyProposal,
+    chatSend, chatChip, refreshOptimiser, applyProposal,
     refreshConnections: renderConnections,
     addToCart, removeFromCart, clearCart, checkout, loadCart,
     dockSend, newConversation, deleteConversation,
     loadConversations, selectConversation, updateDockStatus,
     transferAlert, _doTransfer,
     importFile, toggleRoleMenu, setRole,
+    renderEnvironment,
   };
 })();
 
