@@ -7,6 +7,14 @@
 <div class="home-grid">
   <!-- LEFT: HYLINE metrics -->
   <div class="home-metrics">
+    <!-- Live clock -->
+    <div style="margin-bottom:var(--space-sm);">
+      <div id="home-clock" style="font-family:'DM Mono',monospace;font-size:42px;color:var(--primary);line-height:1;letter-spacing:-0.02em;">--:--:--</div>
+      <div id="home-shift" style="font-size:11px;color:var(--ink-hint);margin-top:4px;"></div>
+      <div id="home-date" style="font-size:12px;color:var(--ink-hint);margin-top:2px;"></div>
+    </div>
+    <!-- Mini alert summary -->
+    <div id="home-alert-summary" style="display:none;padding:8px 12px;border-radius:8px;font-size:12px;margin-bottom:var(--space-sm);"></div>
     <div class="metric-row">
       <span class="metric-row__label">M² Hoje</span>
       <span class="metric-row__value" id="k-m2today" data-live="m2_today">--</span>
@@ -37,9 +45,15 @@
     </div>
   </div>
 
-  <!-- CENTRE: Factory twin -->
-  <div class="home-twin">
-    <div class="twin-container twin" id="twin-host"></div>
+  <!-- CENTRE: Factory twin with mode switcher -->
+  <div class="home-twin" style="display:flex;flex-direction:column;overflow:hidden;">
+    <div id="twin-modes" style="display:flex;gap:6px;padding-bottom:8px;flex-shrink:0;">
+      <button class="twin-mode-btn is-active" onclick="TwinMode.set(this,'mapa')">Mapa</button>
+      <button class="twin-mode-btn" onclick="TwinMode.set(this,'calor')">Calor</button>
+      <button class="twin-mode-btn" onclick="TwinMode.set(this,'fluxo')">Fluxo</button>
+      <button class="twin-mode-btn" onclick="TwinMode.set(this,'metricas')">Métricas</button>
+    </div>
+    <div class="twin-container twin" id="twin-host" style="flex:1;overflow:hidden;"></div>
   </div>
 
   <!-- RIGHT: Live events feed -->
@@ -58,6 +72,7 @@
   window.STATIONS_CFG    = {{ stations_json | safe }};
   window.MEMBERS_CFG     = {{ members_json | safe }};
 </script>
+<div id="twin-tooltip" style="display:none;position:fixed;background:#fff;border:1px solid var(--hairline);border-radius:10px;padding:10px 14px;font-size:12px;z-index:200;max-width:220px;pointer-events:none;box-shadow:0 4px 16px rgba(27,58,33,0.1);"></div>
 {% endblock %}
 
 {% block scripts %}

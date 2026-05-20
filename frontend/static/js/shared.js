@@ -122,3 +122,23 @@ async function updateDockStatus() {
   } catch {}
 }
 setTimeout(updateDockStatus, 2000);
+
+// ── Universal confirm modal ──────────────────────────────────────
+window.confirm2 = function(title, body, onConfirm) {
+  const overlay = document.getElementById('modal-overlay');
+  if (!overlay) { if (confirm(title + '\n' + body)) onConfirm(); return; }
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').textContent = body;
+  overlay.style.display = 'flex';
+  const btn    = document.getElementById('modal-confirm');
+  const cancel = document.getElementById('modal-cancel');
+  const close  = () => { overlay.style.display = 'none'; };
+  // Clone to remove old listeners
+  const newBtn = btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn, btn);
+  const newCancel = cancel.cloneNode(true);
+  cancel.parentNode.replaceChild(newCancel, cancel);
+  document.getElementById('modal-confirm').onclick = () => { close(); onConfirm(); };
+  document.getElementById('modal-cancel').onclick  = close;
+  overlay.onclick = (e) => { if (e.target === overlay) close(); };
+};

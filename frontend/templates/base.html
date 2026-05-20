@@ -39,7 +39,8 @@
           <span class="user-name">Joana Martins</span>
           <span class="user-role">Director Produção</span>
         </div>
-        <a href="/logout" class="nav-item" style="border-top:1px solid var(--hairline);font-size:12px;color:var(--ink-hint);">Terminar sessão</a>
+        <a href="#" class="nav-item" style="border-top:1px solid var(--hairline);font-size:12px;color:var(--ink-hint);"
+           onclick="event.preventDefault();confirm2('Terminar sessão','Vai ser redireccionado para o ecrã de acesso.',()=>{window.location.href='/logout';})">Terminar sessão</a>
       </div>
     </nav>
     <main class="content">
@@ -67,6 +68,17 @@
     <button class="dock__send" id="dock-send">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
     </button>
+  </div>
+  <!-- Universal confirm modal (confirm2) -->
+  <div class="modal-overlay" id="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <p class="modal-title" id="modal-title">Tem a certeza?</p>
+      <p class="modal-body" id="modal-body"></p>
+      <div class="modal-actions">
+        <button class="modal-cancel" id="modal-cancel">Cancelar</button>
+        <button class="modal-confirm" id="modal-confirm">Confirmar</button>
+      </div>
+    </div>
   </div>
   <script src="/static/js/shared.js"></script>
   {% block scripts %}{% endblock %}

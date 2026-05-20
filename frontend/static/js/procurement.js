@@ -13,6 +13,123 @@ const TYPE_LABELS = {
   pivot:'Pivot', curved:'Curvo', screen:'Estore', facade:'Fachada', sliding_door:'Porta Deslizante',
 };
 
+const RAL_HEX = {
+  'RAL 9005': '#0a0a0a', 'RAL 7016': '#293133', 'RAL 9010': '#f4f4f0',
+  'RAL 9006': '#a5a5a5', 'RAL 8022': '#1a1a1a',
+};
+
+function renderProductSVG(product) {
+  const pmm = product.profile_mm || 40;
+  const profileLabel = `perfil visível: ${pmm}mm`;
+  const isWood = product.id === 'HYPIWOOD' || product.id === 'HYSTYLEWOOD';
+  const stroke = isWood ? '#8B6914' : 'var(--primary)';
+  const glass = `rgba(111,175,130,0.06)`;
+  const type = product.type;
+
+  if (type === 'sliding' || type === 'sliding_opening' || type === 'sliding_door') {
+    // Two sliding panels
+    const woodGrain = isWood ? `<line x1="30" y1="60" x2="130" y2="60" stroke="${stroke}" stroke-width="0.4" opacity="0.4"/>
+      <line x1="30" y1="80" x2="130" y2="80" stroke="${stroke}" stroke-width="0.4" opacity="0.4"/>
+      <line x1="30" y1="100" x2="130" y2="100" stroke="${stroke}" stroke-width="0.4" opacity="0.4"/>
+      <line x1="30" y1="120" x2="130" y2="120" stroke="${stroke}" stroke-width="0.4" opacity="0.4"/>
+      <line x1="140" y1="60" x2="260" y2="60" stroke="${stroke}" stroke-width="0.4" opacity="0.4"/>
+      <line x1="140" y1="80" x2="260" y2="80" stroke="${stroke}" stroke-width="0.4" opacity="0.4"/>
+      <line x1="140" y1="100" x2="260" y2="100" stroke="${stroke}" stroke-width="0.4" opacity="0.4"/>
+      <line x1="140" y1="120" x2="260" y2="120" stroke="${stroke}" stroke-width="0.4" opacity="0.4"/>` : '';
+    return `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="260" height="160" rx="2" stroke="${stroke}" stroke-width="1.5"/>
+      <rect x="25" y="25" width="120" height="150" rx="1" stroke="${stroke}" stroke-width="1"/>
+      <rect x="140" y="25" width="135" height="150" rx="1" stroke="${stroke}" stroke-width="1"/>
+      <rect x="26" y="26" width="118" height="148" fill="${glass}"/>
+      <rect x="141" y="26" width="133" height="148" fill="${glass}"/>
+      ${woodGrain}
+      <rect x="190" y="88" width="4" height="24" rx="2" fill="${stroke}"/>
+      <line x1="20" y1="12" x2="280" y2="12" stroke="var(--tertiary)" stroke-width="0.5"/>
+      <text x="150" y="9" text-anchor="middle" font-family="DM Mono" font-size="8" fill="var(--tertiary)">largura configurável</text>
+      <text x="150" y="195" text-anchor="middle" font-family="DM Mono" font-size="9" fill="var(--ink-hint)">${profileLabel}</text>
+    </svg>`;
+  }
+
+  if (type === 'opening') {
+    // Tilt-turn window with opening arc
+    return `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="260" height="160" rx="2" stroke="${stroke}" stroke-width="1.5"/>
+      <rect x="25" y="25" width="250" height="150" rx="1" fill="${glass}" stroke="${stroke}" stroke-width="1"/>
+      <circle cx="26" cy="40" r="3" fill="${stroke}"/>
+      <circle cx="26" cy="160" r="3" fill="${stroke}"/>
+      <rect x="266" y="88" width="4" height="24" rx="2" fill="${stroke}"/>
+      <path d="M 275 100 Q 220 55 150 26" stroke="var(--tertiary)" stroke-width="0.75" stroke-dasharray="4,3"/>
+      <path d="M 150 175 L 275 100" stroke="var(--tertiary)" stroke-width="0.75" stroke-dasharray="4,3"/>
+      <text x="150" y="195" text-anchor="middle" font-family="DM Mono" font-size="9" fill="var(--ink-hint)">${profileLabel}</text>
+    </svg>`;
+  }
+
+  if (type === 'pivot') {
+    // Tall pivot door with centre axis
+    const woodGrain2 = isWood ? `<line x1="95" y1="30" x2="95" y2="175" stroke="${stroke}" stroke-width="0.4" opacity="0.35"/>
+      <line x1="115" y1="30" x2="115" y2="175" stroke="${stroke}" stroke-width="0.4" opacity="0.35"/>
+      <line x1="175" y1="30" x2="175" y2="175" stroke="${stroke}" stroke-width="0.4" opacity="0.35"/>
+      <line x1="195" y1="30" x2="195" y2="175" stroke="${stroke}" stroke-width="0.4" opacity="0.35"/>` : '';
+    return `<svg viewBox="0 0 300 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="60" y="20" width="180" height="185" rx="2" stroke="${stroke}" stroke-width="1.5"/>
+      <rect x="65" y="25" width="170" height="175" rx="1" fill="${glass}" stroke="${stroke}" stroke-width="0.8"/>
+      ${woodGrain2}
+      <line x1="150" y1="20" x2="150" y2="205" stroke="${stroke}" stroke-width="1.5" stroke-dasharray="0"/>
+      <circle cx="150" cy="20" r="4" fill="${stroke}"/>
+      <circle cx="150" cy="205" r="4" fill="${stroke}"/>
+      <path d="M 150 112 Q 120 70 65 45" stroke="var(--tertiary)" stroke-width="0.75" stroke-dasharray="5,3"/>
+      <path d="M 150 112 Q 180 70 235 45" stroke="var(--tertiary)" stroke-width="0.75" stroke-dasharray="5,3"/>
+      <text x="150" y="218" text-anchor="middle" font-family="DM Mono" font-size="9" fill="var(--ink-hint)">eixo central · ${profileLabel}</text>
+    </svg>`;
+  }
+
+  if (type === 'curved') {
+    // Curved frame
+    return `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 30 20 Q 150 5 270 20 L 270 180 Q 150 195 30 180 Z" stroke="${stroke}" stroke-width="1.5" fill="${glass}"/>
+      <path d="M 36 30 Q 150 18 264 30 L 264 170 Q 150 182 36 170 Z" stroke="${stroke}" stroke-width="0.8" fill="none"/>
+      <rect x="252" y="88" width="4" height="24" rx="2" fill="${stroke}"/>
+      <path d="M 30 5 Q 150 -12 270 5" stroke="var(--tertiary)" stroke-width="0.5" stroke-dasharray="3,2"/>
+      <text x="150" y="195" text-anchor="middle" font-family="DM Mono" font-size="9" fill="var(--ink-hint)">sistema curvo · ${profileLabel}</text>
+    </svg>`;
+  }
+
+  if (type === 'facade') {
+    // Curtain wall grid
+    const panels = [];
+    for (let col = 0; col < 3; col++) {
+      for (let row = 0; row < 4; row++) {
+        const x = 20 + col * 88, y = 20 + row * 42;
+        panels.push(`<rect x="${x}" y="${y}" width="83" height="37" fill="${glass}" stroke="${stroke}" stroke-width="0.8"/>`);
+      }
+    }
+    return `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="18" y="18" width="264" height="170" rx="1" stroke="${stroke}" stroke-width="1.5"/>
+      ${panels.join('')}
+      <text x="150" y="198" text-anchor="middle" font-family="DM Mono" font-size="9" fill="var(--ink-hint)">fachada · vão máximo ${product.specs?.max_span_m||8}m</text>
+    </svg>`;
+  }
+
+  if (type === 'screen') {
+    // Screen/protection rolled at top
+    return `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="260" height="160" rx="2" stroke="${stroke}" stroke-width="1.5"/>
+      <rect x="25" y="25" width="250" height="150" rx="1" fill="${glass}" stroke="${stroke}" stroke-width="0.8"/>
+      <rect x="20" y="14" width="260" height="14" rx="2" stroke="${stroke}" stroke-width="1" fill="var(--surface-soft)"/>
+      ${[35,45,55,65,75,85].map(y => `<line x1="25" y1="${y}" x2="275" y2="${y}" stroke="${stroke}" stroke-width="1.5" opacity="0.5"/>`).join('')}
+      <text x="150" y="195" text-anchor="middle" font-family="DM Mono" font-size="9" fill="var(--ink-hint)">HYFLY · Red Dot Award</text>
+    </svg>`;
+  }
+
+  // Fallback: generic window
+  return `<svg viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="20" width="260" height="160" rx="2" stroke="${stroke}" stroke-width="1.5"/>
+    <rect x="25" y="25" width="250" height="150" fill="${glass}" stroke="${stroke}" stroke-width="0.8"/>
+    <text x="150" y="115" text-anchor="middle" font-family="Cormorant Garamond" font-size="20" fill="${stroke}">${product.name}</text>
+    <text x="150" y="195" text-anchor="middle" font-family="DM Mono" font-size="9" fill="var(--ink-hint)">${profileLabel}</text>
+  </svg>`;
+}
+
 let _product = null;
 let _color   = '';
 let _glass   = '';
@@ -25,7 +142,10 @@ function buildProductList() {
     <div id="pcard-${p.id}" onclick="Cfg.select('${p.id}')"
          style="padding:12px 14px;border:1px solid var(--hairline);border-radius:12px;cursor:pointer;transition:all 0.12s;margin-bottom:4px;">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
-        <span style="font-size:14px;font-weight:500;color:var(--primary);">${p.name}</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:40px;height:30px;flex-shrink:0;opacity:0.7;">${renderProductSVG(p)}</div>
+          <span style="font-size:14px;font-weight:500;color:var(--primary);">${p.name}</span>
+        </div>
         <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--ink-hint);text-transform:uppercase;border:1px solid var(--hairline);border-radius:4px;padding:1px 5px;white-space:nowrap;">${TYPE_LABELS[p.type]||p.type}</span>
       </div>
       <div style="font-size:11px;color:var(--ink-hint);margin-top:4px;line-height:1.3;">${p.description}</div>
@@ -133,6 +253,12 @@ const Cfg = {
           </div>
         </div>
         <a href="/portfolio" style="display:block;margin-top:16px;font-size:12px;color:var(--secondary);text-decoration:underline;">Ver Portfolio</a>`;
+      // Show SVG illustration in specs panel (prepend after innerHTML is set)
+      const illusDiv = document.createElement('div');
+      illusDiv.className = 'product-illustration';
+      illusDiv.style.cssText = 'width:100%;margin-bottom:16px;opacity:0.85;';
+      illusDiv.innerHTML = renderProductSVG(_product);
+      specsContent.insertBefore(illusDiv, specsContent.firstChild);
     }
 
     this.calc();
@@ -172,29 +298,36 @@ const Cfg = {
 
   async submit() {
     if (!_product) return;
-    if (!confirm('Confirmas o envio do pedido de proposta?')) return;
-    const body = {
-      product_id: _product.id,
-      width_mm:   parseFloat($('cfg-width')?.value || 1200),
-      height_mm:  parseFloat($('cfg-height')?.value || 2200),
-      units:      parseInt($('cfg-units')?.value || 1),
-      color:      _color,
-      glass:      _glass,
-      motorized:  $('cfg-motorized')?.checked || false,
-      client:     $('cfg-client')?.value || '',
-      architect:  $('cfg-architect')?.value || '',
-      delivery_date: $('cfg-delivery')?.value || '',
-      country:    $('cfg-country')?.value || 'Portugal',
-      notes:      $('cfg-notes')?.value || '',
-    };
-    try {
-      const r = await fetchJSON('/api/orders/quote', {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(body),
-      });
-      const res = $('cfg-result');
-      if (res) res.textContent = `Proposta ${r.quote_ref} criada · €${r.estimated_eur.toLocaleString('pt-PT')} · entrega em ${r.lead_time_days} dias · válida até ${r.valid_until}`;
-    } catch (e) { alert('Erro ao criar proposta: ' + e.message); }
+    const _confirm2 = (t, b, fn) => (window.confirm2 ? window.confirm2(t, b, fn) : (confirm(`${t}\n${b}`) && fn()));
+    const units = parseInt($('cfg-units')?.value || 1);
+    const client = $('cfg-client')?.value || 'Cliente';
+    _confirm2(
+      'Solicitar Proposta',
+      `${_product.name} · ${units} unidade${units!==1?'s':''} · ${client}`,
+      async () => {
+        const body = {
+          product_id: _product.id,
+          width_mm:   parseFloat($('cfg-width')?.value || 1200),
+          height_mm:  parseFloat($('cfg-height')?.value || 2200),
+          units:      parseInt($('cfg-units')?.value || 1),
+          color:      _color, glass: _glass,
+          motorized:  $('cfg-motorized')?.checked || false,
+          client:     $('cfg-client')?.value || '',
+          architect:  $('cfg-architect')?.value || '',
+          delivery_date: $('cfg-delivery')?.value || '',
+          country:    $('cfg-country')?.value || 'Portugal',
+          notes:      $('cfg-notes')?.value || '',
+        };
+        try {
+          const r = await fetchJSON('/api/orders/quote', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(body),
+          });
+          const res = $('cfg-result');
+          if (res) res.textContent = `Proposta ${r.quote_ref} criada · €${r.estimated_eur.toLocaleString('pt-PT')} · entrega em ${r.lead_time_days} dias · válida até ${r.valid_until}`;
+        } catch (e) { alert('Erro ao criar proposta: ' + e.message); }
+      }
+    );
   },
 };
 

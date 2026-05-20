@@ -42,6 +42,13 @@
     </div>
   </div>
 </div>
+
+<!-- Alert slide-out drawer -->
+<div class="alert-drawer" id="alert-drawer">
+  <button class="alert-drawer__close" id="alert-drawer-close" onclick="Alerts.closeDrawer()">×</button>
+  <div id="alert-drawer-content"></div>
+</div>
+<div class="alert-drawer__backdrop" id="alert-drawer-backdrop" onclick="Alerts.closeDrawer()"></div>
 {% endblock %}
 
 {% block scripts %}
