@@ -238,3 +238,119 @@ ws_live:
   interior_co2_base_ppm:      650.0    # baseline CO₂ (ppm)
   interior_noise_base_db:      72.0    # baseline noise level (dB)
   prod_rate_base_m2_min:        2.1    # baseline production rate (m²/min)
+
+# ── HYLINE Building Systems — dados reais ──────────────────────────
+production:
+  company_name: "HYLINE Building Systems"
+  company_full: "BBG, SA"
+  company_type: "Fabricante premium de sistemas de caixilharia em alumínio"
+  founded: 2014
+  factory_m2: 10000
+  location: "Zona Industrial de Esposende, Rua Dr. Francisco Sá Carneiro, 475C"
+  certifications: ["ISO 9001", "Red Dot Design 2022", "EPO Patent", "WIPO Patent"]
+  export_countries: 20
+
+products:
+  avg_price_per_m2_eur: 1800     # average across all product lines
+  lines:
+    - id: "HYLINE"
+      name: "HYLINE Classic"
+      description: "Sistema minimalista alumínio — perfil central 18mm"
+      category: "premium"
+      price_min_eur: 2500
+      price_max_eur: 8000
+      lead_time_days: 21
+    - id: "HYSTYLE"
+      name: "HYSTYLE"
+      description: "Sistema deslizante premium"
+      category: "premium"
+      price_min_eur: 3000
+      price_max_eur: 12000
+      lead_time_days: 28
+    - id: "HYWIN40"
+      name: "HYWIN40+"
+      description: "Sistema de alta performance térmica"
+      category: "ultra_premium"
+      price_min_eur: 4000
+      price_max_eur: 15000
+      lead_time_days: 35
+    - id: "INVISIBLE"
+      name: "Invisible Frame"
+      description: "Vidro de piso a teto sem moldura visível"
+      category: "ultra_premium"
+      price_min_eur: 8000
+      price_max_eur: 50000
+      lead_time_days: 42
+
+markets:
+  export_pct: 0.62              # 62% of orders are for export
+  top_export_country: "Brasil"
+  primary: ["Portugal", "Brasil", "Itália", "Benelux", "USA", "França"]
+  secondary: ["Marrocos", "Dubai", "Kuwait", "Israel", "Índia", "Grécia", "UK", "Paraguai", "Bahamas"]
+
+clients:
+  segments:
+    - type: "Arquitecto"
+      pct: 0.45
+    - type: "Empreiteiro Premium"
+      pct: 0.30
+    - type: "Particular Luxo"
+      pct: 0.15
+    - type: "Hotel/Restaurante"
+      pct: 0.10
+
+quality:
+  defect_tolerance_pct: 0.5
+  warranty_years: 10
+  certifications_required: ["CE", "EN 14351", "WDMA"]
+
+logistics:
+  avg_export_lead_days: 14
+  customs_clearance_days: 3
+  shipping_partners:
+    - id: "DHL"
+      name: "DHL Express"
+      type: "Expresso Internacional"
+      avg_delivery_days: 3
+      contact: "pt.dhl.com"
+    - id: "RANGEL"
+      name: "Rangel"
+      type: "Transporte Nacional/Ibérico"
+      avg_delivery_days: 2
+      contact: "rangel.com"
+    - id: "SCHENKER"
+      name: "DB Schenker"
+      type: "Carga Internacional"
+      avg_delivery_days: 7
+      contact: "dbschenker.com"
+    - id: "KN"
+      name: "Kuehne+Nagel"
+      type: "Logística Premium"
+      avg_delivery_days: 5
+      contact: "kuehne-nagel.com"
+
+users:
+  - id: "director"
+    name: "Filipe Gonçalves"
+    role: "Director de Produção"
+    avatar: "FG"
+    password: "director2026"
+    access: ["all"]
+  - id: "chefe"
+    name: "Carlos Silva"
+    role: "Chefe de Turno"
+    avatar: "CS"
+    password: "chefe2026"
+    access: ["home", "alertas", "acao", "logistica"]
+  - id: "dq"
+    name: "Ana Ferreira"
+    role: "Departamento Qualidade"
+    avatar: "AF"
+    password: "dq2026"
+    access: ["home", "alertas", "acao"]
+  - id: "hst"
+    name: "Pedro Rocha"
+    role: "HST"
+    avatar: "PR"
+    password: "hst2026"
+    access: ["home", "alertas"]

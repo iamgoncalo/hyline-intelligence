@@ -41,32 +41,36 @@ OPERATORS = [
 ]
 OP_IDS = [o["id"] for o in OPERATORS]
 
-# Tipos de não conformidade reais para janelas PVC
+# Tipos de não conformidade reais para caixilharia alumínio de luxo
 NC_TYPES = [
-    "Perfil desalinhado",
-    "Vedante incompleto",
-    "Vidro riscado",
-    "Folga excessiva",
-    "Cor fora de especificação",
+    "Perfil alumínio com risco de superfície",
+    "Vidro com bolha ou inclusão",
+    "Junta de borracha mal posicionada",
+    "Folga excessiva na zona de corte",
+    "Cor RAL fora de especificação",
+    "Motorização com falha de calibração",
+    "Vedação incompleta — infiltração ar",
 ]
 
-# Empresas construtoras portuguesas realistas
+# Clientes reais HYLINE — arquitectos, empreiteiros premium e hotéis de luxo
 CUSTOMERS = [
-    "Construções Oliveira Lda",
-    "Edifícios do Minho SA",
-    "Residencial Esposende",
-    "Obras Atlântico Lda",
-    "Quinta do Pinhal Construções",
-    "Viana Properties Lda",
-    "Lusa Habitat SA",
-    "Braga Imobiliária",
-    "Porto Construções Norte",
-    "Guimarães Reabilitação Lda",
+    "Arq. Studio Saraiva & Associados, Lisboa",
+    "Hotel Four Seasons, Porto",
+    "Mota-Engil Engenharia, Lisboa",
+    "Atelier Siza Inspirado Projects, Porto",
+    "Trump International Golf Club, Dubai",
+    "Four Seasons Hotel, Miami USA",
+    "Residência Privada Cascais — Arq. Torres",
+    "Condomínio Vilamoura Prestige, Algarve",
+    "Hotel Belmond Reid's, Funchal",
+    "Studio Souto Moura Projects, Porto",
+    "Emaar Properties, Dubai",
+    "Marriott Residences, Casablanca",
 ]
 
-# Referências realistas HYLINE
-REF_CORRER = ["SC-60", "SC-70", "SC-82"]
-REF_ABRIR  = ["AB-58", "AB-68", "AB-78"]
+# Referências realistas HYLINE — sistemas alumínio premium
+REF_CORRER = ["HYLINE-SCR-18", "HYSTYLE-SCR-28", "HYWIN40-SCR-35"]
+REF_ABRIR  = ["HYLINE-ABR-18", "HYWIN40-ABR-35", "INVISIBLE-ABR-42"]
 SIZES_MM   = [(600,1200),(900,1400),(1200,1500),(1400,2100),(2000,2200),(800,1600),(1000,2000)]
 
 
@@ -91,11 +95,11 @@ def generate_orders(n: int = 40) -> pd.DataFrame:
     today = datetime.now(timezone.utc).date()
     refs = REF_CORRER + REF_ABRIR
     for i in range(1, n + 1):
-        n_windows = random.randint(4, 40)
+        n_windows = random.randint(1, 15)
         w, h = random.choice(SIZES_MM)
         unit_m2 = (w * h) / 1_000_000
         total_m2 = round(n_windows * unit_m2, 2)
-        deadline = today + timedelta(days=random.randint(5, 45))
+        deadline = today + timedelta(days=random.randint(21, 90))
         status = random.choices(
             ["active", "in_progress", "in_progress", "open", "completed"], k=1,
         )[0]

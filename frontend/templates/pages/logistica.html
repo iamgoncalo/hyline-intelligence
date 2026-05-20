@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Logística{% endblock %}
+{% block page_title %}Logística{% endblock %}
+{% block page_subtitle %}Expedição internacional · {{ "20" }}+ mercados{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:1fr 1fr 280px;height:100%;gap:var(--space-md);">
+
+  <!-- COL 1: Encomendas a exportar -->
+  <div style="display:flex;flex-direction:column;overflow:hidden;">
+    <div class="section-title">Encomendas a Exportar</div>
+    <div id="export-orders" style="flex:1;overflow-y:auto;"></div>
+  </div>
+
+  <!-- COL 2: Próximas expedições -->
+  <div style="display:flex;flex-direction:column;overflow:hidden;">
+    <div class="section-title">Próximas Expedições</div>
+    <table class="data-table" style="flex:1;">
+      <thead>
+        <tr>
+          <th>Encomenda</th>
+          <th>Destino</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="shipments-tbody">
+        <tr><td colspan="3" class="data-table__empty">A carregar</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- COL 3: Parceiros logísticos -->
+  <div style="display:flex;flex-direction:column;overflow:hidden;gap:var(--space-sm);">
+    <div class="section-title">Parceiros</div>
+    <div id="partners-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:var(--space-sm);"></div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/logistica.js"></script>
+{% endblock %}

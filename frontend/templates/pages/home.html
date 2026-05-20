@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="home-grid">
-  <!-- LEFT: 6 live metric rows -->
+  <!-- LEFT: HYLINE metrics -->
   <div class="home-metrics">
     <div class="metric-row">
       <span class="metric-row__label">M² Hoje</span>
@@ -13,29 +13,27 @@
       <span class="metric-row__unit">m²</span>
     </div>
     <div class="metric-row">
+      <span class="metric-row__label">Carteira</span>
+      <span class="metric-row__value" id="k-carteira" style="font-size:22px;">--</span>
+    </div>
+    <div class="metric-row">
       <span class="metric-row__label">Desempenho</span>
       <span class="metric-row__value" id="k-perf">--</span>
       <span class="metric-row__unit">%</span>
     </div>
     <div class="metric-row">
-      <span class="metric-row__label">Temp. Interior</span>
-      <span class="metric-row__value" id="k-temp" data-live="temp_c">--</span>
-      <span class="metric-row__unit">°C</span>
-    </div>
-    <div class="metric-row">
-      <span class="metric-row__label">CO₂ Interior</span>
-      <span class="metric-row__value" id="k-co2" data-live="co2_ppm">--</span>
-      <span class="metric-row__unit">ppm</span>
-    </div>
-    <div class="metric-row">
-      <span class="metric-row__label">Humidade</span>
-      <span class="metric-row__value" id="k-hum" data-live="humidity_pct">--</span>
+      <span class="metric-row__label">Exportação</span>
+      <span class="metric-row__value" id="k-export">--</span>
       <span class="metric-row__unit">%</span>
     </div>
     <div class="metric-row">
-      <span class="metric-row__label">Ruído</span>
-      <span class="metric-row__value" id="k-noise" data-live="noise_db">--</span>
-      <span class="metric-row__unit">dB</span>
+      <span class="metric-row__label">Qualidade</span>
+      <span class="metric-row__value" id="k-quality">--</span>
+      <span class="metric-row__unit">%</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Alertas</span>
+      <span class="metric-row__value" id="k-alerts" data-live="alerts_open">--</span>
     </div>
   </div>
 

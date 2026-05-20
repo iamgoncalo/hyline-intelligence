@@ -1,41 +1,41 @@
 order_id,customer,total_windows,total_m2,deadline,priority,status
-ORD-2026-0001,Edifícios do Minho SA,11,19.8,2026-06-25,2,completed
-ORD-2026-0002,Braga Imobiliária,39,114.66,2026-06-29,5,in_progress
-ORD-2026-0003,Edifícios do Minho SA,32,40.32,2026-05-24,3,open
-ORD-2026-0004,Braga Imobiliária,10,29.4,2026-05-24,3,completed
-ORD-2026-0005,Viana Properties Lda,17,49.98,2026-06-09,4,in_progress
-ORD-2026-0006,Edifícios do Minho SA,36,46.08,2026-05-28,5,open
-ORD-2026-0007,Guimarães Reabilitação Lda,38,68.4,2026-06-11,3,in_progress
-ORD-2026-0008,Lusa Habitat SA,5,10.0,2026-06-16,1,in_progress
-ORD-2026-0009,Edifícios do Minho SA,29,127.6,2026-06-28,4,in_progress
-ORD-2026-0010,Lusa Habitat SA,36,72.0,2026-07-01,5,completed
-ORD-2026-0011,Braga Imobiliária,20,40.0,2026-06-19,5,in_progress
-ORD-2026-0012,Residencial Esposende,37,74.0,2026-05-25,1,in_progress
-ORD-2026-0013,Lusa Habitat SA,37,47.36,2026-05-30,4,open
-ORD-2026-0014,Edifícios do Minho SA,13,38.22,2026-06-07,4,completed
-ORD-2026-0015,Lusa Habitat SA,34,43.52,2026-06-27,3,in_progress
-ORD-2026-0016,Lusa Habitat SA,39,78.0,2026-06-25,4,open
-ORD-2026-0017,Residencial Esposende,16,28.8,2026-06-10,5,active
-ORD-2026-0018,Viana Properties Lda,33,66.0,2026-06-26,2,completed
-ORD-2026-0019,Braga Imobiliária,20,25.6,2026-06-24,4,in_progress
-ORD-2026-0020,Viana Properties Lda,39,49.92,2026-05-26,4,completed
-ORD-2026-0021,Residencial Esposende,10,29.4,2026-06-25,4,in_progress
-ORD-2026-0022,Viana Properties Lda,34,24.48,2026-06-10,1,completed
-ORD-2026-0023,Construções Oliveira Lda,16,20.48,2026-06-19,1,active
-ORD-2026-0024,Edifícios do Minho SA,4,11.76,2026-06-30,5,in_progress
-ORD-2026-0025,Porto Construções Norte,16,20.16,2026-05-31,3,open
-ORD-2026-0026,Guimarães Reabilitação Lda,26,32.76,2026-05-24,5,in_progress
-ORD-2026-0027,Braga Imobiliária,35,44.8,2026-06-01,5,in_progress
-ORD-2026-0028,Lusa Habitat SA,12,52.8,2026-06-25,2,in_progress
-ORD-2026-0029,Lusa Habitat SA,12,24.0,2026-06-30,4,in_progress
-ORD-2026-0030,Edifícios do Minho SA,13,57.2,2026-06-05,4,in_progress
-ORD-2026-0031,Construções Oliveira Lda,8,5.76,2026-06-15,1,open
-ORD-2026-0032,Braga Imobiliária,36,105.84,2026-06-13,3,open
-ORD-2026-0033,Residencial Esposende,11,32.34,2026-06-22,2,in_progress
-ORD-2026-0034,Braga Imobiliária,37,46.62,2026-06-20,5,open
-ORD-2026-0035,Construções Oliveira Lda,18,23.04,2026-05-28,2,in_progress
-ORD-2026-0036,Construções Oliveira Lda,15,10.8,2026-06-27,4,completed
-ORD-2026-0037,Porto Construções Norte,16,47.04,2026-05-25,2,active
-ORD-2026-0038,Residencial Esposende,37,46.62,2026-06-03,4,open
-ORD-2026-0039,Edifícios do Minho SA,21,61.74,2026-06-27,4,in_progress
-ORD-2026-0040,Braga Imobiliária,23,28.98,2026-06-15,4,active
+ORD-2026-0001,"Emaar Properties, Dubai",2,3.6,2026-08-13,1,completed
+ORD-2026-0002,"Hotel Belmond Reid's, Funchal",15,18.9,2026-08-02,4,open
+ORD-2026-0003,"Studio Souto Moura Projects, Porto",13,26.0,2026-08-05,1,in_progress
+ORD-2026-0004,"Emaar Properties, Dubai",2,3.6,2026-06-22,4,in_progress
+ORD-2026-0005,"Four Seasons Hotel, Miami USA",11,19.8,2026-07-06,3,in_progress
+ORD-2026-0006,"Marriott Residences, Casablanca",13,38.22,2026-08-14,3,open
+ORD-2026-0007,"Condomínio Vilamoura Prestige, Algarve",2,8.8,2026-08-17,2,in_progress
+ORD-2026-0008,"Marriott Residences, Casablanca",15,19.2,2026-07-19,3,active
+ORD-2026-0009,"Studio Souto Moura Projects, Porto",6,17.64,2026-08-03,5,active
+ORD-2026-0010,"Studio Souto Moura Projects, Porto",8,16.0,2026-06-24,4,in_progress
+ORD-2026-0011,"Studio Souto Moura Projects, Porto",7,30.8,2026-07-13,4,completed
+ORD-2026-0012,"Mota-Engil Engenharia, Lisboa",9,39.6,2026-06-13,1,in_progress
+ORD-2026-0013,Residência Privada Cascais — Arq. Torres,12,52.8,2026-06-23,4,open
+ORD-2026-0014,"Hotel Four Seasons, Porto",3,8.82,2026-07-09,4,completed
+ORD-2026-0015,Residência Privada Cascais — Arq. Torres,11,32.34,2026-08-18,3,in_progress
+ORD-2026-0016,Residência Privada Cascais — Arq. Torres,9,18.0,2026-08-13,4,open
+ORD-2026-0017,"Mota-Engil Engenharia, Lisboa",4,7.2,2026-07-14,5,active
+ORD-2026-0018,"Four Seasons Hotel, Miami USA",8,16.0,2026-08-15,2,completed
+ORD-2026-0019,"Condomínio Vilamoura Prestige, Algarve",5,6.4,2026-08-11,4,in_progress
+ORD-2026-0020,"Four Seasons Hotel, Miami USA",9,11.52,2026-06-14,4,completed
+ORD-2026-0021,"Marriott Residences, Casablanca",15,30.0,2026-06-22,5,in_progress
+ORD-2026-0022,"Marriott Residences, Casablanca",5,14.7,2026-07-03,4,completed
+ORD-2026-0023,"Four Seasons Hotel, Miami USA",2,2.56,2026-07-14,1,completed
+ORD-2026-0024,"Arq. Studio Saraiva & Associados, Lisboa",4,5.12,2026-08-01,1,active
+ORD-2026-0025,"Hotel Four Seasons, Porto",1,2.94,2026-08-18,5,completed
+ORD-2026-0026,"Arq. Studio Saraiva & Associados, Lisboa",13,16.38,2026-07-11,5,active
+ORD-2026-0027,"Four Seasons Hotel, Miami USA",5,6.4,2026-07-25,5,active
+ORD-2026-0028,"Mota-Engil Engenharia, Lisboa",10,20.0,2026-08-11,5,open
+ORD-2026-0029,"Marriott Residences, Casablanca",4,11.76,2026-06-26,5,completed
+ORD-2026-0030,"Mota-Engil Engenharia, Lisboa",5,3.6,2026-08-02,5,open
+ORD-2026-0031,"Mota-Engil Engenharia, Lisboa",5,22.0,2026-08-01,5,in_progress
+ORD-2026-0032,"Hotel Four Seasons, Porto",13,16.38,2026-07-28,4,active
+ORD-2026-0033,"Emaar Properties, Dubai",15,10.8,2026-06-16,3,completed
+ORD-2026-0034,"Condomínio Vilamoura Prestige, Algarve",15,30.0,2026-06-13,3,active
+ORD-2026-0035,"Hotel Four Seasons, Porto",11,19.8,2026-08-06,4,in_progress
+ORD-2026-0036,"Hotel Belmond Reid's, Funchal",8,35.2,2026-07-01,2,active
+ORD-2026-0037,"Atelier Siza Inspirado Projects, Porto",7,30.8,2026-07-23,1,in_progress
+ORD-2026-0038,"Mota-Engil Engenharia, Lisboa",9,26.46,2026-06-14,1,active
+ORD-2026-0039,"Emaar Properties, Dubai",11,48.4,2026-06-16,2,in_progress
+ORD-2026-0040,"Hotel Belmond Reid's, Funchal",8,10.24,2026-06-12,2,active

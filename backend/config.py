@@ -189,6 +189,77 @@ class WsLiveCfg(BaseModel):
     prod_rate_base_m2_min: float
 
 
+class ProductionCfg(BaseModel):
+    company_name: str
+    company_full: str
+    company_type: str
+    founded: int
+    factory_m2: int
+    location: str
+    certifications: list[str]
+    export_countries: int
+
+
+class ProductLineCfg(BaseModel):
+    id: str
+    name: str
+    description: str
+    category: str
+    price_min_eur: float
+    price_max_eur: float
+    lead_time_days: int
+
+
+class ProductsCfg(BaseModel):
+    avg_price_per_m2_eur: float
+    lines: list[ProductLineCfg]
+
+
+class MarketsCfg(BaseModel):
+    export_pct: float
+    top_export_country: str
+    primary: list[str]
+    secondary: list[str]
+
+
+class ClientSegmentCfg(BaseModel):
+    type: str
+    pct: float
+
+
+class ClientsCfg(BaseModel):
+    segments: list[ClientSegmentCfg]
+
+
+class QualityCfg(BaseModel):
+    defect_tolerance_pct: float
+    warranty_years: int
+    certifications_required: list[str]
+
+
+class ShippingPartnerCfg(BaseModel):
+    id: str
+    name: str
+    type: str
+    avg_delivery_days: int
+    contact: str
+
+
+class LogisticsCfg(BaseModel):
+    avg_export_lead_days: int
+    customs_clearance_days: int
+    shipping_partners: list[ShippingPartnerCfg]
+
+
+class UserCfg(BaseModel):
+    id: str
+    name: str
+    role: str
+    avatar: str
+    password: str
+    access: list[str]
+
+
 class Config(BaseModel):
     app: AppCfg
     paths: PathsCfg
@@ -205,6 +276,13 @@ class Config(BaseModel):
     procurement: ProcurementCfg
     brand: BrandCfg
     ws_live: WsLiveCfg
+    production: ProductionCfg
+    products: ProductsCfg
+    markets: MarketsCfg
+    clients: ClientsCfg
+    quality: QualityCfg
+    logistics: LogisticsCfg
+    users: list[UserCfg]
 
 
 def load_config(path: str | Path = "config.yaml") -> Config:

@@ -153,11 +153,21 @@ async function refreshStations() {
 async function refreshKPIs() {
   try {
     const k = await fetchJSON('/api/kpi');
-    const el = $('k-perf');
-    if (el) el.textContent = k.afi_F_global != null ? Math.round(k.afi_F_global * 100) : '--';
-    // Update simul badge
-    const badge = $('simul-badge');
-    if (badge) badge.textContent = 'SIMULADO';
+    const set = (id, val) => { const el = $(id); if (el) el.textContent = val; };
+    set('k-perf', k.performance_pct != null ? Math.round(k.performance_pct) : '--');
+    set('k-export', k.orders_export_pct != null ? Math.round(k.orders_export_pct) : '--');
+    set('k-quality', k.non_conformity_pct != null ? (100 - k.non_conformity_pct).toFixed(1) : '--');
+    const carteira = $('k-carteira');
+    if (carteira && k.orders_value_eur != null) {
+      const m = k.orders_value_eur / 1_000_000;
+      carteira.textContent = m >= 1
+        ? `${m.toFixed(1)}M EUR`
+        : `${Math.round(k.orders_value_eur / 1000)}k EUR`;
+    }
+    const alertsEl = $('k-alerts');
+    if (alertsEl) {
+      alertsEl.style.color = (k.alerts_open || 0) > 0 ? 'var(--red)' : 'var(--tertiary)';
+    }
   } catch {}
 }
 

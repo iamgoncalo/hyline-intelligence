@@ -25,7 +25,22 @@
       <div id="arch-flow"></div>
     </div>
     <div class="def-panel" id="panel-exportar">
-      <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);margin-top:var(--space-sm);" id="export-btns"></div>
+      <div style="margin-bottom:var(--space-md);">
+        <div class="section-title">Exportar CSV</div>
+        <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);" id="export-btns"></div>
+      </div>
+      <div>
+        <div class="section-title">Google Sheets</div>
+        <div style="font-size:12px;color:var(--ink-hint);margin-bottom:var(--space-sm);">
+          Exportação CSV compatível com Google Sheets e Excel.
+          Após download: Sheets → Ficheiro → Importar → Carregar.
+        </div>
+        <div style="display:flex;gap:var(--space-sm);flex-wrap:wrap;">
+          <a class="export-btn" href="/api/export/sheets/orders" download>Encomendas</a>
+          <a class="export-btn" href="/api/export/sheets/events" download>Produção</a>
+          <a class="export-btn" href="/api/export/sheets/kpis" download>KPIs 30 dias</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>

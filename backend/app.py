@@ -36,7 +36,8 @@ import asyncio
 import math
 import random
 import time
-from fastapi import FastAPI, HTTPException, UploadFile, File, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, HTTPException, UploadFile, File, WebSocket, WebSocketDisconnect, Request, Response, Form
+from fastapi.responses import RedirectResponse
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -102,6 +103,12 @@ class AlertTransferBody(BaseModel):
     to_role: str
 
 
+class LogisticsQuoteBody(BaseModel):
+    partner_id: str
+    order_ids: list[str]
+    destination_country: str
+
+
 def build_live_payload() -> dict:
     """Build second-by-second live data. All base values from cfg().ws_live — zero hardcodes."""
     t = time.time()
@@ -129,6 +136,27 @@ def build_live_payload() -> dict:
     }
 
 
+import hashlib as _hashlib
+import os as _os
+
+_SESSION_SECRET = _os.environ.get("SESSION_SECRET", "hyline-demo-2026")
+
+
+def _make_token(user_id: str) -> str:
+    return _hashlib.sha256(f"{user_id}:{_SESSION_SECRET}".encode()).hexdigest()[:32]
+
+
+def _check_session(request: Request) -> dict | None:
+    """Returns user dict from cfg() if valid session, None otherwise."""
+    token   = request.cookies.get("hyline_session")
+    user_id = request.cookies.get("hyline_user")
+    if not token or not user_id:
+        return None
+    if token != _make_token(user_id):
+        return None
+    return next((u for u in cfg().users if u.id == user_id), None)
+
+
 # ═══════════════════════════════════════════════════════════════════
 # App factory
 # ═══════════════════════════════════════════════════════════════════
@@ -149,13 +177,50 @@ def create_app() -> FastAPI:
     )
 
     # ── Page routes (multi-page v3 architecture) ──────────────────
+
+    # ── Auth routes ───────────────────────────────────────────────
+    @app.get("/login", response_class=HTMLResponse)
+    def login_get(request: Request):
+        if _check_session(request):
+            return RedirectResponse("/", status_code=302)
+        tmpl = env.get_template("pages/login.html")
+        error = request.query_params.get("error", "")
+        return HTMLResponse(tmpl.render(app_name=c.app.name, error=error))
+
+    @app.post("/login", response_class=HTMLResponse)
+    async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
+        user = next((u for u in c.users if u.id == username and u.password == password), None)
+        if not user:
+            return RedirectResponse("/login?error=1", status_code=302)
+        response = RedirectResponse("/", status_code=302)
+        token = _make_token(user.id)
+        response.set_cookie("hyline_session", token, httponly=True, samesite="lax")
+        response.set_cookie("hyline_user",    user.id, httponly=True, samesite="lax")
+        response.set_cookie("hyline_name",    user.name, httponly=False, samesite="lax")
+        response.set_cookie("hyline_role",    user.role, httponly=False, samesite="lax")
+        response.set_cookie("hyline_avatar",  user.avatar, httponly=False, samesite="lax")
+        return response
+
+    @app.get("/logout")
+    def logout():
+        response = RedirectResponse("/login", status_code=302)
+        response.delete_cookie("hyline_session")
+        response.delete_cookie("hyline_user")
+        response.delete_cookie("hyline_name")
+        response.delete_cookie("hyline_role")
+        response.delete_cookie("hyline_avatar")
+        return response
+
     def _page(name: str, active: str, **ctx) -> HTMLResponse:
         tmpl = env.get_template(f"pages/{name}.html")
         return HTMLResponse(tmpl.render(active=active, app_name=c.app.name, **ctx))
 
     @app.get("/", response_class=HTMLResponse)
-    def home():
-        factory_json  = json.dumps(c.factory.model_dump(),          ensure_ascii=False, separators=(",", ":"))
+    def home(request: Request):
+        user = _check_session(request)
+        if not user:
+            return RedirectResponse("/login", status_code=302)
+        factory_json  = json.dumps(c.factory.model_dump(), ensure_ascii=False, separators=(",", ":"))
         stations_json = json.dumps([s.model_dump() for s in c.stations], ensure_ascii=False, separators=(",", ":"))
         members_json  = json.dumps([m.model_dump() for m in c.teams.members], ensure_ascii=False, separators=(",", ":"))
         return _page("home", "home",
@@ -164,33 +229,52 @@ def create_app() -> FastAPI:
                      members_json=members_json)
 
     @app.get("/alertas", response_class=HTMLResponse)
-    def alertas_page(): return _page("alertas", "alertas")
+    def alertas_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        return _page("alertas", "alertas")
 
     @app.get("/acao", response_class=HTMLResponse)
-    def acao_page(): return _page("acao", "acao")
+    def acao_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        return _page("acao", "acao")
 
     @app.get("/escala", response_class=HTMLResponse)
-    def escala_page(): return _page("escala", "escala")
+    def escala_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        return _page("escala", "escala")
 
     @app.get("/procurement", response_class=HTMLResponse)
-    def procurement_page(): return _page("procurement", "procurement")
+    def procurement_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        return _page("procurement", "procurement")
 
     @app.get("/sustentabilidade", response_class=HTMLResponse)
-    def sustentabilidade_page(): return _page("sustentabilidade", "sustentabilidade")
+    def sustentabilidade_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        return _page("sustentabilidade", "sustentabilidade")
+
+    @app.get("/logistica", response_class=HTMLResponse)
+    def logistica_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        return _page("logistica", "logistica")
 
     @app.get("/definicoes", response_class=HTMLResponse)
-    def definicoes_page(): return _page("definicoes", "definicoes")
+    def definicoes_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        return _page("definicoes", "definicoes")
 
     @app.get("/conversas", response_class=HTMLResponse)
-    def conversas_page(): return _page("conversas", "conversas")
+    def conversas_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        return _page("conversas", "conversas")
 
     # ── WebSocket live feed (1s sinusoidal oscillations) ──────────
-    connected_ws: list = []
+    connected_ws: set = set()
 
     @app.websocket("/ws/live")
     async def live_feed(ws: WebSocket):
         await ws.accept()
-        connected_ws.append(ws)
+        connected_ws.add(ws)
         try:
             while True:
                 await asyncio.sleep(1)
@@ -200,17 +284,15 @@ def create_app() -> FastAPI:
                     log.warning("WS payload error: %s", exc)
                     continue
                 dead = []
-                for ws in list(connected_ws):
+                for client in list(connected_ws):
                     try:
-                        await ws.send_text(json.dumps(payload))
+                        await client.send_text(json.dumps(payload))
                     except Exception:
-                        dead.append(ws)
-                for ws in dead:
-                    if ws in connected_ws:
-                        connected_ws.remove(ws)
+                        dead.append(client)
+                for client in dead:
+                    connected_ws.discard(client)
         except (WebSocketDisconnect, Exception):
-            if ws in connected_ws:
-                connected_ws.remove(ws)
+            connected_ws.discard(ws)
 
     # ── Core API ─────────────────────────────────────────────────
     @app.get("/api/health")
@@ -223,7 +305,56 @@ def create_app() -> FastAPI:
 
     @app.get("/api/kpi")
     def kpi_headline() -> dict:
-        return engine.global_kpis()
+        kpis = engine.global_kpis()
+        m2_today = kpis["m2_today"]
+        # Extended HYLINE KPIs — order value from m² × avg_price_per_m2
+        with dlayer.connection() as conn:
+            active_orders = conn.execute(
+                "SELECT total_m2 FROM orders WHERE status IN ('active','in_progress','open')"
+            ).fetchall()
+            nc_count = conn.execute(
+                "SELECT COUNT(*) FROM production_events WHERE status IN ('defect','rework') "
+                "AND DATE(ts)=DATE('now')"
+            ).fetchone()[0]
+            total_events_today = conn.execute(
+                "SELECT COUNT(*) FROM production_events WHERE DATE(ts)=DATE('now')"
+            ).fetchone()[0]
+            m2_week = conn.execute(
+                "SELECT COALESCE(SUM(area_m2),0) FROM production_events "
+                "WHERE status='completed' AND ts>=DATETIME('now','-7 days')"
+            ).fetchone()[0]
+            m2_month = conn.execute(
+                "SELECT COALESCE(SUM(area_m2),0) FROM production_events "
+                "WHERE status='completed' AND ts>=DATETIME('now','-30 days')"
+            ).fetchone()[0]
+            ops_active = conn.execute(
+                "SELECT COUNT(DISTINCT operator_id) FROM production_events "
+                "WHERE ts>=DATETIME('now','-1 hour')"
+            ).fetchone()[0]
+        total_m2_orders = sum(float(r[0] or 0) for r in active_orders)
+        orders_value_eur = round(total_m2_orders * cfg().products.avg_price_per_m2_eur)
+        n_orders = len(active_orders)
+        nc_pct = round(100 * nc_count / max(total_events_today, 1), 2)
+        return {
+            "m2_today":           round(m2_today, 1),
+            "m2_week":            round(float(m2_week), 1),
+            "m2_month":           round(float(m2_month), 1),
+            "performance_pct":    round(kpis.get("afi_F_global", 0) * 100, 1),
+            "orders_active":      n_orders,
+            "orders_value_eur":   orders_value_eur,
+            "orders_export_pct":  round(cfg().markets.export_pct * 100, 1),
+            "avg_order_value_eur": round(orders_value_eur / max(n_orders, 1)),
+            "top_product_line":   "HYLINE Classic",
+            "top_export_country": cfg().markets.top_export_country,
+            "non_conformity_pct": nc_pct,
+            "alerts_open":        kpis["open_alerts"],
+            "operators_active":   ops_active,
+            # backward compat
+            "afi_F_global":       kpis.get("afi_F_global", 0),
+            "open_alerts":        kpis["open_alerts"],
+            "open_orders":        n_orders,
+            "m2_backlog":         kpis.get("m2_backlog", 0),
+        }
 
     @app.get("/api/stations")
     def stations() -> list[dict]:
@@ -423,6 +554,47 @@ def create_app() -> FastAPI:
         s["energy_today_kwh"] = round(kpi["m2_today"] * s["energy_kwh_per_m2"], 1)
         return s
 
+    # ── Google Sheets CSV exports ─────────────────────────────────
+    @app.get("/api/export/sheets/{dataset}")
+    def export_sheets(dataset: str):
+        import csv, io
+        from fastapi.responses import StreamingResponse
+        valid = {"orders", "events", "kpis"}
+        if dataset not in valid:
+            raise HTTPException(404, f"Dataset deve ser um de: {valid}")
+        buf = io.StringIO()
+        writer = csv.writer(buf)
+        with dlayer.connection() as conn:
+            if dataset == "orders":
+                rows = conn.execute(
+                    "SELECT id,customer,total_windows,total_m2,m2_completed,deadline,priority,status "
+                    "FROM orders ORDER BY priority,deadline"
+                ).fetchall()
+                writer.writerow(["order_id","cliente","pecas","m2_total","m2_concluido","prazo","prioridade","estado"])
+            elif dataset == "events":
+                rows = conn.execute(
+                    "SELECT ts,station_id,window_id,order_id,width_mm,height_mm,area_m2,phase,status,operator_id "
+                    "FROM production_events ORDER BY ts DESC LIMIT 10000"
+                ).fetchall()
+                writer.writerow(["timestamp","estacao","janela","encomenda","largura_mm","altura_mm","area_m2","fase","estado","operador"])
+            elif dataset == "kpis":
+                rows = conn.execute(
+                    "SELECT DATE(ts) AS dia, SUM(area_m2) AS m2, COUNT(*) AS pecas, "
+                    "SUM(CASE WHEN status IN('defect','rework') THEN 1 ELSE 0 END) AS nc "
+                    "FROM production_events WHERE ts>=DATETIME('now','-30 days') GROUP BY dia ORDER BY dia"
+                ).fetchall()
+                writer.writerow(["data","m2_produzidos","pecas_produzidas","nao_conformidades"])
+        for r in rows:
+            writer.writerow(list(r))
+        buf.seek(0)
+        ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        fname = f"hyline_{dataset}_{ts}.csv"
+        return StreamingResponse(
+            iter(["﻿" + buf.getvalue()]),  # BOM for Excel/Sheets UTF-8
+            media_type="text/csv; charset=utf-8",
+            headers={"Content-Disposition": f'attachment; filename="{fname}"', "Cache-Control": "no-store"},
+        )
+
     # ── CSV Export · pure Python stdlib ──────────────────────────
     @app.get("/api/export/{dataset}")
     def export_csv(dataset: str):
@@ -581,6 +753,31 @@ def create_app() -> FastAPI:
     @app.get("/api/actions")
     def actions_list(limit: int = 20) -> list[dict]:
         return dlayer.recent_actions(limit=limit)
+
+    # ── Logistics ─────────────────────────────────────────────────
+    @app.get("/api/logistics/partners")
+    def logistics_partners() -> list[dict]:
+        return [p.model_dump() for p in c.logistics.shipping_partners]
+
+    @app.post("/api/logistics/quote")
+    def logistics_quote(body: LogisticsQuoteBody) -> dict:
+        partner = next((p for p in c.logistics.shipping_partners if p.id == body.partner_id), None)
+        if not partner:
+            raise HTTPException(404, f"Parceiro '{body.partner_id}' não encontrado")
+        base_days = partner.avg_delivery_days + c.logistics.customs_clearance_days
+        surcharge = 150 if body.destination_country not in c.markets.primary else 0
+        est_eur   = len(body.order_ids) * 320 + surcharge
+        import uuid
+        quote_ref = f"QT-{datetime.now(timezone.utc).strftime('%Y-%m')}-{str(uuid.uuid4())[:6].upper()}"
+        dlayer.record_decision(
+            member_id=None, kind="logistics_quote",
+            target=body.destination_country,
+            payload=json.dumps({
+                "partner": body.partner_id, "orders": body.order_ids,
+                "est_days": base_days, "est_eur": est_eur, "ref": quote_ref,
+            }, ensure_ascii=False),
+        )
+        return {"estimated_days": base_days, "estimated_eur": est_eur, "quote_ref": quote_ref}
 
     # ── Assistant (floating panel · richer intents) ───────────
     @app.post("/api/assistant")
