@@ -1,33 +1,110 @@
 {% extends "base.html" %}
-{% block title %}Procurement{% endblock %}
-{% block page_title %}Procurement{% endblock %}
-{% block page_subtitle %}Catálogo de fornecedores sustentáveis{% endblock %}
+{% block title %}Configurador{% endblock %}
+{% block page_title %}Configurador{% endblock %}
+{% block page_subtitle %}Especificação técnica para proposta comercial{% endblock %}
 
 {% block content %}
-<div style="display:grid;grid-template-columns:1fr 280px;height:100%;gap:var(--space-md);">
-  <div style="display:flex;flex-direction:column;overflow:hidden;">
-    <div class="catalog-filters">
-      <label class="eco-toggle">
-        <input type="checkbox" id="eco-filter">
-        <span class="eco-toggle__pill">Apenas eco ≥85</span>
-      </label>
-      <span style="font-size:11px;color:var(--ink-hint);" id="cat-label">Todos os materiais</span>
-      <div style="display:flex;gap:6px;margin-left:auto;">
-        <button class="cat-chip is-active" data-cat="" onclick="Proc.filterCat(this,'')">Todos</button>
-        <button class="cat-chip" data-cat="perfis" onclick="Proc.filterCat(this,'perfis')">Perfis</button>
-        <button class="cat-chip" data-cat="vidro" onclick="Proc.filterCat(this,'vidro')">Vidro</button>
-        <button class="cat-chip" data-cat="ferragens" onclick="Proc.filterCat(this,'ferragens')">Ferragens</button>
-        <button class="cat-chip" data-cat="consumiveis" onclick="Proc.filterCat(this,'consumiveis')">Consumíveis</button>
+<div style="display:grid;grid-template-columns:300px 1fr 260px;height:100%;gap:var(--space-md);overflow:hidden;">
+
+  <!-- LEFT: Product selector -->
+  <div style="overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px;">
+    <div class="section-title">Linha de Produto</div>
+    <div id="product-list"></div>
+  </div>
+
+  <!-- CENTRE: Configurator (hidden until product selected) -->
+  <div id="configurator" style="display:none;flex-direction:column;overflow-y:auto;">
+    <div style="margin-bottom:var(--space-md);">
+      <div id="cfg-product-name" style="font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--primary);line-height:1.1;"></div>
+      <div id="cfg-product-desc" style="font-size:14px;color:var(--ink-hint);margin-top:4px;"></div>
+    </div>
+
+    <!-- DIMENSÕES -->
+    <div class="section-title" style="margin-top:var(--space-md);">Dimensões</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-sm);margin-bottom:var(--space-sm);">
+      <div class="metric-row" style="padding:12px;background:#fff;border:1px solid var(--hairline);border-radius:10px;">
+        <span class="metric-row__label">Largura (mm)</span>
+        <input id="cfg-width" type="number" min="400" max="4000" value="1200" style="width:100%;border:none;background:none;font-family:'DM Mono',monospace;font-size:24px;color:var(--primary);outline:none;margin-top:4px;" oninput="Cfg.calc()">
+      </div>
+      <div class="metric-row" style="padding:12px;background:#fff;border:1px solid var(--hairline);border-radius:10px;">
+        <span class="metric-row__label">Altura (mm)</span>
+        <input id="cfg-height" type="number" min="400" max="3500" value="2200" style="width:100%;border:none;background:none;font-family:'DM Mono',monospace;font-size:24px;color:var(--primary);outline:none;margin-top:4px;" oninput="Cfg.calc()">
+      </div>
+      <div class="metric-row" style="padding:12px;background:#fff;border:1px solid var(--hairline);border-radius:10px;">
+        <span class="metric-row__label">Unidades</span>
+        <input id="cfg-units" type="number" min="1" max="50" value="2" style="width:100%;border:none;background:none;font-family:'DM Mono',monospace;font-size:24px;color:var(--primary);outline:none;margin-top:4px;" oninput="Cfg.calc()">
       </div>
     </div>
-    <div class="catalog-grid" id="catalog-grid" style="flex:1;"></div>
+    <div style="display:flex;gap:var(--space-md);font-size:13px;color:var(--ink-hint);margin-bottom:var(--space-md);">
+      <span>Total: <strong id="cfg-m2" style="color:var(--primary);font-family:'DM Mono',monospace;">--</strong> m²</span>
+      <span>Valor estimado: <strong id="cfg-value" style="color:var(--secondary);font-family:'DM Mono',monospace;">--</strong></span>
+    </div>
+
+    <!-- ACABAMENTO -->
+    <div class="section-title">Acabamento</div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--ink-hint);margin-bottom:8px;">Cor</div>
+      <div id="cfg-colors" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:var(--ink-hint);margin-bottom:8px;">Vidro</div>
+      <div id="cfg-glass" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    </div>
+    <div style="margin-bottom:var(--space-md);display:flex;align-items:center;gap:12px;">
+      <span style="font-size:12px;color:var(--ink-hint);">Motorizado</span>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+        <input type="checkbox" id="cfg-motorized" style="width:16px;height:16px;">
+        <span style="font-size:12px;color:var(--primary);" id="cfg-motor-label">Não</span>
+      </label>
+    </div>
+
+    <!-- PROJECTO -->
+    <div class="section-title">Projecto</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm);margin-bottom:var(--space-sm);">
+      <div>
+        <div style="font-size:11px;color:var(--ink-hint);margin-bottom:4px;">Cliente</div>
+        <input id="cfg-client" type="text" placeholder="Nome do cliente" style="width:100%;border:1px solid var(--hairline);border-radius:6px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--primary);outline:none;box-sizing:border-box;">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--ink-hint);margin-bottom:4px;">Arquitecto</div>
+        <input id="cfg-architect" type="text" placeholder="Nome do arquitecto" style="width:100%;border:1px solid var(--hairline);border-radius:6px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--primary);outline:none;box-sizing:border-box;">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--ink-hint);margin-bottom:4px;">Data de entrega</div>
+        <input id="cfg-delivery" type="date" style="width:100%;border:1px solid var(--hairline);border-radius:6px;padding:8px 10px;font-family:'DM Mono',sans-serif;font-size:13px;color:var(--primary);outline:none;box-sizing:border-box;">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--ink-hint);margin-bottom:4px;">País</div>
+        <select id="cfg-country" style="width:100%;border:1px solid var(--hairline);border-radius:6px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--primary);outline:none;background:#fff;box-sizing:border-box;">
+          <option>Portugal</option><option>Brasil</option><option>França</option>
+          <option>Espanha</option><option>Grécia</option><option>Bélgica</option>
+          <option>Índia</option><option>Paraguai</option><option>Dubai, EAU</option>
+          <option>Kuwait</option><option>Israel</option><option>Marrocos</option>
+          <option>UK</option><option>Bahamas</option><option>USA</option>
+          <option>Itália</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:var(--space-md);">
+      <div style="font-size:11px;color:var(--ink-hint);margin-bottom:4px;">Notas</div>
+      <textarea id="cfg-notes" rows="3" placeholder="Detalhes adicionais, orientação, especificações especiais..." style="width:100%;border:1px solid var(--hairline);border-radius:6px;padding:8px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--primary);outline:none;resize:none;box-sizing:border-box;"></textarea>
+    </div>
+
+    <button onclick="Cfg.submit()" style="width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;">Solicitar Proposta</button>
+    <div id="cfg-result" style="margin-top:12px;font-size:13px;color:var(--secondary);text-align:center;"></div>
   </div>
-  <div class="cart-panel">
-    <div class="cart-title">Carrinho</div>
-    <div id="cart-list"><div class="cart-empty">Carrinho vazio</div></div>
-    <button class="cart-checkout" id="cart-checkout" style="display:none;" onclick="Proc.checkout()">Confirmar Compra</button>
+
+  <!-- RIGHT: Product specs panel -->
+  <div id="specs-panel" style="display:none;flex-direction:column;gap:var(--space-sm);overflow-y:auto;">
+    <div class="section-title">Especificações</div>
+    <div id="cfg-specs-content" style="display:flex;flex-direction:column;gap:8px;"></div>
   </div>
+
 </div>
+
+<script>
+window.PRODUCTS_CFG = {{ products_json | safe }};
+</script>
 {% endblock %}
 
 {% block scripts %}

@@ -237,45 +237,47 @@ class ChatbotAgent:
 # ═══════════════════════════════════════════════════════════════════
 
 _FACTORY_KNOWLEDGE = """
-FÁBRICA HYLINE ESPOSENDE:
-- 10 000 m² de área industrial
-- 24 estações de produção: Pré-produção, Série Correr, Série Abrir, Expedição
-- Materiais: perfis alumínio ETEM, vidro Saint-Gobain, ferragens Roto/MACO
-- Cada janela é personalizada: cor RAL, acabamento, motorização, vidro
-- Tolerância de defeito: < 0.5% (padrão de luxo)
-- Garantia: 10 anos
-- Certificações: CE, EN 14351, ISO 9001
+FÁBRICA HYLINE ESPOSENDE — 10 000 m²:
+24 estações: Pré-produção (HY50/HY40), Série Correr (HYSTYLE), Série Abrir (HY40/HY30), Expedição.
+Materiais: perfis alumínio ETEM (extrusão própria), vidro Saint-Gobain e Guardian, ferragens Roto/MACO/Giesse.
+Cada produto: cor RAL personalizada (lacagem por pó eletrostático), vidro à medida, motorização Somfy/Nice opcional.
+Tolerância de defeito: < 0.5% (padrão de luxo — clientes de hotel 5 estrelas não aceitam imperfeições).
+Garantia: 10 anos. Certificações: CE, EN 14351, ISO 9001, Red Dot (HYFLY), Passivhaus (HY50).
 """
 
 _SYSTEM_PROMPT = """És o assistente de produção da HYLINE Building Systems.
 
-SOBRE A EMPRESA:
-A HYLINE (BBG, SA) fabrica sistemas de caixilharia em alumínio de luxo desde 2014, em Esposende. Produz janelas e portas minimalistas de piso a teto para residências de luxo, hotéis e edifícios de referência em 20+ países. Red Dot Design Award, Patente EPO e WIPO.
+SOBRE A HYLINE:
+Fabricante premium de sistemas de caixilharia em alumínio. Fundada em 2014 em Esposende, Portugal. Exporta para 20+ países. Lema: "Details Make Perfection". Prémio Red Dot Design. Patentes EPO e WIPO.
 
-PRODUTOS:
-- HYLINE Classic: perfil central 18mm, o mais minimalista
-- HYSTYLE: sistema deslizante premium
-- HYWIN40+: alta performance térmica
-- Invisible Frame: vidro de piso a teto sem moldura visível
+PRODUTOS HYLINE (13 linhas):
+- HYSLIM: ultra-fino 15mm, deslizante, €5k–18k — o mais elegante
+- HY30: 30mm deslizante, tecnologia integrada, €3.5k–12k
+- HY40: 40mm deslizante/abertura, o mais versátil e popular, €4k–15k
+- HY50: 50mm abertura, alta performance térmica Passivhaus, €5k–18k
+- HYARC: curvo, transforma espaços com formas orgânicas, €15k–80k
+- HYPI: pivot, elegância dramática, €8k–35k
+- HYPIWOOD: pivot madeira+alumínio, sustentável FSC, €10k–40k
+- HYSTYLE: porta deslizante premium, €4.5k–16k
+- HYSTYLE X: porta deslizante versátil, vidro inteligente, €5k–18k
+- HYWIN+: abertura com acessórios ocultos, €3.5k–14k
+- HYFLY: estore integrado, Red Dot Award, protecção invisível, €2k–8k
+- HYWALL: fachada premium, vãos até 8m, €20k–150k
+- HYSTYLEWOOD: deslizante madeira+alumínio, FSC, €8k–30k
 
-CLIENTES: arquitectos, empreiteiros premium, hotéis de luxo. Cada peça é única e personalizada. Encomendas de 8 000 a 450 000 EUR. Exportação para 20+ países.
+CLIENTES: arquitectos de luxo, hotéis 5 estrelas, promotores premium, particulares de alto valor.
+Encomendas: €8k a €450k. Cada peça é única e personalizada.
 
 O TEU PAPEL:
-- Reportas ao Director de Produção
-- Ajudas a gerir produção, alertas, qualidade e logística
-- Usas sempre dados reais das ferramentas disponíveis — nunca inventas números
-- Falas em português europeu, tom profissional e directo
-- Nunca usas jargão interno (F, P, D, alpha, AFI)
-- Nunca usas asteriscos nem markdown — só texto simples
-
-QUANDO PERGUNTAM SOBRE:
-- Produção → usa global_kpis() e station_m2_by_hour()
-- Alertas ou avarias → usa get_station_status() e worst_station()
-- Material ou compras → usa search_catalog()
-- Navegar → usa open_view()
-- Encomendas ou clientes → menciona valor da carteira e países de exportação
-
-RESPOSTAS: curtas (max 3 linhas), directas, profissionais. Sem markdown, sem asteriscos."""
+- Ajudas Filipe Gonçalves (Director) e a equipa de produção
+- Usas SEMPRE dados reais das ferramentas — nunca inventas números
+- Quando perguntam sobre produtos → usa get_product_info()
+- Quando perguntam preço/orçamento → usa create_quote()
+- Quando perguntam produção/KPIs → usa global_kpis()
+- Quando perguntam pior estação → usa worst_station()
+- Falas em português europeu, profissional e directo
+- Nunca usas asteriscos, bullets ou markdown — só texto simples
+- Respostas curtas (max 3 linhas)"""
 
 
 def _clean(text: str) -> str:
@@ -412,6 +414,22 @@ class AssistantAgent:
                 description="Encontra a estação produtiva com pior Desempenho actual. Usa para responder a 'pior estação', 'mais crítica', 'maior problema'.",
                 parameters=S(type=T.OBJECT, properties={}),
             ),
+            types.FunctionDeclaration(
+                name="get_product_info",
+                description="Devolve especificações técnicas de uma linha de produto HYLINE. Usar quando o utilizador perguntar sobre características, preços ou técnicos de um produto específico.",
+                parameters=S(type=T.OBJECT, properties={
+                    "product_id": S(type=T.STRING, description="ID do produto: HYSLIM, HY30, HY40, HY50, HYARC, HYPI, HYPIWOOD, HYSTYLE, HYSTYLE_X, HYWIN_PLUS, HYFLY, HYWALL, HYSTYLEWOOD"),
+                }, required=["product_id"]),
+            ),
+            types.FunctionDeclaration(
+                name="create_quote",
+                description="Cria uma proposta comercial estimada para um produto HYLINE. Usar quando o utilizador pede preço, orçamento, proposta ou cotação.",
+                parameters=S(type=T.OBJECT, properties={
+                    "product_id": S(type=T.STRING, description="ID do produto ex: HY40"),
+                    "units":      S(type=T.NUMBER, description="Número de unidades (janelas/portas)"),
+                    "country":    S(type=T.STRING, description="País de destino"),
+                }, required=["product_id", "units", "country"]),
+            ),
         ])
 
         def _exec(name: str, args: dict) -> dict:
@@ -478,6 +496,42 @@ class AssistantAgent:
                     "m2_per_hour": worst["m2_per_hour"],
                     "target_m2_per_hour": worst["target_m2_per_hour"],
                     "operators": worst.get("operators", []),
+                }
+            if name == "get_product_info":
+                pid = str(args.get("product_id", ""))
+                from .config import cfg as _cfg
+                products = {p.id: p for p in _cfg().products.lines}
+                p = products.get(pid)
+                if not p:
+                    return {"error": f"Produto '{pid}' não encontrado. IDs válidos: HYSLIM, HY30, HY40, HY50, HYARC, HYPI, HYPIWOOD, HYSTYLE, HYSTYLE_X, HYWIN_PLUS, HYFLY, HYWALL, HYSTYLEWOOD"}
+                return {
+                    "id": p.id, "name": p.name, "description": p.description,
+                    "type": p.type, "profile_mm": p.profile_mm, "category": p.category,
+                    "price_min_eur": p.price_min_eur, "price_max_eur": p.price_max_eur,
+                    "lead_time_days": p.lead_time_days,
+                    "colors": p.colors, "glass_options": p.glass_options,
+                    "certifications": p.certifications,
+                    "specs": {"uw_value": p.specs.uw_value, "rw_db": p.specs.rw_db,
+                              "max_span_m": p.specs.max_span_m, "weight_kg_m2": p.specs.weight_kg_m2},
+                }
+            if name == "create_quote":
+                pid     = str(args.get("product_id", "HY40"))
+                units   = int(args.get("units", 1))
+                country = str(args.get("country", "Portugal"))
+                from .config import cfg as _cfg
+                import random as _rnd, datetime as _dt
+                products = {p.id: p for p in _cfg().products.lines}
+                p = products.get(pid)
+                if not p:
+                    return {"error": f"Produto '{pid}' não encontrado"}
+                mid_price = (p.price_min_eur + p.price_max_eur) / 2
+                est_eur = round(mid_price * units)
+                ref = f"QT-2026-{_rnd.randint(100,999)}"
+                valid = (_dt.date.today() + _dt.timedelta(days=30)).isoformat()
+                return {
+                    "quote_ref": ref, "product": p.name, "units": units,
+                    "estimated_eur": est_eur, "lead_time_days": p.lead_time_days,
+                    "valid_until": valid, "country": country,
                 }
             return {"error": f"ferramenta desconhecida: {name}"}
 

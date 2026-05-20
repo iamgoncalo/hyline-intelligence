@@ -251,42 +251,205 @@ production:
   export_countries: 20
 
 products:
-  avg_price_per_m2_eur: 1800     # average across all product lines
+  avg_price_per_m2_eur: 2200
+  slogan: "Details Make Perfection"
+  tagline: "HYLINE redefines how we experience buildings"
+  sector_product_map:
+    correr: "HYSTYLE"
+    abrir: "HY40"
+    pre: "HY50"
+    expedicao: "HY30"
   lines:
-    - id: "HYLINE"
-      name: "HYLINE Classic"
-      description: "Sistema minimalista alumínio — perfil central 18mm"
-      category: "premium"
-      price_min_eur: 2500
-      price_max_eur: 8000
-      lead_time_days: 21
-    - id: "HYSTYLE"
-      name: "HYSTYLE"
-      description: "Sistema deslizante premium"
-      category: "premium"
-      price_min_eur: 3000
-      price_max_eur: 12000
-      lead_time_days: 28
-    - id: "HYWIN40"
-      name: "HYWIN40+"
-      description: "Sistema de alta performance térmica"
+    - id: "HYSLIM"
+      name: "HYSLIM"
+      description: "Elegância e Performance — perfil ultra-fino"
+      type: "sliding"
+      profile_mm: 15
       category: "ultra_premium"
+      price_min_eur: 5000
+      price_max_eur: 18000
+      lead_time_days: 28
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "Personalizado"]
+      glass_options: ["duplo", "triplo", "low-e", "acústico"]
+      certifications: ["CE", "EN 14351"]
+      specs: {uw_value: 1.0, rw_db: 40, max_span_m: 6.0, weight_kg_m2: 24}
+    - id: "HY30"
+      name: "HY30"
+      description: "Integração perfeita da tecnologia — 30mm perfil visível"
+      type: "sliding"
+      profile_mm: 30
+      category: "premium"
+      price_min_eur: 3500
+      price_max_eur: 12000
+      lead_time_days: 21
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "RAL 9006", "Personalizado"]
+      glass_options: ["duplo", "triplo", "low-e"]
+      certifications: ["CE", "EN 14351"]
+      specs: {uw_value: 1.2, rw_db: 38, max_span_m: 4.5, weight_kg_m2: 28}
+    - id: "HY40"
+      name: "HY40"
+      description: "Elegância em cada cenário — o mais versátil"
+      type: "sliding_opening"
+      profile_mm: 40
+      category: "premium"
       price_min_eur: 4000
       price_max_eur: 15000
-      lead_time_days: 35
-    - id: "INVISIBLE"
-      name: "Invisible Frame"
-      description: "Vidro de piso a teto sem moldura visível"
+      lead_time_days: 21
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "RAL 8022", "Personalizado"]
+      glass_options: ["duplo", "triplo", "low-e", "acústico", "anti-reflecção"]
+      certifications: ["CE", "EN 14351", "WDMA"]
+      specs: {uw_value: 1.1, rw_db: 39, max_span_m: 5.0, weight_kg_m2: 30}
+    - id: "HY50"
+      name: "HY50"
+      description: "A Essência da Elegância Minimalista — alta performance térmica"
+      type: "opening"
+      profile_mm: 50
+      category: "premium"
+      price_min_eur: 5000
+      price_max_eur: 18000
+      lead_time_days: 28
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "Personalizado"]
+      glass_options: ["triplo", "low-e", "acústico"]
+      certifications: ["CE", "EN 14351", "Passivhaus"]
+      specs: {uw_value: 0.8, rw_db: 42, max_span_m: 4.0, weight_kg_m2: 32}
+    - id: "HYARC"
+      name: "HYARC"
+      description: "Curvas que Transformam Espaços — sistemas curvos"
+      type: "curved"
+      profile_mm: 40
+      category: "ultra_premium"
+      price_min_eur: 15000
+      price_max_eur: 80000
+      lead_time_days: 42
+      colors: ["RAL 9005", "RAL 7016", "Personalizado"]
+      glass_options: ["curvo", "duplo", "triplo"]
+      certifications: ["CE"]
+      specs: {uw_value: 1.2, rw_db: 36, max_span_m: 4.0, weight_kg_m2: 35}
+    - id: "HYPI"
+      name: "HYPI"
+      description: "Detalhes que Transformam — portas pivot"
+      type: "pivot"
+      profile_mm: 35
       category: "ultra_premium"
       price_min_eur: 8000
-      price_max_eur: 50000
+      price_max_eur: 35000
+      lead_time_days: 35
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "Personalizado"]
+      glass_options: ["duplo", "triplo", "decorativo"]
+      certifications: ["CE", "EN 14351"]
+      specs: {uw_value: 1.0, rw_db: 40, max_span_m: 4.5, weight_kg_m2: 45}
+    - id: "HYPIWOOD"
+      name: "HYPIWOOD"
+      description: "Minimalismo que Respeita a Natureza — alumínio e madeira"
+      type: "pivot"
+      profile_mm: 35
+      category: "ultra_premium"
+      price_min_eur: 10000
+      price_max_eur: 40000
       lead_time_days: 42
+      colors: ["Carvalho natural", "Nogueira", "Wengué", "Personalizado"]
+      glass_options: ["duplo", "triplo"]
+      certifications: ["CE", "EN 14351", "FSC"]
+      specs: {uw_value: 0.9, rw_db: 41, max_span_m: 4.0, weight_kg_m2: 50}
+    - id: "HYSTYLE"
+      name: "HYSTYLE"
+      description: "Melhorar a estética — porta deslizante premium"
+      type: "sliding_door"
+      profile_mm: 38
+      category: "premium"
+      price_min_eur: 4500
+      price_max_eur: 16000
+      lead_time_days: 28
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "Personalizado"]
+      glass_options: ["duplo", "triplo", "low-e"]
+      certifications: ["CE", "EN 14351"]
+      specs: {uw_value: 1.1, rw_db: 38, max_span_m: 5.0, weight_kg_m2: 30}
+    - id: "HYSTYLE_X"
+      name: "HYSTYLE X"
+      description: "Versatilidade com Toque Minimalista"
+      type: "sliding_door"
+      profile_mm: 38
+      category: "premium"
+      price_min_eur: 5000
+      price_max_eur: 18000
+      lead_time_days: 28
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "Personalizado"]
+      glass_options: ["duplo", "triplo", "low-e", "inteligente"]
+      certifications: ["CE", "EN 14351"]
+      specs: {uw_value: 1.0, rw_db: 39, max_span_m: 5.5, weight_kg_m2: 32}
+    - id: "HYWIN_PLUS"
+      name: "HYWIN+"
+      description: "Minimalismo com elegância de acessórios ocultos"
+      type: "opening"
+      profile_mm: 40
+      category: "premium"
+      price_min_eur: 3500
+      price_max_eur: 14000
+      lead_time_days: 21
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "RAL 9006", "Personalizado"]
+      glass_options: ["duplo", "triplo", "low-e"]
+      certifications: ["CE", "EN 14351"]
+      specs: {uw_value: 1.1, rw_db: 38, max_span_m: 4.0, weight_kg_m2: 28}
+    - id: "HYFLY"
+      name: "HYFLY"
+      description: "Protecção apenas visível quando necessária (Red Dot Award)"
+      type: "screen"
+      profile_mm: 12
+      category: "ultra_premium"
+      price_min_eur: 2000
+      price_max_eur: 8000
+      lead_time_days: 14
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "Personalizado"]
+      glass_options: []
+      certifications: ["Red Dot Design Award 2022"]
+      specs: {uw_value: null, rw_db: null, max_span_m: 3.0, weight_kg_m2: 12}
+    - id: "HYWALL"
+      name: "HYWALL"
+      description: "Elegância e Eficiência em Harmonia — fachadas"
+      type: "facade"
+      profile_mm: 50
+      category: "ultra_premium"
+      price_min_eur: 20000
+      price_max_eur: 150000
+      lead_time_days: 56
+      colors: ["RAL 9005", "RAL 7016", "RAL 9010", "Personalizado"]
+      glass_options: ["duplo", "triplo", "low-e", "fotovoltaico"]
+      certifications: ["CE", "EN 13830", "ETA"]
+      specs: {uw_value: 1.0, rw_db: 38, max_span_m: 8.0, weight_kg_m2: 40}
+    - id: "HYSTYLEWOOD"
+      name: "HYSTYLEWOOD"
+      description: "Design que transforma — deslizante madeira e alumínio"
+      type: "sliding_door"
+      profile_mm: 40
+      category: "ultra_premium"
+      price_min_eur: 8000
+      price_max_eur: 30000
+      lead_time_days: 42
+      colors: ["Carvalho natural", "Nogueira", "Personalizado"]
+      glass_options: ["duplo", "triplo"]
+      certifications: ["CE", "EN 14351", "FSC"]
+      specs: {uw_value: 0.9, rw_db: 40, max_span_m: 4.0, weight_kg_m2: 48}
 
 markets:
   export_pct: 0.62              # 62% of orders are for export
   top_export_country: "Brasil"
   primary: ["Portugal", "Brasil", "Itália", "Benelux", "USA", "França"]
   secondary: ["Marrocos", "Dubai", "Kuwait", "Israel", "Índia", "Grécia", "UK", "Paraguai", "Bahamas"]
+
+portfolio:
+  projects:
+    - {ref: "HY40-GR-001",    product: "HY40",    location: "Psychiko, Atenas, Grécia",       year: 2023, type: "Residência privada"}
+    - {ref: "HY40-BE-001",    product: "HY40",    location: "Tervuren, Bélgica",               year: 2023, type: "Residência privada"}
+    - {ref: "HY40-ST-001",    product: "HY40",    location: "Saint Tropez, França",             year: 2022, type: "Villa de luxo"}
+    - {ref: "HY40-LZ-001",    product: "HY40",    location: "La Zagaleta, Marbella, Espanha",  year: 2023, type: "Residência premium"}
+    - {ref: "HYSLIM-PY-001",  product: "HYSLIM",  location: "Assunção, Paraguai",               year: 2022, type: "Edifício comercial"}
+    - {ref: "HY40-IN-001",    product: "HY40",    location: "Mumbai, Índia",                   year: 2023, type: "Hotel de luxo"}
+    - {ref: "HY30-JER-001",   product: "HY30",    location: "Jericoacoara, Brasil",             year: 2022, type: "Resort"}
+    - {ref: "HYWALL-PA-001",  product: "HYWALL",  location: "Palma, Espanha",                  year: 2023, type: "Edifício de escritórios"}
+    - {ref: "HYPI-BIA-001",   product: "HYPI",    location: "Biarritz, França",                year: 2022, type: "Villa privada"}
+    - {ref: "HY50-AND-001",   product: "HY50",    location: "Andros, Grécia",                  year: 2023, type: "Residência de luxo"}
+    - {ref: "HYPIWOOD-PT-001",product: "HYPIWOOD",location: "Cascais, Portugal",               year: 2023, type: "Moradia premium"}
+    - {ref: "HYSTYLE-VIG-001",product: "HYSTYLE", location: "Vigo, Espanha",                   year: 2022, type: "Residência privada"}
 
 clients:
   segments:

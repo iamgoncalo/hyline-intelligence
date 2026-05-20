@@ -54,24 +54,31 @@ NC_TYPES = [
 
 # Clientes reais HYLINE — arquitectos, empreiteiros premium e hotéis de luxo
 CUSTOMERS = [
-    "Arq. Studio Saraiva & Associados, Lisboa",
-    "Hotel Four Seasons, Porto",
-    "Mota-Engil Engenharia, Lisboa",
-    "Atelier Siza Inspirado Projects, Porto",
-    "Trump International Golf Club, Dubai",
-    "Four Seasons Hotel, Miami USA",
-    "Residência Privada Cascais — Arq. Torres",
-    "Condomínio Vilamoura Prestige, Algarve",
-    "Hotel Belmond Reid's, Funchal",
-    "Studio Souto Moura Projects, Porto",
-    "Emaar Properties, Dubai",
-    "Marriott Residences, Casablanca",
+    "Atelier Rui Veloso Arquitectura, Porto",
+    "Souto de Moura Arquitectos, Porto",
+    "Studio M2, Lisboa",
+    "Hotel Four Seasons, Lisboa",
+    "Residência Dr. Marques, Cascais",
+    "Condomínio Quinta do Lago, Algarve",
+    "Villa Privée, Saint Tropez, França",
+    "Emaar Beachfront Residence, Dubai",
+    "Belmond Hotel, Porto",
+    "The Peninsula Hotel, London",
+    "Quinta de Cravel, Vale do Douro",
+    "Hotel Arts, Barcelona",
+    "Villa Privada, La Zagaleta, Espanha",
+    "Residência Santos, São Paulo",
+    "Grupo Teixeira Duarte, Lisboa",
 ]
 
 # Referências realistas HYLINE — sistemas alumínio premium
-REF_CORRER = ["HYLINE-SCR-18", "HYSTYLE-SCR-28", "HYWIN40-SCR-35"]
-REF_ABRIR  = ["HYLINE-ABR-18", "HYWIN40-ABR-35", "INVISIBLE-ABR-42"]
-SIZES_MM   = [(600,1200),(900,1400),(1200,1500),(1400,2100),(2000,2200),(800,1600),(1000,2000)]
+REF_CORRER = ["HYSTYLE", "HYSTYLE_X", "HY40", "HYSLIM", "HYWIN_PLUS"]
+REF_ABRIR  = ["HY40", "HY50", "HYPI", "HYPIWOOD", "HYWIN_PLUS"]
+SIZES_MM   = [
+    (800, 1800), (1200, 2200), (1500, 2500), (2000, 2800),
+    (2400, 3000), (600, 1500), (1000, 2000), (3000, 3000),
+    (1800, 2600), (400, 1200),
+]
 
 
 def _iso(dt: datetime) -> str:
@@ -95,7 +102,7 @@ def generate_orders(n: int = 40) -> pd.DataFrame:
     today = datetime.now(timezone.utc).date()
     refs = REF_CORRER + REF_ABRIR
     for i in range(1, n + 1):
-        n_windows = random.randint(1, 15)
+        n_windows = random.randint(1, 12)
         w, h = random.choice(SIZES_MM)
         unit_m2 = (w * h) / 1_000_000
         total_m2 = round(n_windows * unit_m2, 2)

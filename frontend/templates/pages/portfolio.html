@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Portfolio{% endblock %}
+{% block page_title %}Portfolio{% endblock %}
+{% block page_subtitle %}Projectos de referência em 20 países{% endblock %}
+
+{% block content %}
+<div style="display:flex;flex-direction:column;height:100%;overflow:hidden;">
+  <!-- Filter pills -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;margin-bottom:var(--space-md);">
+    <button class="cat-chip is-active" onclick="Portfolio.filter(this,'')">Todos</button>
+    <button class="cat-chip" onclick="Portfolio.filter(this,'Portugal')">Portugal</button>
+    <button class="cat-chip" onclick="Portfolio.filter(this,'Grécia')">Grécia</button>
+    <button class="cat-chip" onclick="Portfolio.filter(this,'França')">França</button>
+    <button class="cat-chip" onclick="Portfolio.filter(this,'Espanha')">Espanha</button>
+    <button class="cat-chip" onclick="Portfolio.filter(this,'Brasil')">Brasil</button>
+    <button class="cat-chip" onclick="Portfolio.filter(this,'Bélgica')">Bélgica</button>
+    <button class="cat-chip" onclick="Portfolio.filter(this,'Índia')">Índia</button>
+    <button class="cat-chip" onclick="Portfolio.filter(this,'Paraguai')">Paraguai</button>
+  </div>
+  <!-- Project grid -->
+  <div id="portfolio-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);flex:1;overflow-y:auto;align-content:start;"></div>
+</div>
+
+<script>
+window.PORTFOLIO_DATA = {{ portfolio_json | safe }};
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/portfolio.js"></script>
+{% endblock %}

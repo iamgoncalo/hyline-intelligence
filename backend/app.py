@@ -109,6 +109,21 @@ class LogisticsQuoteBody(BaseModel):
     destination_country: str
 
 
+class OrderQuoteBody(BaseModel):
+    product_id: str
+    width_mm: float
+    height_mm: float
+    units: int
+    color: str = ""
+    glass: str = ""
+    motorized: bool = False
+    client: str = ""
+    architect: str = ""
+    delivery_date: str = ""
+    country: str = "Portugal"
+    notes: str = ""
+
+
 def build_live_payload() -> dict:
     """Build second-by-second live data. All base values from cfg().ws_live — zero hardcodes."""
     t = time.time()
@@ -246,7 +261,28 @@ def create_app() -> FastAPI:
     @app.get("/procurement", response_class=HTMLResponse)
     def procurement_page(request: Request):
         if not _check_session(request): return RedirectResponse("/login", status_code=302)
-        return _page("procurement", "procurement")
+        products_json = json.dumps(
+            [{"id": p.id, "name": p.name, "description": p.description,
+              "type": p.type, "profile_mm": p.profile_mm, "category": p.category,
+              "price_min_eur": p.price_min_eur, "price_max_eur": p.price_max_eur,
+              "lead_time_days": p.lead_time_days, "colors": p.colors,
+              "glass_options": p.glass_options, "certifications": p.certifications,
+              "specs": {"uw_value": p.specs.uw_value, "rw_db": p.specs.rw_db,
+                        "max_span_m": p.specs.max_span_m, "weight_kg_m2": p.specs.weight_kg_m2}}
+             for p in c.products.lines],
+            ensure_ascii=False, separators=(",", ":"),
+        )
+        return _page("procurement", "procurement", products_json=products_json)
+
+    @app.get("/portfolio", response_class=HTMLResponse)
+    def portfolio_page(request: Request):
+        if not _check_session(request): return RedirectResponse("/login", status_code=302)
+        portfolio_json = json.dumps(
+            [{"ref": p.ref, "product": p.product, "location": p.location, "year": p.year, "type": p.type}
+             for p in c.portfolio.projects],
+            ensure_ascii=False, separators=(",", ":"),
+        )
+        return _page("portfolio", "portfolio", portfolio_json=portfolio_json)
 
     @app.get("/sustentabilidade", response_class=HTMLResponse)
     def sustentabilidade_page(request: Request):
@@ -753,6 +789,66 @@ def create_app() -> FastAPI:
     @app.get("/api/actions")
     def actions_list(limit: int = 20) -> list[dict]:
         return dlayer.recent_actions(limit=limit)
+
+    @app.post("/api/orders/quote")
+    def orders_quote(body: OrderQuoteBody) -> dict:
+        prod = next((p for p in c.products.lines if p.id == body.product_id), None)
+        if not prod:
+            raise HTTPException(404, f"Produto '{body.product_id}' não encontrado")
+        area_m2 = round(body.width_mm * body.height_mm * body.units / 1_000_000, 2)
+        mid = (prod.price_min_eur + prod.price_max_eur) / 2
+        motorized_surcharge = 800 if body.motorized else 0
+        est_eur = round(mid * body.units + motorized_surcharge)
+        import uuid
+        ref = f"QT-{datetime.now(timezone.utc).strftime('%Y')}-{str(uuid.uuid4())[:6].upper()}"
+        valid_until = (datetime.now(timezone.utc).date() + __import__('datetime').timedelta(days=30)).isoformat()
+        # Save as order with status "quote"
+        with dlayer.connection() as conn:
+            conn.execute(
+                "INSERT OR IGNORE INTO orders(id,customer,total_windows,total_m2,deadline,priority,status) "
+                "VALUES(?,?,?,?,?,?,?)",
+                (ref, body.client or "Proposta", body.units, area_m2,
+                 body.delivery_date or datetime.now(timezone.utc).date().isoformat(),
+                 1, "quote"),
+            )
+        dlayer.record_decision(
+            member_id=None, kind="order_quote",
+            target=ref,
+            payload=json.dumps({
+                "product": prod.name, "units": body.units, "area_m2": area_m2,
+                "est_eur": est_eur, "color": body.color, "glass": body.glass,
+                "motorized": body.motorized, "client": body.client,
+                "country": body.country, "notes": body.notes,
+            }, ensure_ascii=False),
+        )
+        return {
+            "quote_ref": ref, "estimated_eur": est_eur, "area_m2": area_m2,
+            "lead_time_days": prod.lead_time_days, "valid_until": valid_until,
+            "product": prod.name, "units": body.units,
+        }
+
+    @app.get("/api/production/mix")
+    def production_mix() -> list[dict]:
+        spm = c.products.sector_product_map
+        with dlayer.connection() as conn:
+            rows = conn.execute(
+                "SELECT phase, COALESCE(SUM(area_m2),0) AS m2 "
+                "FROM production_events "
+                "WHERE status='completed' AND DATE(ts)=DATE('now') "
+                "GROUP BY phase ORDER BY m2 DESC"
+            ).fetchall()
+        total = sum(float(r["m2"] or 0) for r in rows)
+        result = []
+        for r in rows:
+            m2 = float(r["m2"] or 0)
+            product_line = spm.get(r["phase"], r["phase"])
+            result.append({
+                "product_line": product_line,
+                "phase": r["phase"],
+                "m2_today": round(m2, 1),
+                "pct": round(100 * m2 / max(total, 0.01), 1),
+            })
+        return result[:5]
 
     # ── Logistics ─────────────────────────────────────────────────
     @app.get("/api/logistics/partners")

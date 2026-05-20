@@ -190,13 +190,33 @@ async function refreshEvents() {
   } catch {}
 }
 
+// ── Product mix chart ─────────────────────────────────────────────
+async function refreshProductMix() {
+  try {
+    const mix = await fetchJSON('/api/production/mix');
+    const host = $('product-mix-chart');
+    if (!host || !mix.length) return;
+    const maxM2 = Math.max(...mix.map(m => m.m2_today), 0.1);
+    host.innerHTML = mix.map(m => `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-size:10px;color:var(--ink-hint);width:64px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${m.product_line}</span>
+        <div style="flex:1;height:6px;background:var(--surface-soft);border-radius:3px;overflow:hidden;">
+          <div style="width:${(m.m2_today/maxM2*100).toFixed(1)}%;height:100%;background:var(--tertiary);border-radius:3px;transition:width 0.4s;"></div>
+        </div>
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--ink-hint);flex-shrink:0;">${m.m2_today}m²</span>
+      </div>`).join('');
+  } catch {}
+}
+
 // ── Init ────────────────────────────────────────────────────────────
 refreshStations();
 refreshKPIs();
 refreshEvents();
+refreshProductMix();
 setInterval(refreshStations, 2000);
 setInterval(refreshKPIs, 5000);
 setInterval(refreshEvents, 2000);
+setInterval(refreshProductMix, 5000);
 
 // Also listen for live WS updates to refresh station colours
 document.addEventListener('live', () => { refreshStations(); });

@@ -200,19 +200,47 @@ class ProductionCfg(BaseModel):
     export_countries: int
 
 
+class ProductSpecsCfg(BaseModel):
+    uw_value: float | None = None
+    rw_db: int | None = None
+    max_span_m: float
+    weight_kg_m2: float
+
+
 class ProductLineCfg(BaseModel):
     id: str
     name: str
     description: str
+    type: str
+    profile_mm: int
     category: str
     price_min_eur: float
     price_max_eur: float
     lead_time_days: int
+    colors: list[str]
+    glass_options: list[str] = []
+    certifications: list[str]
+    specs: ProductSpecsCfg
 
 
 class ProductsCfg(BaseModel):
     avg_price_per_m2_eur: float
+    slogan: str
+    tagline: str
+    sector_product_map: dict[str, str]
     lines: list[ProductLineCfg]
+
+
+class PortfolioProjectCfg(BaseModel):
+    ref: str
+    product: str
+    location: str
+    year: int
+    type: str
+
+
+class PortfolioCfg(BaseModel):
+    projects: list[PortfolioProjectCfg]
 
 
 class MarketsCfg(BaseModel):
@@ -278,6 +306,7 @@ class Config(BaseModel):
     ws_live: WsLiveCfg
     production: ProductionCfg
     products: ProductsCfg
+    portfolio: PortfolioCfg
     markets: MarketsCfg
     clients: ClientsCfg
     quality: QualityCfg
