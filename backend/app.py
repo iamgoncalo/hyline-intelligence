@@ -185,21 +185,32 @@ def create_app() -> FastAPI:
     def conversas_page(): return _page("conversas", "conversas")
 
     # ── WebSocket live feed (1s sinusoidal oscillations) ──────────
+    connected_ws: list = []
+
     @app.websocket("/ws/live")
     async def live_feed(ws: WebSocket):
         await ws.accept()
+        connected_ws.append(ws)
         try:
             while True:
                 await asyncio.sleep(1)
                 try:
                     payload = build_live_payload()
-                    await ws.send_text(json.dumps(payload))
                 except Exception as exc:
                     log.warning("WS payload error: %s", exc)
-        except WebSocketDisconnect:
-            pass
-        except Exception:
-            pass
+                    continue
+                dead = []
+                for ws in list(connected_ws):
+                    try:
+                        await ws.send_text(json.dumps(payload))
+                    except Exception:
+                        dead.append(ws)
+                for ws in dead:
+                    if ws in connected_ws:
+                        connected_ws.remove(ws)
+        except (WebSocketDisconnect, Exception):
+            if ws in connected_ws:
+                connected_ws.remove(ws)
 
     # ── Core API ─────────────────────────────────────────────────
     @app.get("/api/health")
