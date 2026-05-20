@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Conversas{% endblock %}
+{% block page_title %}Conversas{% endblock %}
+{% block page_subtitle %}Histórico de interações com o Assistente{% endblock %}
+
+{% block content %}
+<div class="conv-layout">
+  <div class="conv-sidebar">
+    <div class="conv-sidebar__header">
+      <span class="conv-sidebar__title">Conversas</span>
+      <button class="conv-new-btn" id="conv-new-btn">Nova</button>
+    </div>
+    <div class="conv-list" id="conv-list"></div>
+  </div>
+  <div class="conv-main">
+    <div class="conv-stream" id="conv-stream">
+      <div class="conv-stream__empty">Seleciona uma conversa ou inicia uma nova.</div>
+    </div>
+    <div class="chat-input-area">
+      <input class="chat-input" id="conv-input" placeholder="Escreve uma mensagem" autocomplete="off">
+      <button class="chat-send" id="conv-send">Enviar</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Hide dock on conversations page (has its own input)
+  document.getElementById('dock').style.opacity = '0';
+  document.getElementById('dock').style.pointerEvents = 'none';
+</script>
+<script src="/static/js/conversas.js"></script>
+{% endblock %}

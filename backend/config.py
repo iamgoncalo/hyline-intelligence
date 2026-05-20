@@ -181,6 +181,14 @@ class BrandCfg(BaseModel):
     font_display: str; font_body: str; font_mono: str
 
 
+class WsLiveCfg(BaseModel):
+    interior_base_temp_c: float
+    interior_humidity_base_pct: float
+    interior_co2_base_ppm: float
+    interior_noise_base_db: float
+    prod_rate_base_m2_min: float
+
+
 class Config(BaseModel):
     app: AppCfg
     paths: PathsCfg
@@ -196,6 +204,7 @@ class Config(BaseModel):
     ai: AICfg
     procurement: ProcurementCfg
     brand: BrandCfg
+    ws_live: WsLiveCfg
 
 
 def load_config(path: str | Path = "config.yaml") -> Config:

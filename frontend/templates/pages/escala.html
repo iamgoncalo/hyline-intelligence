@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Escala{% endblock %}
+{% block page_title %}Escala{% endblock %}
+{% block page_subtitle %}Tendências de mercado e prioridades estratégicas{% endblock %}
+
+{% block content %}
+<div class="escala-grid">
+  <div class="escala-top">
+    <div style="overflow:hidden;display:flex;flex-direction:column;">
+      <div class="section-title">Tendências · Google Portugal</div>
+      <div id="trends-chart" style="flex:1;"></div>
+    </div>
+    <div class="escala-priorities" id="priorities-list">
+      <div class="section-title">Prioridades Estratégicas</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="section-title">Contexto Ambiental · Esposende</div>
+    <div class="escala-env">
+      <div class="metric-row">
+        <span class="metric-row__label">Temperatura</span>
+        <span class="metric-row__value" id="env-temp">--</span>
+        <span class="metric-row__unit">°C</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-row__label">Humidade Ext.</span>
+        <span class="metric-row__value" id="env-hum">--</span>
+        <span class="metric-row__unit">%</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-row__label">CO₂ Rede PT</span>
+        <span class="metric-row__value" id="env-co2">--</span>
+        <span class="metric-row__unit">g/kWh</span>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--ink-hint);margin-top:8px;" id="env-source">A carregar</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/escala.js"></script>
+{% endblock %}

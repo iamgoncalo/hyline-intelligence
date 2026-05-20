@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Procurement{% endblock %}
+{% block page_title %}Procurement{% endblock %}
+{% block page_subtitle %}Catálogo de fornecedores sustentáveis{% endblock %}
+
+{% block content %}
+<div style="display:grid;grid-template-columns:1fr 280px;height:100%;gap:var(--space-md);">
+  <div style="display:flex;flex-direction:column;overflow:hidden;">
+    <div class="catalog-filters">
+      <label class="eco-toggle">
+        <input type="checkbox" id="eco-filter">
+        <span class="eco-toggle__pill">Apenas eco ≥85</span>
+      </label>
+      <span style="font-size:11px;color:var(--ink-hint);" id="cat-label">Todos os materiais</span>
+      <div style="display:flex;gap:6px;margin-left:auto;">
+        <button class="cat-chip is-active" data-cat="" onclick="Proc.filterCat(this,'')">Todos</button>
+        <button class="cat-chip" data-cat="perfis" onclick="Proc.filterCat(this,'perfis')">Perfis</button>
+        <button class="cat-chip" data-cat="vidro" onclick="Proc.filterCat(this,'vidro')">Vidro</button>
+        <button class="cat-chip" data-cat="ferragens" onclick="Proc.filterCat(this,'ferragens')">Ferragens</button>
+        <button class="cat-chip" data-cat="consumiveis" onclick="Proc.filterCat(this,'consumiveis')">Consumíveis</button>
+      </div>
+    </div>
+    <div class="catalog-grid" id="catalog-grid" style="flex:1;"></div>
+  </div>
+  <div class="cart-panel">
+    <div class="cart-title">Carrinho</div>
+    <div id="cart-list"><div class="cart-empty">Carrinho vazio</div></div>
+    <button class="cart-checkout" id="cart-checkout" style="display:none;" onclick="Proc.checkout()">Confirmar Compra</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/procurement.js"></script>
+{% endblock %}

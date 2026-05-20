@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}HYLINE{% endblock %} · Inteligência do Espaço</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/planta.css">
+</head>
+<body>
+  <div class="shell">
+    <nav class="sidebar">
+      <div class="sidebar__brand">
+        <span class="sidebar__logo">HYLINE</span>
+        <span class="sidebar__sub">Inteligência do Espaço</span>
+      </div>
+      <div class="sidebar__nav">
+        <a href="/" class="nav-item {% if active=='home' %}is-active{% endif %}">Homepage</a>
+        <a href="/alertas" class="nav-item {% if active=='alertas' %}is-active{% endif %}">
+          Alertas
+          <span class="nav-badge" id="nav-alerts-count">--</span>
+        </a>
+        <a href="/acao" class="nav-item {% if active=='acao' %}is-active{% endif %}">Ação</a>
+        <a href="/escala" class="nav-item {% if active=='escala' %}is-active{% endif %}">Escala</a>
+        <a href="/procurement" class="nav-item {% if active=='procurement' %}is-active{% endif %}">Procurement</a>
+        <a href="/sustentabilidade" class="nav-item {% if active=='sustentabilidade' %}is-active{% endif %}">Sustentabilidade</a>
+        <div class="nav-divider"></div>
+        <a href="/conversas" class="nav-item {% if active=='conversas' %}is-active{% endif %}">Conversas</a>
+        <a href="/definicoes" class="nav-item {% if active=='definicoes' %}is-active{% endif %}">Definições</a>
+      </div>
+      <div class="sidebar__user">
+        <div class="user-avatar">JM</div>
+        <div class="user-info">
+          <span class="user-name">Joana Martins</span>
+          <span class="user-role">Director Produção</span>
+        </div>
+      </div>
+    </nav>
+    <main class="content">
+      <header class="page-header">
+        <div class="page-header__left">
+          <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+          <p class="page-subtitle">{% block page_subtitle %}{% endblock %}</p>
+        </div>
+        <div class="page-header__right">
+          <span class="sync-status" id="sync-status">a carregar</span>
+          <span class="clock" id="clock"></span>
+        </div>
+      </header>
+      <div class="page-body">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+  <div class="dock" id="dock">
+    <button class="dock__new" id="dock-new" title="Nova conversa">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    </button>
+    <input id="dock-input" placeholder="Pergunta ao assistente" autocomplete="off">
+    <span class="dock__dot" id="dock-dot" title="A ligar"></span>
+    <button class="dock__send" id="dock-send">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    </button>
+  </div>
+  <script src="/static/js/shared.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

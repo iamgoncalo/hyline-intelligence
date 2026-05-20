@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Homepage{% endblock %}
+{% block page_title %}Homepage{% endblock %}
+{% block page_subtitle %}Produção em tempo real · <span id="simul-badge">SIMULADO</span>{% endblock %}
+
+{% block content %}
+<div class="home-grid">
+  <!-- LEFT: 6 live metric rows -->
+  <div class="home-metrics">
+    <div class="metric-row">
+      <span class="metric-row__label">M² Hoje</span>
+      <span class="metric-row__value" id="k-m2today" data-live="m2_today">--</span>
+      <span class="metric-row__unit">m²</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Desempenho</span>
+      <span class="metric-row__value" id="k-perf">--</span>
+      <span class="metric-row__unit">%</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Temp. Interior</span>
+      <span class="metric-row__value" id="k-temp" data-live="temp_c">--</span>
+      <span class="metric-row__unit">°C</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">CO₂ Interior</span>
+      <span class="metric-row__value" id="k-co2" data-live="co2_ppm">--</span>
+      <span class="metric-row__unit">ppm</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Humidade</span>
+      <span class="metric-row__value" id="k-hum" data-live="humidity_pct">--</span>
+      <span class="metric-row__unit">%</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Ruído</span>
+      <span class="metric-row__value" id="k-noise" data-live="noise_db">--</span>
+      <span class="metric-row__unit">dB</span>
+    </div>
+  </div>
+
+  <!-- CENTRE: Factory twin -->
+  <div class="home-twin">
+    <div class="twin-container twin" id="twin-host"></div>
+  </div>
+
+  <!-- RIGHT: Live events feed -->
+  <div class="home-events">
+    <div class="home-events__title">Eventos Recentes</div>
+    <div class="events-feed" id="events-list"></div>
+  </div>
+</div>
+
+<script>
+  window.FACTORY_CONFIG  = {{ factory_json | safe }};
+  window.STATIONS_CFG    = {{ stations_json | safe }};
+  window.MEMBERS_CFG     = {{ members_json | safe }};
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/home.js"></script>
+{% endblock %}

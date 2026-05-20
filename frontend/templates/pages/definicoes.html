@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Definições{% endblock %}
+{% block page_title %}Definições{% endblock %}
+{% block page_subtitle %}Equipa, parâmetros, conexões e arquitectura{% endblock %}
+
+{% block content %}
+<div class="definicoes-inner">
+  <div class="def-tabs">
+    <button class="def-tab is-active" onclick="Def.tab(this,'equipa')">Equipa</button>
+    <button class="def-tab" onclick="Def.tab(this,'conexoes')">Conexões</button>
+    <button class="def-tab" onclick="Def.tab(this,'arquitectura')">Arquitectura</button>
+    <button class="def-tab" onclick="Def.tab(this,'exportar')">Exportar</button>
+  </div>
+  <div class="def-content">
+    <div class="def-panel is-active" id="panel-equipa">
+      <table class="data-table" id="team-table">
+        <thead><tr><th>Nome</th><th>Papel</th><th>Estação</th></tr></thead>
+        <tbody id="team-tbody"></tbody>
+      </table>
+    </div>
+    <div class="def-panel" id="panel-conexoes">
+      <div id="conn-list"></div>
+    </div>
+    <div class="def-panel" id="panel-arquitectura">
+      <div id="arch-flow"></div>
+    </div>
+    <div class="def-panel" id="panel-exportar">
+      <div style="display:flex;flex-wrap:wrap;gap:var(--space-sm);margin-top:var(--space-sm);" id="export-btns"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/definicoes.js"></script>
+{% endblock %}

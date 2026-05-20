@@ -231,3 +231,10 @@ brand:
   font_display: "Cormorant Garamond"
   font_body: "DM Sans"
   font_mono: "DM Mono"
+
+ws_live:
+  interior_base_temp_c:        18.5    # factory interior baseline temp (°C)
+  interior_humidity_base_pct:  58.0    # baseline relative humidity (%)
+  interior_co2_base_ppm:      650.0    # baseline CO₂ (ppm)
+  interior_noise_base_db:      72.0    # baseline noise level (dB)
+  prod_rate_base_m2_min:        2.1    # baseline production rate (m²/min)

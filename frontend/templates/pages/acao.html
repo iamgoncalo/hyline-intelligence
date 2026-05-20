@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Ação{% endblock %}
+{% block page_title %}Ação{% endblock %}
+{% block page_subtitle %}Agentes de inteligência e otimização{% endblock %}
+
+{% block content %}
+<div class="acao-grid">
+  <!-- LEFT: agents + proposals -->
+  <div class="acao-left">
+    <div class="card">
+      <div class="section-title">Agentes</div>
+      <div id="agents-list">
+        <div class="agent-row">
+          <div class="agent-dot is-active" id="dot-monitor"></div>
+          <div>
+            <div class="agent-name">Monitorização</div>
+            <div class="agent-desc">Tick a cada segundo · sem IA</div>
+          </div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-dot is-idle" id="dot-diagnostico"></div>
+          <div>
+            <div class="agent-name">Diagnóstico</div>
+            <div class="agent-desc">Análise de alertas · Gemini</div>
+          </div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-dot is-idle" id="dot-otimizacao"></div>
+          <div>
+            <div class="agent-name">Otimização</div>
+            <div class="agent-desc">Reatribuição de operadores · 15 min</div>
+          </div>
+        </div>
+        <div class="agent-row">
+          <div class="agent-dot is-active" id="dot-assistente"></div>
+          <div>
+            <div class="agent-name">Assistente</div>
+            <div class="agent-desc">Gemini 2.5 Flash · linguagem natural</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="section-title">Sugestões de Otimização</div>
+      <div id="proposals-list" style="overflow-y:auto;flex:1;"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Gemini chat -->
+  <div class="acao-right">
+    <div class="acao-chat-header">Assistente Gemini · linguagem natural</div>
+    <div class="acao-chat-body" id="acao-chat-body">
+      <div class="chat-chips" id="acao-chips">
+        <button class="chat-chip" onclick="AcaoChat.chip('qual a pior estação')">qual a pior estação</button>
+        <button class="chat-chip" onclick="AcaoChat.chip('m² produzidos hoje')">m² produzidos hoje</button>
+        <button class="chat-chip" onclick="AcaoChat.chip('alertas em aberto')">alertas em aberto</button>
+      </div>
+    </div>
+    <div class="acao-chat-footer">
+      <div class="acao-chat-input-row">
+        <input class="acao-chat-input" id="acao-input" placeholder="Pergunta sobre a fábrica" autocomplete="off">
+        <button class="acao-chat-send" id="acao-send">Enviar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/acao.js"></script>
+{% endblock %}

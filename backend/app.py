@@ -32,7 +32,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, UploadFile, File
+import asyncio
+import math
+import random
+import time
+from fastapi import FastAPI, HTTPException, UploadFile, File, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -98,6 +102,33 @@ class AlertTransferBody(BaseModel):
     to_role: str
 
 
+def build_live_payload() -> dict:
+    """Build second-by-second live data. All base values from cfg().ws_live — zero hardcodes."""
+    t = time.time()
+    wsl = cfg().ws_live
+    temp      = wsl.interior_base_temp_c       + 0.3 * math.sin(t / 120)       + random.gauss(0, 0.05)
+    humidity  = wsl.interior_humidity_base_pct + 2.0 * math.sin(t / 200 + 1.0) + random.gauss(0, 0.3)
+    co2       = wsl.interior_co2_base_ppm      + 80  * math.sin(t / 300 + 2.0) + random.gauss(0, 5.0)
+    noise_db  = wsl.interior_noise_base_db     + 3.0 * math.sin(t / 45)        + random.gauss(0, 1.0)
+    prod_rate = wsl.prod_rate_base_m2_min      + 0.4 * math.sin(t / 600)       + random.gauss(0, 0.02)
+    kpis = engine.global_kpis()
+    with dlayer.connection() as conn:
+        alerts_count = conn.execute(
+            "SELECT COUNT(*) FROM alerts WHERE resolved_ts IS NULL"
+        ).fetchone()[0]
+    return {
+        "ts":               round(t, 3),
+        "temp_c":           round(temp, 1),
+        "humidity_pct":     round(humidity, 1),
+        "co2_ppm":          int(round(co2)),
+        "noise_db":         round(noise_db, 1),
+        "prod_rate_m2_min": round(prod_rate, 3),
+        "m2_today":         round(kpis["m2_today"], 1),
+        "afi_f_global":     round(kpis.get("afi_F_global", 0), 3),
+        "alerts_open":      alerts_count,
+    }
+
+
 # ═══════════════════════════════════════════════════════════════════
 # App factory
 # ═══════════════════════════════════════════════════════════════════
@@ -117,46 +148,58 @@ def create_app() -> FastAPI:
         lstrip_blocks=True,
     )
 
-    # ── Dashboard HTML (renderizado server-side) ────────────────
-    @app.get("/", response_class=HTMLResponse)
-    def dashboard() -> HTMLResponse:
-        tmpl = env.get_template("dashboard.html.j2")
-        productive_count = sum(1 for s in c.stations if s.target_m2_per_hour > 0)
-        stations_json = json.dumps(
-            [s.model_dump() for s in c.stations], ensure_ascii=False, separators=(",", ":"),
-        )
-        members_json = json.dumps(
-            [m.model_dump() for m in c.teams.members], ensure_ascii=False, separators=(",", ":"),
-        )
-        trends_json = json.dumps(
-            [t.model_dump() for t in c.scale.trends_pt], ensure_ascii=False, separators=(",", ":"),
-        )
-        priorities_json = json.dumps(
-            [p.model_dump() for p in c.scale.strategic_priorities], ensure_ascii=False, separators=(",", ":"),
-        )
-        sustain_json = json.dumps(c.sustainability.model_dump(), ensure_ascii=False, separators=(",", ":"))
+    # ── Page routes (multi-page v3 architecture) ──────────────────
+    def _page(name: str, active: str, **ctx) -> HTMLResponse:
+        tmpl = env.get_template(f"pages/{name}.html")
+        return HTMLResponse(tmpl.render(active=active, app_name=c.app.name, **ctx))
 
-        html = tmpl.render(
-            app_name=c.app.name,
-            app_tagline=c.app.tagline,
-            refresh_seconds=c.app.dashboard_refresh_seconds,
-            factory=c.factory.model_dump(),
-            stations=c.stations,
-            stations_json=stations_json,
-            productive_count=productive_count,
-            fiducials=c.factory.fiducials,
-            brand=c.brand.model_dump(),
-            roles=c.teams.roles,
-            members=c.teams.members,
-            members_json=members_json,
-            trends_json=trends_json,
-            priorities_json=priorities_json,
-            sustain_json=sustain_json,
-            afi_alpha=c.afi.alpha,
-            thresholds=c.thresholds.model_dump(),
-            agents=registry().status(),
-        )
-        return HTMLResponse(html)
+    @app.get("/", response_class=HTMLResponse)
+    def home():
+        factory_json  = json.dumps(c.factory.model_dump(),          ensure_ascii=False, separators=(",", ":"))
+        stations_json = json.dumps([s.model_dump() for s in c.stations], ensure_ascii=False, separators=(",", ":"))
+        members_json  = json.dumps([m.model_dump() for m in c.teams.members], ensure_ascii=False, separators=(",", ":"))
+        return _page("home", "home",
+                     factory_json=factory_json,
+                     stations_json=stations_json,
+                     members_json=members_json)
+
+    @app.get("/alertas", response_class=HTMLResponse)
+    def alertas_page(): return _page("alertas", "alertas")
+
+    @app.get("/acao", response_class=HTMLResponse)
+    def acao_page(): return _page("acao", "acao")
+
+    @app.get("/escala", response_class=HTMLResponse)
+    def escala_page(): return _page("escala", "escala")
+
+    @app.get("/procurement", response_class=HTMLResponse)
+    def procurement_page(): return _page("procurement", "procurement")
+
+    @app.get("/sustentabilidade", response_class=HTMLResponse)
+    def sustentabilidade_page(): return _page("sustentabilidade", "sustentabilidade")
+
+    @app.get("/definicoes", response_class=HTMLResponse)
+    def definicoes_page(): return _page("definicoes", "definicoes")
+
+    @app.get("/conversas", response_class=HTMLResponse)
+    def conversas_page(): return _page("conversas", "conversas")
+
+    # ── WebSocket live feed (1s sinusoidal oscillations) ──────────
+    @app.websocket("/ws/live")
+    async def live_feed(ws: WebSocket):
+        await ws.accept()
+        try:
+            while True:
+                await asyncio.sleep(1)
+                try:
+                    payload = build_live_payload()
+                    await ws.send_text(json.dumps(payload))
+                except Exception as exc:
+                    log.warning("WS payload error: %s", exc)
+        except WebSocketDisconnect:
+            pass
+        except Exception:
+            pass
 
     # ── Core API ─────────────────────────────────────────────────
     @app.get("/api/health")

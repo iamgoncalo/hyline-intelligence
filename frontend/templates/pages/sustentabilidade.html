@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Sustentabilidade{% endblock %}
+{% block page_title %}Sustentabilidade{% endblock %}
+{% block page_subtitle %}Impacto ambiental e metas de circularidade{% endblock %}
+
+{% block content %}
+<div class="sustain-grid">
+  <!-- COL 1: Produção -->
+  <div class="sustain-col">
+    <div class="section-title">Produção</div>
+    <div class="metric-row">
+      <span class="metric-row__label">m² Hoje</span>
+      <span class="metric-row__value" data-live="m2_today" id="s-m2">--</span>
+      <span class="metric-row__unit">m²</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Encomendas Activas</span>
+      <span class="metric-row__value" id="s-orders">--</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Taxa de Conformidade</span>
+      <span class="metric-row__value" id="s-conformidade">--</span>
+      <span class="metric-row__unit">%</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Material Reutilizado</span>
+      <span class="metric-row__value" id="s-reuse">--</span>
+      <span class="metric-row__unit">%</span>
+    </div>
+  </div>
+
+  <!-- COL 2: Energia e CO₂ -->
+  <div class="sustain-col">
+    <div class="section-title">Energia e CO₂</div>
+    <div class="metric-row">
+      <span class="metric-row__label">CO₂ Produção Hoje</span>
+      <span class="metric-row__value" id="s-co2">--</span>
+      <span class="metric-row__unit">kg CO₂e</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Energia Estimada</span>
+      <span class="metric-row__value" id="s-energy">--</span>
+      <span class="metric-row__unit">kWh</span>
+    </div>
+    <div class="metric-row">
+      <span class="metric-row__label">Eficiência</span>
+      <span class="metric-row__value" id="s-eff">--</span>
+      <span class="metric-row__unit">m²/kWh</span>
+    </div>
+    <div style="margin-top:var(--space-md);">
+      <div class="section-title">Contexto Esposende · <span id="s-month">Maio 2026</span></div>
+      <div class="metric-row">
+        <span class="metric-row__label">Temp. Exterior</span>
+        <span class="metric-row__value" id="s-ext-temp">--</span>
+        <span class="metric-row__unit">°C</span>
+      </div>
+      <div class="metric-row">
+        <span class="metric-row__label">CO₂ Rede PT</span>
+        <span class="metric-row__value" id="s-grid-co2">--</span>
+        <span class="metric-row__unit">g/kWh</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- COL 3: Fornecedores -->
+  <div class="sustain-col">
+    <div class="section-title">Fornecedores</div>
+    <div id="suppliers-sustain">
+      <div style="font-size:13px;color:var(--ink-hint);">A carregar</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/sustentabilidade.js"></script>
+{% endblock %}

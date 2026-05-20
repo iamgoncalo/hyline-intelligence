@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Alertas{% endblock %}
+{% block page_title %}Alertas{% endblock %}
+{% block page_subtitle %}Encaminhamento automático por papel{% endblock %}
+
+{% block content %}
+<div class="alerts-grid" id="alerts-grid">
+  <div class="alert-col" id="col-Director">
+    <div class="alert-col__header">
+      Director
+      <span class="alert-col__count" id="cnt-Director">0</span>
+    </div>
+    <div class="alert-col__list" id="list-Director">
+      <div class="alert-col__empty">Sem alertas</div>
+    </div>
+  </div>
+  <div class="alert-col" id="col-HST">
+    <div class="alert-col__header">
+      Chefe de Turno
+      <span class="alert-col__count" id="cnt-HST">0</span>
+    </div>
+    <div class="alert-col__list" id="list-HST">
+      <div class="alert-col__empty">Sem alertas</div>
+    </div>
+  </div>
+  <div class="alert-col" id="col-DQ">
+    <div class="alert-col__header">
+      Qualidade
+      <span class="alert-col__count" id="cnt-DQ">0</span>
+    </div>
+    <div class="alert-col__list" id="list-DQ">
+      <div class="alert-col__empty">Sem alertas</div>
+    </div>
+  </div>
+  <div class="alert-col" id="col-ChefeTurno">
+    <div class="alert-col__header">
+      Produção
+      <span class="alert-col__count" id="cnt-ChefeTurno">0</span>
+    </div>
+    <div class="alert-col__list" id="list-ChefeTurno">
+      <div class="alert-col__empty">Sem alertas</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/alertas.js"></script>
+{% endblock %}
